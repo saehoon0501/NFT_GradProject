@@ -66,8 +66,7 @@ export const Login = () => {
        const msg = await dk.methods.ownerOf(1).call();
        console.log(msg);
         if(publicAddress.toString().toLowerCase() === msg.toString().toLowerCase()){
-           
-            window.alert("Login Sucessful");
+            window.location.assign("http://localhost:3000/sns");            
             return 0;
         }else{
             window.alert("Login Failed Try Again");
@@ -91,7 +90,7 @@ export const Login = () => {
 
     return(
         <div>
-            <button className="" onClick={handleClick}>
+            <button className="" onClick={handleClick} link>
                 Login to SNS
             </button>
         </div>

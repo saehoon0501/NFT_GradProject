@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react';
 import Web3 from "web3/dist/web3.min.js";
 import {init, mintToken, Login, Login2} from "./Web3Client";
+import {BrowserRouter as Router, Route, Routes} from 'react-router-dom';
 import './App.css';
-
-
-
+import {Sns} from "./Sns";
 
 
 function App() {
@@ -48,14 +47,19 @@ function App() {
     };
 
   return (
-    <div className="App" style={rgb}>
-      {!minted
-        ? <button onClick={()=>mint()}>Mint Token</button>
-        : <p>Token Minted</p>
-      }
-      <Login> </Login>
-      <Login2>  </Login2>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<div className="App" style={rgb}>
+          {!minted
+            ? <button onClick={()=>mint()}>Mint Token</button>
+            : <p>Token Minted</p>
+          }
+          <Login> </Login>
+          <Login2>  </Login2>
+        </div>} />
+        <Route exact path="/sns" element={<Sns></Sns>} />
+      </Routes>
+    </Router>
   );
 }
 
