@@ -1,4 +1,9 @@
 import { Link } from 'react-router-dom';
+import img from "./images/user.png";
+import add from "./images/addButton.png";
+import Avatar from "@material-ui/core/Avatar";
+
+
 
 export function Header({ username }) {
   return (
@@ -13,6 +18,15 @@ export function Header({ username }) {
             <button className="primary__button">Log in</button>
             <button className="text__button">Sign up</button>
           </div>
+          <img
+            src={add}
+            alt="add Button"
+          />
+          <Avatar
+          className="post__avatar"
+          alt={username}
+          src={img}
+        />
         </div>
       </div>
   );
