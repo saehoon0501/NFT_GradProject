@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
+import React from "react";
 import "./Modal.css";
 import Avatar from "@material-ui/core/Avatar";
 import img from "./images/user.png";
@@ -9,20 +10,20 @@ export const showModal = () => {
     modal.style.display = "block";
 }
 
-const Mycaption = () => {
+const Mycaption = (props) => {
 
     const [caption, setCaption] = useState("");
 
-    const handlePost = (e) =>{
+    const handleUpdate = (e) =>{
         setCaption(e.target.value);
-        console.log(caption);
+        props.caption(caption);
     }
 
     return(
         <div>
             <form>
                 <textarea aria-label="문구입력..." placeholder="문구입력..." autoComplete="off" autoCorrect="off"
-                onChange={(event)=>{handlePost(event)}}
+                onChange={(event)=>{handleUpdate(event)}}
                 style={{padding:"10px",resize:"none",width:"100%", height:"300px", border: "0", outline:"none"}}></textarea>
             </form>
         </div>
@@ -33,9 +34,11 @@ const ImageResize = (props) => {
 
     const [resize, resetSize] = useState(false);
 
-
+    const ref = useRef(null);
+    const changeRef = (value) => {ref.current = value};
+    
     const handleSize = () => {
-        resetSize(true);
+       resetSize(true);
     }
 
     return(
@@ -66,7 +69,7 @@ const ImageResize = (props) => {
                         <h3>{"byun0501"}</h3>
                         </div>
                     </div>
-                    <Mycaption/>
+                    <Mycaption caption={changeRef}/>
                 </div>
                 }
             </div>
@@ -79,6 +82,7 @@ export const Modal = () => {
     let modal = document.getElementById("myModal");
 
     const [selectedImage, setImage] = useState(null);
+   
 
     const handleClose = () => {
         modal.style.display = "none";
