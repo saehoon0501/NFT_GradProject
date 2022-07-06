@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import Web3 from "web3/dist/web3.min.js";
-import {init, mintToken, Login, Login2} from "./Web3Client";
+import {init, mintToken, Login} from "./Web3Client";
 import {BrowserRouter as Router, Route, Routes} from 'react-router-dom';
 import './App.css';
 import {Sns} from "./Sns";
 
+let selectedAccount;
 
 function App() {
 
@@ -26,38 +27,22 @@ function App() {
     useEffect(() => {
 
         init();
-
-        const onScroll = () => setOffset(window.pageYOffset);
-        // clean up code
-        window.removeEventListener('scroll', onScroll);
-        window.addEventListener('scroll', onScroll, { passive: true });
-        return () => window.removeEventListener('scroll', onScroll);
+        
     }, []);
-
-    console.log(offset);
-
-    const x = 1 + offset / 100;
-    const y = 1 + offset / 160;
-    const z = 1 + offset / 300;
-    
-    const [r, g, b] = [red/x, green/y, blue/z].map(Math.round);
-
-    const rgb = {
-      backgroundColor: `rgb(${r},${g},${b})`
-    };
 
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<div className="App" style={rgb}>
+        <Route path="/" element={<div>
+          <div className="app">
           {!minted
-            ? <button onClick={()=>mint()}>Mint Token</button>
+            ? <button className='primary__button' onClick={()=>mint()}>Mint Token</button>
             : <p>Token Minted</p>
           }
           <Login> </Login>
-          <Login2>  </Login2>
+          </div>
         </div>} />
-        <Route exact path="/sns" element={<Sns></Sns>} />
+        <Route exact path="/sns" element={<Sns/>} />
       </Routes>
     </Router>
   );

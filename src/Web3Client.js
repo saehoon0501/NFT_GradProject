@@ -3,7 +3,7 @@ import DistrictK from "./contracts/DistrictK.json";
 import React, { useState } from 'react';
 
 
-let selectedAccount; 
+export let selectedAccount; 
 
 let dk;
 
@@ -16,7 +16,6 @@ export const init = async () => {
           //MetaMask is installed
           provider.request({method: "eth_requestAccounts"}).then(accounts=>{
             selectedAccount = accounts[0];
-            console.log(accounts);
           })
           .catch((err)=>{
             console.log(err);
@@ -32,11 +31,12 @@ export const init = async () => {
         });
 
         const network_id = await web3.eth.net.getId();
-        const address = '0x0290fb167208af455bb137780163b7b7a9a10c16';
+        const address = '0x1842a13a1c8d389834107ba166c6b78ce70f271a';
 
         dk = new web3.eth.Contract(DistrictK.abi, address);
 
         isInitialized = true;
+        return selectedAccount;
 };
 
 export const mintToken = async () => {
@@ -63,15 +63,18 @@ export const Login = () => {
     };
 
     const handleAuthenticate = async ({publicAddress, signature}) =>{
-       const msg = await dk.methods.ownerOf(1).call();
+    try{
+        const msg = await dk.methods.ownerOf(1).call();
        console.log(msg);
-        if(publicAddress.toString().toLowerCase() === msg.toString().toLowerCase()){
-            window.location.assign("http://localhost:3000/sns");            
-            return 0;
+       if(publicAddress.toString().toLowerCase() === msg.toString().toLowerCase()){
+        window.location.assign("http://localhost:3000/sns");            
         }else{
-            window.alert("Login Failed Try Again");
-            return -1;
+        window.alert("Login Failed Try Again");
         }
+    }catch(err){
+        window.alert("Login Failed Try Again");
+    }
+        
     }
 
     const handleClick = () => {
@@ -82,6 +85,7 @@ export const Login = () => {
         try{
             handleSignMessage(selectedAccount,'124315')
         .then(handleAuthenticate);
+
         }catch(err){
             console.log(err);
         }
@@ -90,59 +94,8 @@ export const Login = () => {
 
     return(
         <div>
-            <button className="" onClick={handleClick} link>
+            <button className="login__button" onClick={handleClick} link>
                 Login to SNS
-            </button>
-        </div>
-    );
-};
-
-export const Login2 = () => {
-
-    const web3 = new Web3(window.ethereum);
-
-    const handleSignMessage = async (publicAddress, nonce) => {
-       try{
-           const signature = await web3.eth.personal.sign('I am signing my one-time Nonce: ${nonce}',
-           publicAddress,
-           ''
-           );
-           return {publicAddress, signature};
-       }catch(err){
-            console.log(err);   
-       }
-    };
-
-    const handleAuthenticate = async ({publicAddress, signature}) =>{
-       const msg = await dk.methods.ownerOf(1).call();
-     
-        if(publicAddress.toString().toLowerCase() === msg.toString().toLowerCase()){
-            window.alert("Login Sucessful");
-            return 0;
-        }else{
-            window.alert("Login Failed Try Again");
-            return -1;
-        }
-    }
-
-    const handleClick = () => {
-        if(!window.ethereum){
-            window.alert("Please install MetaMask first");
-            return;
-        }
-        try{
-            handleSignMessage(selectedAccount,'124315')
-        .then(handleAuthenticate);
-        }catch(err){
-            console.log(err);
-        }
-        
-    };
-
-    return(
-        <div>
-            <button className="" onClick={handleClick}>
-                Login to Game
             </button>
         </div>
     );

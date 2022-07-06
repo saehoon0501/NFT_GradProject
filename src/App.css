@@ -13,6 +13,7 @@ body {
 .app {
   background-color: #fafafa;
   min-height: 100vh;
+  text-align: center;
 }
 .app__header {
   position: sticky;
@@ -32,7 +33,6 @@ body {
   padding: 0 20px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
 }
 .app__headerButtons {
   display: flex;
@@ -51,6 +51,22 @@ button {
   padding: 5px 9px;
   font-weight: 600;
   text-align: center;
+  display: flex;
+  margin-left: auto;
+  margin-top: 20px;
+  margin-right: auto;
+}
+.login__button {
+  background-color: orange;
+  border-radius: 4px;
+  color: #fff;
+  padding: 5px 9px;
+  font-weight: 600;
+  text-align: center;
+  display: flex;
+  margin-left: auto;
+  margin-top: 20px;
+  margin-right: auto;
 }
 .text__button {
   color: #0095f6;
@@ -69,4 +85,12 @@ button {
   margin: 0 auto;
   max-width: 500px;
   padding: 20px;
+}
+
+.addButton{
+  margin: 0 0 0 80%;
+}
+
+.headerAva{
+  margin-left: 5%;
 }
