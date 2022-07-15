@@ -5,8 +5,6 @@ import Post from "./Post";
 import img from "./images/user.png";
 import "./App.css";
 
-let username;
-
 export const Sns = () => {   
 
     const [posts, setPosts] = useState([
@@ -19,13 +17,11 @@ export const Sns = () => {
 
       useEffect( () => {
 
-
-
       }, [posts])
 
     return(
         <div className="app">
-            <Header username={'user'}/>
+            <Header username={'byun0501'} newPosts={setPosts}/>
             <div className="timeline">
             {posts.map((post)=>(
                 <Post

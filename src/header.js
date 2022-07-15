@@ -3,12 +3,13 @@ import img from "./images/user.png";
 import Avatar from "@material-ui/core/Avatar";
 import {Modal, showModal} from "./Modal";
 import add from "./images/addButton.png";
+import { IconButton } from '@material-ui/core';
 
 const handleClick = () => {
   showModal();
 }
 
-export function Header({ username }) {
+export function Header(props) {
   return (
       <div className="app__header">
         <div className="app__headerWrapper">
@@ -25,12 +26,14 @@ export function Header({ username }) {
                 onClick={handleClick}
                 className='addButton'
           />
-          <Modal/>
+          <Modal username={props.username} newPosts={props.newPosts}/>
+          <IconButton size='small'>
           <Avatar
           className="post__avatar headerAva"
-          alt={username}
+          alt={props.username}
           src={img}
         />
+        </IconButton>
         </div>
       </div>
   );

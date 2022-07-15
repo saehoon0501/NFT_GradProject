@@ -10,13 +10,13 @@ export const showModal = () => {
     modal.style.display = "block";
 }
 
-const Mycaption = (props) => {
+export const Mycaption = () => {
 
     const [caption, setCaption] = useState("");
 
     const handleUpdate = (e) =>{
         setCaption(e.target.value);
-        props.caption(caption);
+        console.log(caption);
     }
 
     return(
@@ -32,10 +32,22 @@ const Mycaption = (props) => {
 
 const ImageResize = (props) => {
 
+    let caption = "";
+
     const [resize, resetSize] = useState(false);
 
-    const ref = useRef(null);
-    const changeRef = (value) => {ref.current = value};
+    const handleUpdate = (e) => {
+        caption = e.target.value;
+    }
+
+    const handlePost = () => {
+        props.newPosts([{
+            username: props.username,
+            caption: caption,
+            imageUrl: `${URL.createObjectURL(props.img)}`
+        }]);
+        props.close();
+    }
     
     const handleSize = () => {
        resetSize(true);
@@ -46,16 +58,16 @@ const ImageResize = (props) => {
                 <div style={{borderColor:"black", marginTop:"10px",width:"100%", height:"40px", 
                 borderBottom: "solid 1px lightgray", alignItems:"center", justifyContent:"center"}}>
                     <span style={{marginRight:"10px", fontSize:"15px", color:"blueviolet"}}
-                    class="close" onClick={handleSize}>{resize? "공유하기":"다음"}</span>
+                    class="close" onClick={resize? handlePost: handleSize}>{resize? "공유하기":"다음"}</span>
                     <h3 style={{marginLeft:"35px"}}>이미지 크기 조정</h3>
                 </div>
                 <div style={{display:"flex",width:"100%", height:"100%"}}>
-                <div id="selectedImg" style={{width:"855px", height:"805px", borderRadius:"0 0 2ex 2ex",
-                backgroundImage:`url(${URL.createObjectURL(props.img)})`,
-                backgroundSize:"cover",
-                backgroundRepeat:"no-repeat",
-                backgroundPosition:"cetner"}}>
-                </div>
+                    <div id="selectedImg" style={{width:"855px", height:"805px", borderRadius:"0 0 2ex 2ex",
+                    backgroundImage:`url(${URL.createObjectURL(props.img)})`,
+                    backgroundSize:"cover",
+                    backgroundRepeat:"no-repeat",
+                    backgroundPosition:"cetner"}}>
+                    </div>
                 {resize&&<div style={{display:"block", width:"339px"}}>
                     <div style={{display:"flex", alignItems:"center", margin:"10px"}}>
                         <div>
@@ -69,7 +81,13 @@ const ImageResize = (props) => {
                         <h3>{"byun0501"}</h3>
                         </div>
                     </div>
-                    <Mycaption caption={changeRef}/>
+                    <div>
+                        <form>
+                            <textarea aria-label="문구입력..." placeholder="문구입력..." autoComplete="off" autoCorrect="off"
+                            onChange={(event)=>{handleUpdate(event)}}
+                            style={{padding:"10px",resize:"none",width:"100%", height:"300px", border: "0", outline:"none"}}></textarea>
+                        </form>
+                    </div>
                 </div>
                 }
             </div>
@@ -77,13 +95,12 @@ const ImageResize = (props) => {
     )
 }
 
-export const Modal = () => {
+export const Modal = (props) => {
 
     let modal = document.getElementById("myModal");
 
-    const [selectedImage, setImage] = useState(null);
+    const [selectedImage, setImage] = useState(null);   
    
-
     const handleClose = () => {
         modal.style.display = "none";
         setImage(null);
@@ -102,8 +119,8 @@ export const Modal = () => {
             <div id="myModal" class="modal">
             {selectedImage==null
                 ?<div id="ImgResize" class="modal-content">
-                    <div style={{borderColor:"black", marginTop:"10px",width:"100%", height:"5%", 
-                    borderBottom: "solid 1px lightgray"}}>
+                    <div style={{borderColor:"black", marginTop:"10px",width:"100%", height:"40px", 
+                    borderBottom: "solid 1px lightgray", alignItems:"center", justifyContent:"center"}}>
                         <span style={{marginRight:"10px"}} class="close" onClick={handleClose}>&times;</span>
                         <h3 style={{marginLeft:"30px"}}>이미지를 추가해주세요</h3>
                     </div>
@@ -117,7 +134,7 @@ export const Modal = () => {
                     />
                     </div>
                 </div>
-                :<ImageResize img={selectedImage}/>
+                :<ImageResize img={selectedImage} username={props.username} newPosts={props.newPosts} close={handleClose}/>
             }
             </div>
     )
