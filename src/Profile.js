@@ -12,8 +12,11 @@ export const Profile = () => {
                         <img src={img} style={{width:"450px", borderRadius:"20px"}}/>
                         </div>
                         <div className="profile-info profile-about" style={{ width:"400px",padding:"1% 5%"}}>
-                            <div>
+                            <div style={{display:"flex"}}>
                                 <h2>byun_0501</h2>
+                                <input style={{fontSize:"16px", padding:"0 16px", margin:"auto", backgroundColor:"white",
+                                 border:"0", borderRadius:"2pt", 
+                                 boxShadow:"0 0 0 1px lightgray"}} type="button" value="프로필 편집"></input>
                             </div>
                             <div className="profile-text">
                                 <h3>게시물 3</h3>
