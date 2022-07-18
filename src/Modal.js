@@ -96,17 +96,17 @@ const ImageResize = (props) => {
 }
 
 export const Modal = (props) => {
-
-    let modal = document.getElementById("myModal");
-
+   
     const [selectedImage, setImage] = useState(null);   
    
     const handleClose = () => {
+        let modal = document.getElementById("myModal");
         modal.style.display = "none";
         setImage(null);
     }
 
     window.onclick = (e) => {
+        let modal = document.getElementById("myModal");
         if(e.target == modal){
             modal.style.display="none";
             setImage(null)
