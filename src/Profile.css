@@ -1,0 +1,28 @@
+.profile-container{
+    margin: 2% auto;
+}
+
+.profile-wrapper{
+    max-width: 975px;
+    display: flex;
+    justify-content: center;
+    margin: 0 auto;
+}
+
+.profile-info{
+    margin: 0 2%;
+}
+
+.profile-about{
+    text-align: left;
+}
+
+.profile-text{
+    margin: 8% auto;
+    display: flex;
+}
+
+.profile-text h3{
+    margin: 2% 3%;
+    text-align: left;
+}

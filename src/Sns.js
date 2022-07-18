@@ -4,6 +4,7 @@ import {init, selectedAccount} from "./Web3Client";
 import Post from "./Post";
 import img from "./images/user.png";
 import "./App.css";
+import { Profile } from "./Profile";
 
 export const Sns = () => {   
 
@@ -14,6 +15,8 @@ export const Sns = () => {
             imageUrl: img
         }
       ]);
+    
+    const [profileClicked, setprofileClickced] = useState(false);
 
       useEffect( () => {
 
@@ -21,8 +24,10 @@ export const Sns = () => {
 
     return(
         <div className="app">
-            <Header username={'byun0501'} newPosts={setPosts}/>
-            <div className="timeline">
+            <Header username={'byun0501'} newPosts={setPosts} openProfile={setprofileClickced}/>
+            {profileClicked?
+            <Profile/>
+            :<div className="timeline">
             {posts.map((post)=>(
                 <Post
                 //key = {} 
@@ -32,6 +37,7 @@ export const Sns = () => {
                 />
             ))}
             </div>
+            }
         </div>
     );
 };
