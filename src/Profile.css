@@ -26,3 +26,19 @@
     margin: 2% 3%;
     text-align: left;
 }
+
+.profile-post h4{
+    display: flex;
+    margin: 2% auto;
+    justify-content: center;
+}
+
+.profile-post{
+    display: flex;
+    text-align: left;
+    margin: 0;
+}
+
+.profile-post img{
+    margin: 0 1.7%;
+}

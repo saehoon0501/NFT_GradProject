@@ -30,11 +30,22 @@ export const Profile = () => {
                         </div>
                     </div>
                 </div>
-                <div>
-
-                </div>
-
+                <div className="profile-wrapper">
+                    <div style={{width:"100%", height:"1px", borderBottom: "1px solid lightgray", margin:"3% auto"}}>
+                        <div className="profile-post">
+                            <h4>
+                                게시물
+                            </h4>
+                        </div>
+                        <div className="profile-post">
+                            <img src={img} style={{width:"30%"}}/>
+                            <img src={img} style={{width:"30%"}}/>
+                            <img src={img} style={{width:"30%"}}/>
+                        </div>
+                    </div>                    
+                </div>                
             </div>
+            
         </div>
     );
 }
