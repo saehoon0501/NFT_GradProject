@@ -18,12 +18,15 @@
 }
 
 .profile-text{
-    margin: 8% auto;
+    margin: 8%;
+    margin-left: 0;
+    margin-right: 8%;
     display: flex;
 }
 
 .profile-text h3{
-    margin: 2% auto;
+    margin-left: 0;
+    margin-right: 8%;
     text-align: left;
 }
 
@@ -41,4 +44,43 @@
 
 .profile-post img{
     margin: 0 1.7%;
+}
+
+.clickable{
+    cursor: pointer;
+}
+
+.clickable-img:hover{
+    cursor: pointer;
+    transition: 0.5s;
+    opacity: 1;
+    filter: grayscale(100%);
+}
+
+.clickable-img:hover .description{
+    opacity: 1;
+    font-size: 2em;
+    color: white;
+}
+
+.description{
+ position: relative;
+ top: -250px;
+ font-size: 0em;
+ opacity: 0;
+}
+
+.clickable-input{
+cursor: pointer;
+font-size:16px;
+padding:0 16px; 
+margin:auto 5%;
+background-color:white;
+border:0; 
+border-radius:2pt;
+box-shadow:0 0 0 1px lightgray;
+}
+
+.clickable-input:hover{
+    background-color: skyblue;
 }
