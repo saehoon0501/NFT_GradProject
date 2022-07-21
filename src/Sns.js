@@ -11,7 +11,7 @@ export const Sns = () => {
     const [posts, setPosts] = useState([
         {
             username: `undefined`,
-            caption: "Hello NFT",
+            caption: "Hello NFT sda fsdafasdfasfs  adfsafdasffadddddddd ffs",
             imageUrl: img
         }
       ]);

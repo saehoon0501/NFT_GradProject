@@ -85,7 +85,8 @@ const ImageResize = (props) => {
                         <form>
                             <textarea aria-label="문구입력..." placeholder="문구입력..." autoComplete="off" autoCorrect="off"
                             onChange={(event)=>{handleUpdate(event)}}
-                            style={{padding:"10px",resize:"none",width:"100%", height:"300px", border: "0", outline:"none"}}></textarea>
+                            style={{padding:"10px",resize:"none",width:"100%", height:"300px", border: "0", outline:"none"}}>
+                            </textarea>
                         </form>
                     </div>
                 </div>
