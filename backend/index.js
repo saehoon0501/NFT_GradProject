@@ -1,0 +1,33 @@
+const express = require("express");
+const cors = require("cors");
+const bodyParser = require("body-parser");
+
+const services = require('./services');
+const User = require('./models/user.model');
+
+const app = express(); // express module on
+
+
+
+// const user1 = new User({
+//   publicAddr:"0xbe38d61731fb86d9a981f38f1bd73b106e80ce32",
+// ownerOfNFT:[{collection_id:"azuki", NFT_URL:["https://ikzttp.mypinata.cloud/ipfs/QmYDvPAXtiJg7s8JdRBSLWdgSphQdac8j1YuQNNxcGE1hg/111.png",
+//  "https://ikzttp.mypinata.cloud/ipfs/QmYDvPAXtiJg7s8JdRBSLWdgSphQdac8j1YuQNNxcGE1hg/199.png"]}],
+// profile:{username:"0xbe38d61731FB86D9A981f38F1bD73b106E80ce32", 
+// caption:"", 
+// points: 0, 
+// post_ids:[], 
+// profile_pic:"https://ikzttp.mypinata.cloud/ipfs/QmYDvPAXtiJg7s8JdRBSLWdgSphQdac8j1YuQNNxcGE1hg/199.png"
+// }});
+
+// user1.save();
+
+app.use(cors());
+app.use(express.static("public"));
+app.use(bodyParser.json());
+
+app.use('/api', services);
+
+
+
+app.listen(4000); // port 4000인 server 실행
