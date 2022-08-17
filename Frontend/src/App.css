@@ -19,6 +19,7 @@ body {
   position: sticky;
   top: 0;
   z-index: 9999;
+  width: 100%;
   background-color: white;
   height: 54px;
   display: flex;
@@ -27,9 +28,8 @@ body {
   border-bottom: 1px solid lightgray;
 }
 .app__headerWrapper {
-  max-width: 975px;
+  max-width: 500px;
   margin: 0 auto;
-  width: 100%;
   padding: 0 20px;
   display: flex;
   align-items: center;
@@ -37,6 +37,7 @@ body {
 .app__headerButtons {
   display: flex;
   column-gap: 15px;
+  margin: 0 auto;
 }
 button {
   font-size: 14px;
@@ -85,6 +86,7 @@ button {
   margin: 0 auto;
   max-width: 500px;
   padding: 20px;
+  background-color: #fbfbfb;
 }
 
 .addButton{

@@ -1,0 +1,47 @@
+.create {
+    display: block; /* Hidden by default */
+    min-height: 100vh; /* Full height */
+    background-color: #D6DBE2; /* Black w/ opacity */
+    text-align: left;
+  }
+
+  /* Modal Content/Box */
+  .create_content {
+    border-radius: 2ex;
+    width: 750px;
+    margin: 30px auto; /* 15% from the top and centered */
+    padding: 20px;
+    max-width: 855px;
+    padding: 0;
+  }
+
+  .create_title{
+    border-bottom: 1px solid white;
+    padding: 15px 0;
+  }
+  
+  /* The Close Button */
+  .close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+  }
+  
+  .close:hover,
+  .close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  textarea::placeholder{
+    color: lightgrey;
+    font-weight: 1.2em;
+  }
+
+  [contenteditable=true]:empty:not(:focus):before{
+    margin: 5px;
+    content:attr(data-ph);
+    color:grey;
+  }

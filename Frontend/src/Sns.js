@@ -1,18 +1,20 @@
-import {Header} from "./header";
+import {Header} from "./Header";
 import React, { useState, useEffect} from "react";
-import {init, selectedAccount} from "./Web3Client";
 import Post from "./Post";
-import img from "./images/user.png";
 import "./App.css";
 import { Profile } from "./Profile";
+
+import home from "./images/home.png";
+import star from "./images/star.png";
+import illustrate from "./images/illustrate.png";
+import chat from "./images/chat.png";
+import nft from "./images/nft.png";
 import axios from "axios";
 
 const token = window.localStorage.getItem("NFTLogin");
 const baseURL = "http://localhost:4000";
 
 export const Sns = () => {   
-
-    const baseURL = "http://localhost:4000";
 
     const [posts, setPosts] = useState([]);
 
@@ -75,10 +77,40 @@ export const Sns = () => {
 
     return(
         <div className="app">
-            <Header username={'byun0501'} newPosts={createPost} openProfile={setprofileClickced} pic={pic}/>
+            {/* <Header username={'byun0501'} newPosts={createPost} openProfile={setprofileClickced} pic={pic}/> */}
             {profileClicked?
             <Profile user_info={user_info} setPic={setPic} pic={pic}/>
-            :<div className="timeline">
+            :<div style={{display:"flex"}}>
+            <div style={{display:"block", position:"fixed", padding:"10px", border:"1px solid lightgray", width:"180px",height:"250px",
+            textAlign:"left", top:"74px", left:"240px"}}>
+                <div style={{margin:"0 0 10px 0"}}>
+                    <span>Feeds</span>
+                </div>
+                <div style={{margin:"0 0 5px 5px"}}>
+                    <img src={home} alt="home_icon" />
+                    <span>Home</span>
+                </div>
+                <div style={{margin:"0 0 5px 5px"}}>
+                    <img src={star} alt="home_icon" />
+                    <span>Popular</span>
+                </div>
+                <div style={{margin:"10px 0 10px 0"}}>
+                    <span>Explore</span>
+                </div>
+                <div style={{margin:"0 0 5px 5px"}}>
+                    <img src={illustrate} alt="home_icon" />
+                    <span>일러스트</span>
+                </div>
+                <div style={{margin:"0 0 5px 5px"}}>
+                    <img src={chat} alt="home_icon" />
+                    <span>자유</span>
+                </div>
+                <div style={{margin:"0 0 5px 5px"}}>
+                    <img src={nft} alt="home_icon" />
+                    <span>NFT</span>
+                </div>
+            </div>
+            <div className="timeline">
             {posts.map((post)=>(
                 <Post
                 //key = {} 
@@ -88,6 +120,7 @@ export const Sns = () => {
                 userPic={post.userPic}
                 />
             ))}
+                </div>
             </div>
             }
         </div>

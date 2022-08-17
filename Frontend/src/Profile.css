@@ -39,7 +39,7 @@
 .profile-post{
     display: flex;
     text-align: left;
-    margin: 0;
+    margin: 0 auto;
 }
 
 .profile-post img{

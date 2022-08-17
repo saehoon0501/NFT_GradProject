@@ -10,7 +10,6 @@ const token = window.localStorage.getItem("NFTLogin");
 
 const ProfilePic = (props) => {
     
-    
     return(
         <div className="profile-info clickable-img" onClick={props.handlePic}>
             <img src={props.profile_pic} style={{width:"450px", borderRadius:"20px"}}/>
@@ -114,7 +113,6 @@ export const Profile = (props) => {
     }
 
     const updatePic = async (event) => {
-
         const profile_pic = event.target.src;
 
         await axios.post(`${baseURL}/api/user`, {profile_pic}

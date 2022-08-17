@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import React from "react";
 import "./Modal.css";
-import Avatar from "@material-ui/core/Avatar";
+import Avatar from "@mui/material/Avatar";
 import img from "./images/user.png";
 
 

@@ -1,0 +1,101 @@
+
+.submit_wrapper{
+    display:block;
+    border:1px solid lightgray;
+    padding:5px 10px 0 10px;
+    border-radius:5px;
+    width:500px;
+    margin-bottom: 10px;
+}
+
+.submit_wrapper2{
+    display:block;
+    border:1px solid lightgray;
+    border-radius:5px;
+    width:500px;
+    margin-bottom: 10px;
+}
+
+.submit_header{
+    display:flex;
+}
+
+.submit_header2{
+    display:flex;
+    padding:5px 10px 0 10px;
+}
+
+.submit_profilePic{
+    position:relative;
+    margin-top:2px;
+    margin-right:10px;
+}
+
+.submit_title{
+    width:100%;
+    max-width: 423px;
+    position:relative;
+    margin: 10px 0px;
+    text-align: left;
+    z-index:1; 
+    border:1px solid lightgray;
+    background-color:white; 
+    border-radius:5px;
+    padding: 5px;
+}
+
+.submit_title_div{
+    width:100%;
+    text-align: left;
+    height:auto;     
+    border:none;
+    padding:0;
+    box-sizing:border-box;
+    resize:none;
+    margin-right:0px;
+    outline:none;
+   
+}
+
+.submit_text{
+    max-width: 500px;
+    margin:0px; 
+    padding:5px;
+    border:1px solid lightgray;
+    border-radius:5px;
+    min-height:150px;
+    text-align:left;
+}
+
+.submit_insta{
+    max-width: 498px;
+}
+
+.submit_insta img{
+    max-width: 498px;
+    margin: 0;
+}
+
+[contenteditable=true]:empty:not(:focus):before{
+    margin: 5px;
+    content:attr(data-ph);
+    color:grey;
+}
+
+.submit_switch{
+    display: none;
+    margin:-10px 0px 0px 0px;
+    padding:0 10px;
+    text-align:right;
+}
+
+.submit_switch2{
+    display: block;
+    margin:-10px 0px 0px 0px;
+    padding:0 10px;
+    text-align:right;
+}
+
+.button:hover{
+    cursor: pointer;
+}

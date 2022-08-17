@@ -8,10 +8,10 @@ const postSchema = new Schema({
     user:{
        type: Schema.Types.ObjectId, ref: 'user', required: true
     },
-    imgs:[{
-        type: Schema.Types.ObjectId, ref:'uploads', required:true
-    }],
-    caption:{
+    title:{
+        type: String, required:true
+    },
+    text:{
         type: String
     },
     likes:{

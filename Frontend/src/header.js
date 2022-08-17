@@ -1,14 +1,11 @@
-import img from "./images/user.png";
 import {Modal, showModal} from "./Modal";
 import add from "./images/addButton.png";
-import { IconButton } from '@material-ui/core';
-import "./Profile.css"
+import { IconButton } from '@mui/material';
+import "./App.css"
 
 const handleClick = () => {
   showModal();
 }
-
-
 
 export function Header(props) {
 
@@ -29,7 +26,6 @@ export function Header(props) {
             onClick={showSns}
           />
           <div className="app__headerButtons">
-          </div>
           <input
                 type="image"
                 src={add}
@@ -42,9 +38,11 @@ export function Header(props) {
         <img 
           src={props.pic}
           alt="profile picture"
-          style={{width:"40px",borderRadius:"20px"}}
+          style={{width:"40px", height:"40px", borderRadius:"10px"}}
         />
         </IconButton>
+          </div>
+          
         </div>
       </div>
   );

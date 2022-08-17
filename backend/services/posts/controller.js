@@ -7,6 +7,7 @@ const multer = require("multer");
 const path = require('path');
 const {GridFsStorage} = require("multer-gridfs-storage");
 const Grid = require("gridfs-stream");
+const QuillDeltaToHtmlConverter = require('quill-delta-to-html').QuillDeltaToHtmlConverter;
 
 mongoose.connect('mongodb://localhost:27017/Postdb');
 
@@ -44,9 +45,12 @@ const storage = new GridFsStorage({
 
 module.exports={
     createPost : (req,res,next)=>{
-        const publicAddress = res.locals.decoded.publicAddress;
-        const {caption} = req.body;
+        const publicAddress = res.locals.decoded.publicAddress;                
+        const {post_title, post_text, post_user} = req.body;
 
+        const converter = new QuillDeltaToHtmlConverter(post_text.ops,{});
+        const content = converter.convert();
+                
         User.findOne({publicAddr:`${publicAddress}`})
         .then((user)=>{
             if(!user){
@@ -65,24 +69,34 @@ module.exports={
 
            const post = new Post({
             user: user.id,
-            imgs:[req.file.id.toString()],
-            caption: caption,
-            likes: like.id,
-            comments: comment.id
+            title: post_title,
+            text: content,
+            likes: like,
+            comments: comment
         });
             post.save();
-
-            return {user_id:user.id, post_id:post.id};
+            return {user, post};
         })
-        .then(({user_id,post_id})=>{
-            User.updateOne({
-                id: user_id
+        .then( async ({user, post})=>{
+            await User.updateOne({
+                id: user._id
             },
             {
-                $push:{"profile.post_ids": post_id}
-            }).then(()=>{
-                return res.send("post created");
+                $push:{"profile.post_ids": post._id}
             });
+            
+            const data = {
+                    post_id : post.id,
+                    post_username: user.profile.username,
+                    post_userPic: user.profile.profile_pic,
+                    post_title: post.title,
+                    post_text: post.text,
+                    post_liked: post.likes,
+                    post_comments: post.comments,
+                };
+
+                return res.send(data);                
+            
         });
     },
     upload
@@ -92,39 +106,28 @@ module.exports={
        const posts_result = Post.find().sort({createdAt:-1}).limit(10).skip(0).exec();
        
         posts_result.then(async (posts)=>{
-            let results = [];
+           
 
             await Promise.all(posts.map(async (post)=>{
                 const result = await Post.findOne({_id:`${post.id}`})
                 .populate('comments').populate('likes').populate('user', '', User).exec();
-                results.push(result);
-            }));
-            
-            return results;
-       }).then(async (results)=>{
-
-        await Promise.all(results.map(async (result)=>{
-            
-            const file = await gfs.files.findOne(result.imgs[0]);
-            
-            if(!file){
-                return res.status(401).send('error file not found');
-            }
-
-            if(file.contentType === 'image/jpeg' || file.contentType === 'image/png'){                
-                const base64 = await readImage(file)
-                const sndData = {
-                    post_id : result.id,
-                    post_username: result.user.profile.username,
-                    post_userProfile: result.user.profile.profile_pic,
-                    post_liked: result.likes,
-                    post_comments: result.comments,
-                    base64};
-                    return sndData 
-                    }
-                })).then((sndData)=>{
-                    console.log('post data sent');
-                    res.send(sndData);
+                return result;
+            })).then( (results) => {
+                console.log(results);
+                let datas = [];
+                results.map((result)=>{
+                    const data = {
+                        post_id : result.id,
+                        post_username: result.user.profile.username,
+                        post_userPic: result.user.profile.profile_pic,
+                        post_title: result.title,
+                        post_text: result.text,
+                        post_liked: result.likes,
+                        post_comments: result.comments,
+                    };
+                    datas.push(data);
+                })
+                res.send(datas);                
             })
            
         })

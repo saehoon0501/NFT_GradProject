@@ -1,6 +1,7 @@
 import axios from "axios";
 import Web3 from "web3/dist/web3.min.js";
 import DistrictK from "./contracts/DistrictK.json";
+import {useNavigate} from 'react-router-dom'
 
 export let selectedAccount; 
 
@@ -50,6 +51,7 @@ export const mintToken = async () => {
 export const Login = () => {
 
     const web3 = new Web3(window.ethereum);
+    const navigate = useNavigate();
 
     const handleSignMessage = async (publicAddress, nonce) => {
        try{
@@ -70,7 +72,7 @@ export const Login = () => {
 
        if(result != null){
         localStorage.setItem("NFTLogin", result.accessToken);
-        window.location.assign("http://localhost:3000/sns");            
+        navigate('/home'); 
         }else{
         window.alert("Login Failed Try Again");
         }

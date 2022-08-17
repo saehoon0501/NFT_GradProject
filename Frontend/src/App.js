@@ -4,6 +4,7 @@ import {init, mintToken, Login} from "./Web3Client";
 import {BrowserRouter as Router, Route, Routes} from 'react-router-dom';
 import './App.css';
 import {Sns} from "./Sns";
+import {Thread} from "./Thread";
 
 let selectedAccount;
 
@@ -29,7 +30,8 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<div>
+        <Route path="/login" element={
+        <div>
           <div className="app">
           {!minted
             ? <button className='primary__button' onClick={()=>mint()}>Mint Token</button>
@@ -37,8 +39,9 @@ function App() {
           }
           <Login> </Login>
           </div>
-        </div>} />
-        <Route exact path="/sns" element={<Sns/>} />
+        </div>}/>
+        <Route exact path="/:category" element={<Thread/>} />
+        <Route exact path="/create" element={<Sns/>} />
       </Routes>
     </Router>
   );

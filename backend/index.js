@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
-
+const path = require('path');
 const services = require('./services');
 const User = require('./models/user.model');
 
@@ -25,6 +25,8 @@ const app = express(); // express module on
 app.use(cors());
 app.use(express.static("public"));
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname+'public')));
 
 app.use('/api', services);
 
