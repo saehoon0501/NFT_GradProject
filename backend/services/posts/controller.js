@@ -1,7 +1,6 @@
 const {Post, Like, Comment} = require('../../models/post.model');
 const User = require('../../models/user.model');
 const mongoose = require("mongoose");
-const ObjectId = require('mongodb').ObjectId;
 const crypto = require(`crypto`);
 const multer = require("multer");
 const path = require('path');
@@ -58,7 +57,7 @@ module.exports={
             }
 
             const like = new Like({
-                liked_user: []
+                
            });
            like.save();
 
@@ -106,8 +105,6 @@ module.exports={
        const posts_result = Post.find().sort({createdAt:-1}).limit(10).skip(0).exec();
        
         posts_result.then(async (posts)=>{
-           
-
             await Promise.all(posts.map(async (post)=>{
                 const result = await Post.findOne({_id:`${post.id}`})
                 .populate('comments').populate('likes').populate('user', '', User).exec();
@@ -124,6 +121,7 @@ module.exports={
                         post_text: result.text,
                         post_liked: result.likes,
                         post_comments: result.comments,
+                        post_createdAt: result.createdAt,
                     };
                     datas.push(data);
                 })
@@ -132,7 +130,47 @@ module.exports={
            
         })
     
-    }
+    },
+    addLike : async (req,res,next)=>{
+        const publicAddress = res.locals.decoded.publicAddress;
+        const {likes} = req.body;
+        const post_id = req.params
+
+        await User.findOne({id:publicAddress})
+        .then( (user)=>{
+
+            Like.findOne({_id:likes._id})
+                .then(like=>{
+            
+                like.liked_user.addToSet(user.id);
+                like.save((err,data)=>{
+                if(err) console.log(err);
+                    console.log(data);
+                return res.send(like);
+            })    
+        }); 
+        });
+    },
+    delLike : async (req,res,next)=>{
+        const publicAddress = res.locals.decoded.publicAddress;
+        const {likes} = req.body;
+        const post_id = req.params
+
+        await User.findOne({id:publicAddress})
+        .then( (user)=>{
+
+            Like.findOne({_id:likes._id})
+                .then(like=>{            
+            
+            like.liked_user.pull(user.id);
+            like.save((err,data)=>{
+                if(err) console.log(err);
+                console.log(data);
+                return res.send(like);
+            })    
+        }); 
+        });
+    } 
 }
 
 const readImage = (file) => {

@@ -1,25 +1,26 @@
 import React, { useState, useEffect } from "react";
-import "./Feed.css";
 import like_before from "./images/like-before.png";
 import like_after from "./images/like-after.png";
 import comment from "./images/comment.png";
 import parse from 'html-react-parser';
+import './FeedView.css';
 import 'react-quill/dist/quill.core.css';
-import {useNavigate} from 'react-router-dom'
+import {useLocation} from 'react-router-dom'
 import axios from 'axios';
 
 const baseURL = "http://localhost:4000";
 const token = window.localStorage.getItem("NFTLogin");
 
-function Feed({id, username, user_id, caption, title, userPic, likes, comments }) {
-  
+function FeedView(props) {
+  const {state} = useLocation();
+  const {id, username, user_id, caption, title, userPic, comments } = state;
+  let {likes} = state;  
+
   const [showMore, setShowMore] = useState(false);
   const [like, setLike] = useState({
     liked: false,
     liked_num: likes.liked_user.length
   });
-
-  const navigate = useNavigate();
 
   useEffect(()=>{
     if(likes.liked_user.includes(user_id)){
@@ -68,22 +69,13 @@ function Feed({id, username, user_id, caption, title, userPic, likes, comments }
   }
 
   const handleClick = () => {
-    navigate(`/home/${id}`,{
-      state:{id, 
-        username, 
-        user_id, 
-        caption, 
-        title, 
-        userPic, 
-        likes, 
-        comments }      
-    });
+    
   }
   
   return (
-    <div className="feed" style={{display:"block", border:"1px solid lightgray", borderRadius:"5px"}}>
-        <div onClick={handleClick} className='feed_click' style={{width:"500px", maxHeight:"500px",overflow:"hidden"}}>
-            <div  className="feed_header" style={{display:"block"}}>
+    <div onClick={handleClick} className="feed" style={{display:"block", border:"1px solid lightgray", borderRadius:"5px"}}>
+        <div className="" style={{width:"500px", maxHeight:"500px",overflow:"hidden"}}>
+            <div className="feed_header" style={{display:"block"}}>
                 <div style={{display:'flex'}}>
                     <div className="feed_avatar">
                         <img 
@@ -137,4 +129,4 @@ function Feed({id, username, user_id, caption, title, userPic, likes, comments }
   );
 }
 
-export default Feed;
+export default FeedView;

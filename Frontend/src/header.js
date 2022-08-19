@@ -2,6 +2,8 @@ import {Modal, showModal} from "./Modal";
 import add from "./images/addButton.png";
 import { IconButton } from '@mui/material';
 import "./App.css"
+import {useNavigate} from 'react-router-dom'
+
 
 const handleClick = () => {
   showModal();
@@ -9,8 +11,10 @@ const handleClick = () => {
 
 export function Header(props) {
 
+  const navigate = useNavigate();
+
   const showProfile = () => {
-    props.openProfile(true);
+    navigate('/profile');
   }
   
   const showSns = () => {

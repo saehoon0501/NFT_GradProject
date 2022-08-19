@@ -2,6 +2,7 @@ import axios from "axios";
 import Web3 from "web3/dist/web3.min.js";
 import DistrictK from "./contracts/DistrictK.json";
 import {useNavigate} from 'react-router-dom'
+import {useEffect} from 'react';
 
 export let selectedAccount; 
 
@@ -48,10 +49,14 @@ export const mintToken = async () => {
   return dk.methods.mint().send({from: selectedAccount});
 }
 
-export const Login = () => {
+export const Login = (props) => {
 
     const web3 = new Web3(window.ethereum);
     const navigate = useNavigate();
+
+    useEffect(()=>{
+        props.setIsAuth(true);
+    })
 
     const handleSignMessage = async (publicAddress, nonce) => {
        try{
@@ -72,6 +77,7 @@ export const Login = () => {
 
        if(result != null){
         localStorage.setItem("NFTLogin", result.accessToken);
+        props.setIsAuth(true);
         navigate('/home'); 
         }else{
         window.alert("Login Failed Try Again");

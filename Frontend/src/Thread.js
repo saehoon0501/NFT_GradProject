@@ -1,12 +1,11 @@
-import {Header} from "./Header";
 import React, { useState, useEffect} from "react";
 import {useParams} from 'react-router-dom';
 import Feed from "./Feed";
 import "./Thread.css";
-import { Profile } from "./Profile";
 import { CategoryBar } from "./CategoryBar";
 import { Submit } from "./Submit";
 import axios from "axios";
+import {useNavigate} from 'react-router-dom'
 
 import new_icon from "./images/new.png";
 import new_icon2 from './images/new2.png';
@@ -16,20 +15,18 @@ import best2 from './images/best2.png';
 const token = window.localStorage.getItem("NFTLogin");
 const baseURL = "http://localhost:4000";
 
-export const Thread = () => {
+
+export const Thread = (props) => {
     
     const {category} = useParams();
-
     const [posts, setPosts] = useState([]);
-
     const[user_info, setUser_info]= useState({});
-    
     const [profileClicked, setprofileClickced] = useState(false);
-
     const [pic, setPic] = useState('');
-
     const [filter_best, setBest]= useState(false);
     const [filter_new, setNew] = useState(true);
+
+    const navigate = useNavigate();
 
     const handleFilter = ()=>{
         setNew(!filter_new);
@@ -38,74 +35,59 @@ export const Thread = () => {
 
       useEffect( () => {
             const cancelToken = axios.CancelToken.source();            
-
             const token = window.localStorage.getItem("NFTLogin");
+    
+            props.setIsAuth(false);
+
+            if(!token) {
+                navigate('/login'); 
+                return
+               }
+
             axios.get(`${baseURL}/api/user`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
                 cancelToken: cancelToken.token
             }).then((res)=>{
-                setUser_info(res.data);
-                console.log(res.data);
+                setUser_info(res.data);                
                 setPic(`${res.data.profile.profile_pic}`);
             }).catch((err)=>{
                 console.log(err);
+                navigate('/login');
                 if(axios.isCancel(err)){
                     console.log("axios cancelled")
                 }
-            });
+            })
 
             axios.get(`${baseURL}/api/post`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 }
-            }).then((res)=>{
+            }).then((res)=>{                
                 let res2 = [];
-                res.data.map((post)=>{                    
+                res.data.map((post)=>{
                     res2.push({
                         post_id: post.post_id,
-                        username:post.post_username,
+                        username:post.post_username,                 
                         caption:post.post_text,
                         title: post.post_title,
                         userPic: post.post_userPic,
                         likes: post.post_liked,
                         comments: post.post_comments,
+                        createdAt: post.createdAt,
                     })
-                });
+                });               
                 setPosts(res2);
             }).catch((err)=>console.log(err));
-
             return () => {
                 cancelToken.cancel();
             }
       }, []);
 
-      const createPost = async ({username, caption, image}) =>{
-
-        const data = new FormData();
-        
-        data.append('file', image);
-        data.append('caption', caption);
-        data.append('user', username);
-         
-        await axios.post(`${baseURL}/api/post`,data
-            ,{
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                    Authorization: `Bearer ${token}`,
-            }
-        }).then((res)=>{
-            console.log(res.data);
-        });
-      }
-
     return(
-        <div className="app">
-            <Header username={'byun0501'} newPosts={createPost} openProfile={setprofileClickced} pic={pic}/>
-            {profileClicked?
-            <Profile user_info={user_info} setPic={setPic} pic={pic}/>
-            :<div className="timeline">            
+        <div className="app">            
+              
             <div className="timeline">
                 <CategoryBar/>
                 <Submit pic={pic} user_info={user_info} setPosts={setPosts}/>
@@ -132,8 +114,10 @@ export const Thread = () => {
                 </div>
             {posts.map((post)=>(
                 <Feed
-                key = {post.post_id} 
+                key = {post.post_id}
+                id = {post.post_id} 
                 username={post.username} 
+                user_id={user_info._id}
                 caption={post.caption} 
                 title={post.title}
                 userPic={post.userPic}
@@ -142,8 +126,6 @@ export const Thread = () => {
                 />
             ))}
                 </div>
-            </div>
-            }
-        </div>
+            </div>                    
     );
 };

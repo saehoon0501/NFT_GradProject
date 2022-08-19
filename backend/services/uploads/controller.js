@@ -1,8 +1,6 @@
-const {Post, Like, Comment} = require('../../models/post.model');
+const {Post} = require('../../models/post.model');
 const User = require('../../models/user.model');
 const mongoose = require("mongoose");
-const ObjectId = require('mongodb').ObjectId;
-const crypto = require(`crypto`);
 const multer = require("multer");
 const path = require('path');
 
