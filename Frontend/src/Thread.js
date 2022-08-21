@@ -20,9 +20,7 @@ export const Thread = (props) => {
     
     const {category} = useParams();
     const [posts, setPosts] = useState([]);
-    const[user_info, setUser_info]= useState({});
-    const [profileClicked, setprofileClickced] = useState(false);
-    const [pic, setPic] = useState('');
+    const [user_info, setUser_info] = useState({});
     const [filter_best, setBest]= useState(false);
     const [filter_new, setNew] = useState(true);
 
@@ -51,10 +49,8 @@ export const Thread = (props) => {
                 cancelToken: cancelToken.token
             }).then((res)=>{
                 setUser_info(res.data);                
-                setPic(`${res.data.profile.profile_pic}`);
             }).catch((err)=>{
                 console.log(err);
-                navigate('/login');
                 if(axios.isCancel(err)){
                     console.log("axios cancelled")
                 }
@@ -66,7 +62,8 @@ export const Thread = (props) => {
                 }
             }).then((res)=>{                
                 let res2 = [];
-                res.data.map((post)=>{
+                console.log(res);
+                res.data.map((post)=>{                   
                     res2.push({
                         post_id: post.post_id,
                         username:post.post_username,                 
@@ -78,7 +75,7 @@ export const Thread = (props) => {
                         createdAt: post.createdAt,
                     })
                 });               
-                setPosts(res2);
+                setPosts(res2);                
             }).catch((err)=>console.log(err));
             return () => {
                 cancelToken.cancel();
@@ -90,7 +87,7 @@ export const Thread = (props) => {
               
             <div className="timeline">
                 <CategoryBar/>
-                <Submit pic={pic} user_info={user_info} setPosts={setPosts}/>
+                <Submit pic={props.pic} user_info={user_info} setPosts={setPosts}/>
                 <div style={{display:"flex", border:"1px solid lightgray", padding:"10px", borderRadius:"5px", width:"500px",
                 marginBottom:"10px"}}>
                     <div className={filter_best?"filter_icon clickable":"clickable"} style={{border:"1px solid lightgray",

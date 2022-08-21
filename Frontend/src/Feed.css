@@ -6,12 +6,6 @@
     display: inline-block;
     overflow: hidden;
   }
-  
-  .feed_image {
-    display: flex;
-    width: 100%;
-    max-width: 100%;
-  }
 
   .feed_image img{
     width: 100%;
@@ -46,9 +40,10 @@
     object-fit: contain;
   }
 
-  .ql-image{
+  .ql-editor img{
     max-width: 100%;
     border-radius: 5px;
+    text-align: center;
   }
 
   .feed_avatar img{

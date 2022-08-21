@@ -38,10 +38,21 @@ const commentSchema = new Schema({
         },
         caption:{
             type:String
-        },
-        liked:{
-            type: Number, default: 0
-        }
+        },        
+        liked_user:[{
+            type: Schema.Types.ObjectId, ref:'user'  
+        }],
+        reply:[{
+            user:{
+                type: Schema.Types.ObjectId, ref:'user'
+            },
+            caption:{
+                type:String
+            },            
+            liked_user:[{
+                type: Schema.Types.ObjectId, ref:'user'  
+            }],            
+        }]
     }]
 })
 

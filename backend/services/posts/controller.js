@@ -158,7 +158,6 @@ module.exports={
 
         await User.findOne({id:publicAddress})
         .then( (user)=>{
-
             Like.findOne({_id:likes._id})
                 .then(like=>{            
             
@@ -170,7 +169,94 @@ module.exports={
             })    
         }); 
         });
-    } 
+    },
+    getComment: async(req,res,next)=>{
+        const comment_id = req.params.comment_id;
+        console.log(comment_id);
+        
+        const result = await Comment.findById(`${comment_id}`).populate('comments.user','',User)
+        .populate('comments.reply.user','',User).exec();        
+        return res.send(result);
+    },
+    addComment: async (req,res,next)=>{
+        const publicAddress = res.locals.decoded.publicAddress;
+        const {context} = req.body;
+        const comment_id = req.params.comment_id;
+
+        if(!context) return res.status(400).send('invalid context');
+
+        await User.findOne({publicAddr:publicAddress})
+            .then((user)=>{            
+            Comment.findOne({_id:comment_id})
+             .then( async (comment)=>{            
+            comment.comments.push({user:user.id,caption:context,});
+            user.profile.comments_ids.addToSet(comment.id);
+            user.save();
+            comment.save().then(async ()=>{
+                const result = await Comment.findById(`${comment_id}`).populate('comments.user','',User)
+                .populate('comments.reply.user','',User).exec();
+                return res.send(result);
+            })                        
+        }).catch(err=>{return res.send(err)})
+        })
+
+    } ,
+    likeComment:(req,res,next)=>{
+        const publicAddress = res.locals.decoded.publicAddress;
+        const {commentIndex} = req.body;
+        const comment_id = req.params.comment_id;
+        console.log(commentIndex);
+
+        User.findOne({publicAddr:publicAddress})
+        .then((user)=>{
+            Comment.findById(comment_id)
+        .then(async (comment)=>{
+            console.log(comment);
+            comment.comments[commentIndex].liked_user.addToSet(user.id);
+            await comment.save();
+
+            return res.send(comment.comments[commentIndex].liked_user);
+        })
+        })        
+    },
+    addReply : async (req, res, next)=>{
+        const publicAddress = res.locals.decoded.publicAddress;
+        const {commentIndex, context} = req.body;
+        const comment_id = req.params.comment_id;
+
+        if(!context) return res.status(400).send('invalid context');
+
+        await User.findOne({publicAddr:publicAddress})
+            .then((user)=>{            
+            Comment.findOne({_id:comment_id})
+             .then( async (comment)=>{            
+            comment.comments[commentIndex].reply.push({user:user.id, caption: context,});                        
+            comment.save().then(async ()=>{
+                const result = await Comment.findById(`${comment_id}`).populate('comments.reply.user','',User).exec();
+                return res.send(result.comments[commentIndex].reply);
+            })                        
+        }).catch(err=>{return res.send(err)})
+        })
+    },
+    likeReply: (req,res,next)=>{
+        const publicAddress = res.locals.decoded.publicAddress;
+        const {commentIndex, replyIndex} = req.body;
+        const comment_id = req.params.comment_id;
+
+        console.log(commentIndex);
+
+        User.findOne({publicAddr:publicAddress})
+        .then((user)=>{
+            Comment.findById(comment_id)
+        .then(async (comment)=>{
+            console.log(comment);
+            comment.comments[commentIndex].reply[replyIndex].liked_user.addToSet(user.id);
+            await comment.save();
+
+            return res.send(comment.comments[commentIndex].reply[replyIndex].liked_user);
+        })
+        })        
+    }
 }
 
 const readImage = (file) => {

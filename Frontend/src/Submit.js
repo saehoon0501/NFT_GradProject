@@ -72,8 +72,7 @@ export const Submit = (props)=>{
                         const range = editor.getSelection();                        
                         
                         const url = await uploadURL(file);
-
-                        editor.insertEmbed(range.index, 'block', `<p><br></p>`);                        
+                                               
                         editor.insertEmbed(range.index, 'image', `${url.data}`);   
                     }
                 }
@@ -106,14 +105,14 @@ export const Submit = (props)=>{
             }
         }).then((res)=>{
             console.log(res.data);
-            props.setPosts([{
+            props.setPosts(prev=>([{
                             post_id: res.data.post_id,
                             username:res.data.post_username,
                             caption: res.data.post_text,
                             userPic: res.data.post_userPic,
                             title: res.data.post_title,
                             likes:res.data.post_liked,
-                            comments:res.data.post_comments}])
+                            comments:res.data.post_comments},...prev]))
         });
 
         

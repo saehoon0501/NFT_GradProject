@@ -4,7 +4,6 @@ import like_before from "./images/like-before.png";
 import like_after from "./images/like-after.png";
 import comment from "./images/comment.png";
 import parse from 'html-react-parser';
-import 'react-quill/dist/quill.core.css';
 import {useNavigate} from 'react-router-dom'
 import axios from 'axios';
 
@@ -13,7 +12,6 @@ const token = window.localStorage.getItem("NFTLogin");
 
 function Feed({id, username, user_id, caption, title, userPic, likes, comments }) {
   
-  const [showMore, setShowMore] = useState(false);
   const [like, setLike] = useState({
     liked: false,
     liked_num: likes.liked_user.length
@@ -59,14 +57,6 @@ function Feed({id, username, user_id, caption, title, userPic, likes, comments }
     }
   }
 
-  const handleShow = () =>{
-    if(showMore){
-      setShowMore(false);
-    }else{
-      setShowMore(true);
-    }
-  }
-
   const handleClick = () => {
     navigate(`/home/${id}`,{
       state:{id, 
@@ -108,7 +98,7 @@ function Feed({id, username, user_id, caption, title, userPic, likes, comments }
                     <h2 style={{lineHeight:"22px"}}>{title}</h2>
             </div>
             {/* Content */}
-            <div className="ql-editor ql-image" style={{textAlign:"left", padding:"10px 10px 10px 10px"}}>
+            <div className="ql-editor" style={{padding:"10px 10px 10px 10px"}}>
                 {parse(caption)}        
             </div>
         </div>
@@ -119,7 +109,7 @@ function Feed({id, username, user_id, caption, title, userPic, likes, comments }
             <h4>댓글 {comments.comments.length}개</h4>
         </div>
         <div className="clickable" style={{position:"relative", margin:"-3px 5px 0 5px"}}>
-                <img src={comment} onClick={handleShow}/>
+                <img src={comment} onClick={handleClick}/>
         </div>
         <div>
             <h4>좋아요 {like.liked_num}개</h4>

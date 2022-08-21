@@ -76,7 +76,7 @@ function App() {
     <Router>
       {
         isAuth?undefined  
-        :<Header username={'byun0501'} newPosts={createPost} openProfile={setprofileClickced} pic={pic}/>
+        :<Header username={'byun0501'} newPosts={createPost} pic={pic}/>
       }
       <Routes>
         <Route path="/login" element={
@@ -89,7 +89,7 @@ function App() {
           <Login setIsAuth={setIsAuth}/>
           </div>
         </div>}/>
-        <Route exact path="/:category" element={<Thread setIsAuth={setIsAuth}/>} />
+        <Route exact path="/:category" element={<Thread setIsAuth={setIsAuth} pic={pic}/>} />
         <Route exact path="/profile" element={<Profile user_info={user_info} setPic={setPic} pic={pic}/>} />
         <Route exact path="/:category/:post_id" element={<FeedView/>} />
       </Routes>

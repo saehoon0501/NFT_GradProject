@@ -18,7 +18,7 @@ export function Header(props) {
   }
   
   const showSns = () => {
-    props.openProfile(false);
+    navigate('/home');
   }
 
   return (
