@@ -4,6 +4,7 @@ import './Submit.css';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import axios from 'axios';
+import {addPost} from './api/FeedApi'
 
 // import emoji from './images/emoji.png';
 // import image_s from './images/image-s.png';
@@ -33,7 +34,7 @@ const uploadURL = (file) => {
     });
 };
 
-export const Submit = (props)=>{
+export const Submit = ({user, setPosts})=>{
 
     const [open, setOpen] = useState([{
         'name':'sumit_open',
@@ -96,23 +97,12 @@ export const Submit = (props)=>{
         
         const post_title = title
         const post_text = quill.current.getEditor().getContents();
-        const post_user = props.user_info.profile;
+        const post_user = user;
         
-        await axios.post(`${baseURL}/api/post`,{post_title,post_text,post_user}
-            ,{
-                headers: {                    
-                    Authorization: `Bearer ${token}`,
-            }
-        }).then((res)=>{
+        addPost(post_title, post_text, post_user)
+        .then((res)=>{
             console.log(res.data);
-            props.setPosts(prev=>([{
-                            post_id: res.data.post_id,
-                            username:res.data.post_username,
-                            caption: res.data.post_text,
-                            userPic: res.data.post_userPic,
-                            title: res.data.post_title,
-                            likes:res.data.post_liked,
-                            comments:res.data.post_comments},...prev]))
+            setPosts(prev=>([res.data, ...prev]))            
         });
 
         
@@ -151,7 +141,7 @@ export const Submit = (props)=>{
                     <div className={open[1].isActive?'submit_header2':'submit_header'}>
                         <div className='submit_profilePic'>
                             <img 
-                                src={props.pic}
+                                src={user?.profile.profile_pic}
                                 alt="profile picture"
                                 style={{width:"45px", height:"45px", borderRadius:"10px"}}
                                 />                            

@@ -1,27 +1,25 @@
 import "./Profile.css"
 import img from "./images/user.png";
 import { useEffect, useRef, useState } from "react";
-import axios from "axios";
 import "./Modal.css";
+import {updateUser, updateProfilePic, getUser} from './api/UserApi'
+import {useQuery, useMutation, useQueryClient} from 'react-query'
 
-const baseURL = "http://localhost:4000";
 
-const token = window.localStorage.getItem("NFTLogin");
-
-const ProfilePic = (props) => {
-    
+const ProfilePic = ({userProfile, handlePic}) => {
+       
     return(
-        <div className="profile-info clickable-img" onClick={props.handlePic}>
-            <img src={props.profile_pic} style={{width:"450px", borderRadius:"20px"}}/>
+        <div className="profile-info clickable-img" onClick={handlePic}>
+            <img src={userProfile.profile_pic} style={{width:"450px", borderRadius:"20px"}}/>
             <p className="description">이미지 수정</p>
         </div>
     );
 }
 
-const ProfileCaption = (props) => {
+const ProfileCaption = ({userProfile}) => {
     
-    const [caption, setCaption] = useState(`${props.user_info.profile.caption}`);
-    const [profileName, setProfileName] = useState(`${props.user_info.profile.username}`);
+    const [caption, setCaption] = useState(`${userProfile.caption}`);
+    const [profileName, setProfileName] = useState(`${userProfile.username}`);
     const [edit, setEdit] = useState(true);
 
     const nameRef = useRef(profileName);
@@ -31,12 +29,7 @@ const ProfileCaption = (props) => {
         nameRef.current = profileName;
         captionRef.current = caption;
         
-        await axios.post(`${baseURL}/api/user`,  {caption, profileName}
-        ,{
-            headers: {
-                Authorization: `Bearer ${token}`,
-            }
-        })
+        updateUser(caption, profileName)
         .then((res)=>{
             console.log(res.data);
         });
@@ -69,8 +62,8 @@ const ProfileCaption = (props) => {
                 }
                 
                 <div className="profile-text">
-                    <h3>게시물 {props.user_info.profile.post_ids.length}</h3>
-                    <h3 style={{color:"blue"}}>RGB {props.user_info.profile.points}</h3>
+                    <h3>게시물 {userProfile.post_ids.length}</h3>
+                    <h3 style={{color:"blue"}}>RGB {userProfile.points}</h3>
                 </div>
             </div>
                 
@@ -101,8 +94,15 @@ export const Profile = (props) => {
 
     const [onClick, setOnClick] = useState(false);
 
-    const pic = props.pic;
-    const setPic = props.setPic;
+    const {isError, isLoading, error, data:user} = useQuery('user', ({signal})=>getUser(signal))
+
+    const queryClient = useQueryClient()
+
+    const profilePicMutate = useMutation(updateProfilePic,{
+        onSuccess: ()=>{
+            queryClient.invalidateQueries('user')
+        }
+    })
 
     const handlePic = () => {
         setOnClick(true);
@@ -114,22 +114,11 @@ export const Profile = (props) => {
 
     const updatePic = async (event) => {
         const profile_pic = event.target.src;
-
-        await axios.post(`${baseURL}/api/user`, {profile_pic}
-        ,{
-            headers: {
-                Authorization: `Bearer ${token}`,
-            }
-        })
-        .then((res)=>{
-           if(res){
-            console.log(res.data);
-            setPic(event.target.src);
-        }
-        });
+        
+        profilePicMutate.mutate(profile_pic)                
     };
 
-    const ownedNFTs = props.user_info.ownerOfNFT.map((NFTs)=>{
+    const ownedNFTs = user.ownerOfNFT.map((NFTs)=>{
         return( 
             NFTs.NFT_URL.map((NFT)=>{
                return(
@@ -158,8 +147,8 @@ export const Profile = (props) => {
                             </div>
                         </div>
                     </div>
-                        <ProfilePic user_info={props.user_info} handlePic={handlePic} profile_pic={pic}/>
-                        <ProfileCaption user_info={props.user_info}/>
+                        <ProfilePic userProfile={user?.profile} handlePic={handlePic}/>
+                        <ProfileCaption userProfile={user?.profile}/>
                     </div>
                 </div>
                 <div className="profile-wrapper">

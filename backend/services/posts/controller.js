@@ -40,9 +40,29 @@ const storage = new GridFsStorage({
     }
   });
 
-  const upload = multer({ storage });
+const upload = multer({ storage });
 
 module.exports={
+    
+    upload,
+    getPost : (req, res, next)=>{        
+
+       const posts_result = Post.find().sort({createdAt:-1}).limit(10).skip(0).exec();
+       
+        posts_result.then(async (posts)=>{
+            await Promise.all(posts.map(async (post)=>{
+                const result = await Post.findOne({_id:`${post.id}`})
+                .populate('comments').populate('likes').populate('user', '', User).exec();
+                return result;
+            })).then( (results) => {
+                console.log(results);
+                res.send(results);                
+            })
+           
+        })
+    
+    },
+
     createPost : (req,res,next)=>{
         const publicAddress = res.locals.decoded.publicAddress;                
         const {post_title, post_text, post_user} = req.body;
@@ -59,12 +79,12 @@ module.exports={
             const like = new Like({
                 
            });
-           like.save();
+           
 
            const comment = new Comment({
                 comments:[]
            });
-            comment.save();
+            
 
            const post = new Post({
             user: user.id,
@@ -73,70 +93,62 @@ module.exports={
             likes: like,
             comments: comment
         });
+            like.save();
+            comment.save();
             post.save();
-            return {user, post};
+            return {user, post,like, comment};
         })
-        .then( async ({user, post})=>{
+        .then( async ({user, post, like, comment})=>{
             await User.updateOne({
                 id: user._id
             },
             {
                 $push:{"profile.post_ids": post._id}
-            });
-            
+            })
+            console.log('userinfo', user.profile.post_ids, 'postinfo', post)
+
             const data = {
-                    post_id : post.id,
-                    post_username: user.profile.username,
-                    post_userPic: user.profile.profile_pic,
-                    post_title: post.title,
-                    post_text: post.text,
-                    post_liked: post.likes,
-                    post_comments: post.comments,
+                    _id : post.id,
+                    user: user,                    
+                    title: post.title,
+                    text: post.text,
+                    likes: like,
+                    comments: comment,
+                    createdAt:post.createdAt,                    
                 };
 
                 return res.send(data);                
             
         });
     },
-    upload
-    ,
-    getPost : (req, res, next)=>{        
 
-       const posts_result = Post.find().sort({createdAt:-1}).limit(10).skip(0).exec();
-       
-        posts_result.then(async (posts)=>{
-            await Promise.all(posts.map(async (post)=>{
-                const result = await Post.findOne({_id:`${post.id}`})
-                .populate('comments').populate('likes').populate('user', '', User).exec();
-                return result;
-            })).then( (results) => {
-                console.log(results);
-                let datas = [];
-                results.map((result)=>{
-                    const data = {
-                        post_id : result.id,
-                        post_username: result.user.profile.username,
-                        post_userPic: result.user.profile.profile_pic,
-                        post_title: result.title,
-                        post_text: result.text,
-                        post_liked: result.likes,
-                        post_comments: result.comments,
-                        post_createdAt: result.createdAt,
-                    };
-                    datas.push(data);
-                })
-                res.send(datas);                
+    delPost: async (req, res, next)=>{
+        const publicAddress = res.locals.decoded.publicAddress;
+        const post_id = req.params.post_id
+        
+        await User.findOne({publicAddr:publicAddress})
+        .then(async (user)=>{            
+            if(user.profile.post_ids.includes(post_id)){
+                Post.deleteOne({_id:post_id})
+                .then((result)=>console.log(result))
+                                
+            }
+            user.profile.post_ids.pull(post_id)
+            user.save().then( async ()=>{
+                const posts_result = await Post.find().sort({createdAt:-1}).limit(10).skip(0)
+                .populate('comments').populate('likes').populate('user', '', User).exec(); 
+                console.log(posts_result)
+                // return res.send(posts_result)
             })
-           
         })
-    
     },
+
     addLike : async (req,res,next)=>{
         const publicAddress = res.locals.decoded.publicAddress;
         const {likes} = req.body;
         const post_id = req.params
 
-        await User.findOne({id:publicAddress})
+        await User.findOne({publicAddr:publicAddress})
         .then( (user)=>{
 
             Like.findOne({_id:likes._id})
@@ -151,10 +163,11 @@ module.exports={
         }); 
         });
     },
+
     delLike : async (req,res,next)=>{
         const publicAddress = res.locals.decoded.publicAddress;
         const {likes} = req.body;
-        const post_id = req.params
+        const post_id = req.params.post_id
 
         await User.findOne({id:publicAddress})
         .then( (user)=>{
@@ -170,14 +183,16 @@ module.exports={
         }); 
         });
     },
+
     getComment: async(req,res,next)=>{
         const comment_id = req.params.comment_id;
-        console.log(comment_id);
+        console.log(req.params);
         
         const result = await Comment.findById(`${comment_id}`).populate('comments.user','',User)
         .populate('comments.reply.user','',User).exec();        
         return res.send(result);
     },
+
     addComment: async (req,res,next)=>{
         const publicAddress = res.locals.decoded.publicAddress;
         const {context} = req.body;
@@ -189,8 +204,8 @@ module.exports={
             .then((user)=>{            
             Comment.findOne({_id:comment_id})
              .then( async (comment)=>{            
-            comment.comments.push({user:user.id,caption:context,});
-            user.profile.comments_ids.addToSet(comment.id);
+            comment.comments.push({user:user.id,caption:context,});            
+            user.profile.comments_ids.addToSet(comment.comments[comment.comments.length-1].id);                        
             user.save();
             comment.save().then(async ()=>{
                 const result = await Comment.findById(`${comment_id}`).populate('comments.user','',User)
@@ -200,7 +215,8 @@ module.exports={
         }).catch(err=>{return res.send(err)})
         })
 
-    } ,
+    },
+
     likeComment:(req,res,next)=>{
         const publicAddress = res.locals.decoded.publicAddress;
         const {commentIndex} = req.body;
@@ -219,6 +235,67 @@ module.exports={
         })
         })        
     },
+
+    modifyComment:(req,res,next)=>{
+        const publicAddress = res.locals.decoded.publicAddress
+        const {context, commentIndex} = req.body
+        const comment_id = req.params.comment_id
+
+        User.findOne({publicAddr:publicAddress})
+        .then((user)=>{
+            Comment.findOne({_id:comment_id})
+             .then( async (comment)=>{
+                 
+                if(user.id==comment.comments[commentIndex].user.toString()){                
+                comment.comments[commentIndex].caption=context
+                console.log(comment.comments[commentIndex].caption)           
+                comment.save().then(async ()=>{
+                    const result = await Comment.findById(`${comment_id}`).populate('comments.user','',User)
+                    .populate('comments.reply.user','',User).exec()
+                    return res.send(result.comments[commentIndex])
+                })
+            }else{
+                return res.status(400).send('not a owner of comment')
+            }                        
+        }).catch(err=>{return res.send(err)})
+        })
+    },
+
+    delComment:(req,res,next)=>{
+        const publicAddress = res.locals.decoded.publicAddress
+        const {commentIndex} = req.body
+        const comment_id = req.params.comment_id
+        
+        console.log(commentIndex)
+
+        User.findOne({publicAddr:publicAddress})
+        .then((user)=>{
+            Comment.findOne({_id:comment_id})
+            .then(async (comment)=>{   
+                console.log(comment)              
+                if(user.id==comment.comments[commentIndex].user.toString()){           
+                    if(comment.comments[commentIndex].reply.length<=0){
+                        comment.comments[commentIndex].caption='삭제'
+                        user.profile.comments_ids.pull(comment.comments[commentIndex].id)
+                        comment.comments.splice(commentIndex,1)                                                
+                    }else{                
+                   comment.comments[commentIndex].caption='삭제된 내용입니다.'                   
+                   user.profile.comments_ids.pull(comment.comments[commentIndex].id)                   
+                   
+                   console.log(comment.comments[commentIndex])
+                }
+                user.save()
+                comment.save().then(async ()=>{
+                    const result = await Comment.findById(`${comment_id}`).populate('comments.user','',User)
+                    .populate('comments.reply.user','',User).exec()
+                    return res.send(result.comments)
+                })
+            }else{
+                return res.status(400).send('not a owner of comment')
+            }                        
+        })
+    })},
+
     addReply : async (req, res, next)=>{
         const publicAddress = res.locals.decoded.publicAddress;
         const {commentIndex, context} = req.body;
@@ -230,7 +307,10 @@ module.exports={
             .then((user)=>{            
             Comment.findOne({_id:comment_id})
              .then( async (comment)=>{            
-            comment.comments[commentIndex].reply.push({user:user.id, caption: context,});                        
+            comment.comments[commentIndex].reply.push({user:user.id, caption: context,});
+            user.profile.comments_ids.addToSet(comment.comments[commentIndex].reply[comment.comments[commentIndex].reply.length-1].id)
+                        
+            user.save()                        
             comment.save().then(async ()=>{
                 const result = await Comment.findById(`${comment_id}`).populate('comments.reply.user','',User).exec();
                 return res.send(result.comments[commentIndex].reply);
@@ -238,6 +318,7 @@ module.exports={
         }).catch(err=>{return res.send(err)})
         })
     },
+
     likeReply: (req,res,next)=>{
         const publicAddress = res.locals.decoded.publicAddress;
         const {commentIndex, replyIndex} = req.body;
@@ -256,7 +337,32 @@ module.exports={
             return res.send(comment.comments[commentIndex].reply[replyIndex].liked_user);
         })
         })        
-    }
+    },
+
+    delReply: (req,res,next)=>{
+        const publicAddress = res.locals.decoded.publicAddress;
+        const {commentIndex, replyIndex} = req.body;
+        const comment_id = req.params.comment_id;
+
+        User.findOne({publicAddr:publicAddress})
+        .then((user)=>{
+            Comment.findOne({_id:comment_id})
+            .then(async (comment)=>{                                 
+                if(user.id==comment.comments[commentIndex].reply[replyIndex].user.toString()){                                                       
+                    user.profile.comments_ids.pull(comment.comments[commentIndex].reply[replyIndex].id)                    
+                    comment.comments[commentIndex].reply[replyIndex].caption='삭제된 내용입니다.'                                 
+                                       
+                    user.save()
+                    comment.save().then(async ()=>{
+                        const result = await Comment.findById(`${comment_id}`).populate('comments.user','',User)
+                        .populate('comments.reply.user','',User).exec()
+                        return res.send(result.comments[commentIndex].reply)
+                    })
+            }else{
+                return res.status(400).send('not a owner of comment')
+            }                        
+        })
+    })},
 }
 
 const readImage = (file) => {

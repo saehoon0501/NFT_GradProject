@@ -5,17 +5,20 @@ import like_after from "./images/like-after.png";
 import comment from "./images/comment.png";
 import parse from 'html-react-parser';
 import {useNavigate} from 'react-router-dom'
-import axios from 'axios';
+import {IconButton, Menu, MenuItem} from '@mui/material'
+import {likePost, dislikePost, delPost} from './api/FeedApi'
+import kebab from './images/kebab.png'
 
-const baseURL = "http://localhost:4000";
-const token = window.localStorage.getItem("NFTLogin");
 
-function Feed({id, username, user_id, caption, title, userPic, likes, comments }) {
+function Feed({post_id, writer_profile, user_id, caption, title, likes, comments }) {
   
   const [like, setLike] = useState({
     liked: false,
     liked_num: likes.liked_user.length
   });
+  const [anchorEl, setAnchorEl]= useState(null)
+  const open = Boolean(anchorEl)
+  const [isOwner, setIsOwner]= useState(false)
 
   const navigate = useNavigate();
 
@@ -23,6 +26,12 @@ function Feed({id, username, user_id, caption, title, userPic, likes, comments }
     if(likes.liked_user.includes(user_id)){
       setLike(prev=>({...prev, liked:true}));
     }
+
+    console.log(caption, writer_profile.post_ids.includes(post_id))
+    if(isOwner===false && writer_profile.post_ids.includes(post_id)){
+      setIsOwner(true)
+    }
+
     return ()=>{
 
     }      
@@ -30,13 +39,7 @@ function Feed({id, username, user_id, caption, title, userPic, likes, comments }
 
   const handleLike = async () =>{
     if(!like.liked){      
-      axios.put(`${baseURL}/api/post/like/${id}`,{        
-        likes
-      },{
-        headers:{
-          Authorization: `Bearer ${token}`,
-        }
-      }).then(res=>{
+     likePost(post_id, likes).then(res=>{
         likes = res.data;
         if(likes.liked_user.includes(user_id)){
           setLike({liked:true, liked_num: likes.liked_user.length});
@@ -44,13 +47,7 @@ function Feed({id, username, user_id, caption, title, userPic, likes, comments }
       })
       .catch(err=>console.log(err))
     }else{
-      await axios.put(`${baseURL}/api/post/unlike/${id}`,{        
-        likes
-      },{
-        headers:{
-          Authorization: `Bearer ${token}`,
-        }
-      }).then(res=>{
+      dislikePost(post_id, likes).then(res=>{
         likes = res.data;
         setLike({liked:false, liked_num: likes.liked_user.length});
       })      
@@ -58,38 +55,87 @@ function Feed({id, username, user_id, caption, title, userPic, likes, comments }
   }
 
   const handleClick = () => {
-    navigate(`/home/${id}`,{
-      state:{id, 
-        username, 
+    navigate(`/home/${post_id}`,{
+      state:{post_id, 
+        writer_profile, 
         user_id, 
         caption, 
-        title, 
-        userPic, 
-        likes, 
-        comments }      
+        title,         
+        likes,
+        comments_id:comments._id 
+      }      
     });
   }
+
+  const handleModify = () => {
+
+  }
+
+  const handleDelete = () => {
+      delPost(post_id).then((res)=>{
+        console.log(res)
+      })
+  }
+
+   const kebabMenu = (
+    <div>
+      <IconButton
+        aria-label="more"
+        id="long-button"
+        aria-controls={open ? 'long-menu' : undefined}
+        aria-expanded={open ? 'true' : undefined}
+        aria-haspopup="true"
+        sx={{zIndex:"1"}}
+        onClick={(event)=>{setAnchorEl(event.currentTarget); event.stopPropagation()}}
+      >
+       <img src={kebab} alt='menu icon'/>
+      </IconButton>
+      <Menu
+        id="long-menu"
+        MenuListProps={{
+          'aria-labelledby': 'long-button',
+        }}
+        anchorEl={anchorEl}
+        open={open}
+        onClose={(event)=>{setAnchorEl(null); event.stopPropagation()}}
+        PaperProps={{
+          style: {
+            maxHeight: 45 * 4.5,
+            width: '8ch',
+          },
+        }}
+      >        
+          <MenuItem key={'수정'} onClick={(event)=>{setAnchorEl(null); event.stopPropagation(); handleModify()}} sx={{'&.MuiMenuItem-root':{color:'black'}}}>
+            스크랩
+          </MenuItem>
+          {isOwner?<MenuItem key={'삭제'} onClick={(event)=>{setAnchorEl(null); event.stopPropagation(); handleDelete()}} sx={{'&.MuiMenuItem-root':{color:'red'}}}>
+            삭제
+          </MenuItem>:undefined}
+      </Menu>
+    </div>
+   )
   
   return (
     <div className="feed" style={{display:"block", border:"1px solid lightgray", borderRadius:"5px"}}>
-        <div onClick={handleClick} className='feed_click' style={{width:"500px", maxHeight:"500px",overflow:"hidden"}}>
-            <div  className="feed_header" style={{display:"block"}}>
+        <div  style={{width:"500px", maxHeight:"500px",overflow:"hidden"}}>
+            <div className="feed_header" style={{display:"block"}}>
                 <div style={{display:'flex'}}>
                     <div className="feed_avatar">
                         <img 
-                            src={userPic}
+                            src={writer_profile.profile_pic}
                             alt="profile picture"
                             style={{width:"40px", height:"40px", borderRadius:"10px"}}
                             />            
                     </div>
-                    <div style={{position:"relative", marginLeft:"5px",display:"flex", marginTop:"10px" }}>
+                    <div style={{position:"relative", width:'77%',marginLeft:"5px",display:"flex", marginTop:"10px" }}>
                         <div>
-                            <h3>{username}</h3>
+                            <h3>{writer_profile.username}</h3>
                         </div>
                         <div className="post__text">
                             <span>n일 전</span>
-                        </div>
+                        </div>                        
                     </div>
+                    {kebabMenu}
                 </div>        
             </div>
         <div style={{maxHeight:"450px"}}>
@@ -98,17 +144,17 @@ function Feed({id, username, user_id, caption, title, userPic, likes, comments }
                     <h2 style={{lineHeight:"22px"}}>{title}</h2>
             </div>
             {/* Content */}
-            <div className="ql-editor" style={{padding:"10px 10px 10px 10px"}}>
+            <div onClick={handleClick} className="ql-editor feed_click" style={{padding:"10px 10px 10px 10px", minHeight:'60px'}}>
                 {parse(caption)}        
             </div>
         </div>
       </div>
       {/* INFO */}
       <div style={{display:"flex", padding:"10px 10px 5px 15px"}}>
-        <div>
+        <div onClick={handleClick} className="feed_click" >
             <h4>댓글 {comments.comments.length}개</h4>
         </div>
-        <div className="clickable" style={{position:"relative", margin:"-3px 5px 0 5px"}}>
+        <div onClick={handleClick} className="clickable" style={{position:"relative", margin:"-3px 5px 0 5px"}}>
                 <img src={comment} onClick={handleClick}/>
         </div>
         <div>

@@ -19,15 +19,14 @@ module.exports = {
 
         const {caption, profileName, profile_pic} = req.body;
 
-        console.log(req.body);
-
-        if(caption && profileName){
+        if(caption || profileName){
             User.updateOne({
                 publicAddr:`${publicAddress}`
             },
             {
                 $set:{"profile.username":`${profileName}`, "profile.caption":`${caption}`}
-            }).then(()=>{
+            }).then((result)=>{
+                console.log(result)
                 return res.send("user info updated")
             });
         }

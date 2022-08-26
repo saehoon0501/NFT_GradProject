@@ -3,6 +3,8 @@ import add from "./images/addButton.png";
 import { IconButton } from '@mui/material';
 import "./App.css"
 import {useNavigate} from 'react-router-dom'
+import {getUser} from './api/UserApi'
+import {useQuery} from 'react-query'
 
 
 const handleClick = () => {
@@ -12,6 +14,10 @@ const handleClick = () => {
 export function Header(props) {
 
   const navigate = useNavigate();
+  
+  const {isError, isLoading, error, data:user} = useQuery('user', ({signal})=>getUser(signal))
+
+  console.log(user)
 
   const showProfile = () => {
     navigate('/profile');
@@ -37,10 +43,10 @@ export function Header(props) {
                 onClick={handleClick}
                 className='addButton'
           />
-          <Modal username={props.username} newPosts={props.newPosts}/>
+          <Modal username={user?.profile.username} newPosts={props.newPosts}/>
           <IconButton size='small' onClick={showProfile} style={{marginLeft:"50px", backgroundColor:"transparent"}}>
         <img 
-          src={props.pic}
+          src={user?.profile.profile_pic}
           alt="profile picture"
           style={{width:"40px", height:"40px", borderRadius:"10px"}}
         />

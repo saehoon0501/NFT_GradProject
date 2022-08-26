@@ -5,6 +5,6 @@ const verify = require('../../middleware/jwt');
 const userRouter = express.Router();
 
 userRouter.route('/').get(verify, controller.sndProfile);
-userRouter.route('/').post(verify, controller.updateProfile);
+userRouter.route('/').patch(verify, controller.updateProfile);
 
 module.exports = userRouter;

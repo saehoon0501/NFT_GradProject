@@ -4,90 +4,56 @@ import Feed from "./Feed";
 import "./Thread.css";
 import { CategoryBar } from "./CategoryBar";
 import { Submit } from "./Submit";
-import axios from "axios";
-import {useNavigate} from 'react-router-dom'
 
+import {useNavigate} from 'react-router-dom'
+import {getUser} from './api/UserApi'
+import {getPost} from './api/FeedApi'
 import new_icon from "./images/new.png";
 import new_icon2 from './images/new2.png';
 import best from "./images/best.png";
 import best2 from './images/best2.png';
-
-const token = window.localStorage.getItem("NFTLogin");
-const baseURL = "http://localhost:4000";
-
+import {useQuery} from 'react-query'
 
 export const Thread = (props) => {
-    
-    const {category} = useParams();
-    const [posts, setPosts] = useState([]);
-    const [user_info, setUser_info] = useState({});
+    const {category} = useParams(); 
     const [filter_best, setBest]= useState(false);
     const [filter_new, setNew] = useState(true);
 
+    const userQuery = useQuery('user', ({signal})=>getUser(signal))
+    const postQuery = useQuery('posts', ({signal})=>getPost(signal),{
+        onSuccess: (data)=>{console.log(posts); setPosts(data)}
+    })
+    const [posts, setPosts] = useState(postQuery.data);
+   
     const navigate = useNavigate();
+
+    if(userQuery.isError) navigate('/login')
 
     const handleFilter = ()=>{
         setNew(!filter_new);
         setBest(filter_new);
     };
 
-      useEffect( () => {
-            const cancelToken = axios.CancelToken.source();            
-            const token = window.localStorage.getItem("NFTLogin");
-    
-            props.setIsAuth(false);
-
-            if(!token) {
-                navigate('/login'); 
-                return
-               }
-
-            axios.get(`${baseURL}/api/user`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-                cancelToken: cancelToken.token
-            }).then((res)=>{
-                setUser_info(res.data);                
-            }).catch((err)=>{
-                console.log(err);
-                if(axios.isCancel(err)){
-                    console.log("axios cancelled")
-                }
-            })
-
-            axios.get(`${baseURL}/api/post`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                }
-            }).then((res)=>{                
-                let res2 = [];
-                console.log(res);
-                res.data.map((post)=>{                   
-                    res2.push({
-                        post_id: post.post_id,
-                        username:post.post_username,                 
-                        caption:post.post_text,
-                        title: post.post_title,
-                        userPic: post.post_userPic,
-                        likes: post.post_liked,
-                        comments: post.post_comments,
-                        createdAt: post.createdAt,
-                    })
-                });               
-                setPosts(res2);                
-            }).catch((err)=>console.log(err));
-            return () => {
-                cancelToken.cancel();
-            }
+      useEffect( () => {            
+        props.setIsAuth(false);                
+        return () => {
+        }
       }, []);
+
+      if(userQuery.isLoading || postQuery.isLoading){
+        return(
+            <div>
+                <p>Loading....</p>
+            </div>
+        )
+    }
 
     return(
         <div className="app">            
               
             <div className="timeline">
                 <CategoryBar/>
-                <Submit pic={props.pic} user_info={user_info} setPosts={setPosts}/>
+                <Submit user={userQuery.data} setPosts={setPosts}/>
                 <div style={{display:"flex", border:"1px solid lightgray", padding:"10px", borderRadius:"5px", width:"500px",
                 marginBottom:"10px"}}>
                     <div className={filter_best?"filter_icon clickable":"clickable"} style={{border:"1px solid lightgray",
@@ -109,17 +75,16 @@ export const Thread = (props) => {
                     </div>
                     </div>
                 </div>
-            {posts.map((post)=>(
+            {posts?.map((post)=>(                
                 <Feed
-                key = {post.post_id}
-                id = {post.post_id} 
-                username={post.username} 
-                user_id={user_info._id}
-                caption={post.caption} 
-                title={post.title}
-                userPic={post.userPic}
+                key = {post._id}
+                post_id = {post._id} 
+                writer_profile={post.user.profile} 
+                user_id={userQuery.data._id}
+                caption={post.text} 
+                title={post.title}                
                 comments={post.comments}
-                likes={post.likes}
+                likes={post.likes}                
                 />
             ))}
                 </div>
