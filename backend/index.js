@@ -32,4 +32,13 @@ app.use('/api', services);
 
 
 
-app.listen(4000); // port 4000인 server 실행
+const server = app.listen(4000); // port 4000인 server 실행
+const io = require('socket.io')(server)
+
+io.on('connection', (socket)=>{
+    console.log('someone logged in')
+
+    socket.on('disconnect', ()=>{
+        console.log('someone has left')
+    })
+})
