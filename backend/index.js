@@ -38,10 +38,15 @@ io.use((socket, next)=>{
     
 })
 
-const namespace = io.of('/comment/:comment_id')
+const namespace = io.of('/comment')
 
 namespace.on('connection', (socket)=>{
     console.log('someone logged in')
+
+    socket.on('join', (comment_id)=>{
+        socket.join(comment_id)
+        namespace.to(comment_id).emit('testsocket', comment_id)
+    })
 
     socket.on('disconnect', ()=>{
         console.log('someone has left')
