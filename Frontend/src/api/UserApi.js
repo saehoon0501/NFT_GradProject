@@ -9,7 +9,7 @@ const userApi = axios.create({
 //     Authorization: `Bearer ${token}`,
 // }
 userApi.interceptors.request.use((config)=>{
-    const token = window.localStorage.getItem("NFTLogin");
+    const token = window.localStorage.getItem("accessToken");
     if(!token){        
         return config
     }

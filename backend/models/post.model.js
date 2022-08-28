@@ -1,8 +1,8 @@
 const mongoose =  require(`mongoose`);
 const Schema = mongoose.Schema;
-const User = require('./user.model');
+const config = require('../config');
 
-const postDb = mongoose.createConnection("mongodb://localhost:27017/Postdb")
+const postDb = mongoose.createConnection(config.mongoPath)
 
 const postSchema = new Schema({
     user:{
@@ -56,7 +56,7 @@ const commentSchema = new Schema({
     }]
 })
 
-module.exports.Post = mongoose.model('post', postSchema);
-module.exports.Like = mongoose.model('like', likeSchema);
-module.exports.Comment = mongoose.model('comment', commentSchema);
+module.exports.Post = postDb.model('post', postSchema);
+module.exports.Like = postDb.model('like', likeSchema);
+module.exports.Comment = postDb.model('comment', commentSchema);
 

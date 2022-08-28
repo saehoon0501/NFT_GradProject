@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 import "./Feed.css";
-import like_before from "./images/like-before.png";
-import like_after from "./images/like-after.png";
-import comment from "./images/comment.png";
+import like_before from "../images/like-before.png";
+import like_after from "../images/like-after.png";
+import comment from "../images/comment.png";
 import parse from 'html-react-parser';
 import {useNavigate} from 'react-router-dom'
 import {IconButton, Menu, MenuItem} from '@mui/material'
-import {likePost, dislikePost, delPost} from './api/FeedApi'
-import kebab from './images/kebab.png'
+import {likePost, dislikePost, delPost} from '../api/FeedApi'
+import kebab from '../images/kebab.png'
 
 
 function Feed({post_id, writer_profile, user_id, caption, title, likes, comments }) {
@@ -127,13 +127,13 @@ function Feed({post_id, writer_profile, user_id, caption, title, likes, comments
                             style={{width:"40px", height:"40px", borderRadius:"10px"}}
                             />            
                     </div>
-                    <div style={{position:"relative", width:'77%',marginLeft:"5px",display:"flex", marginTop:"10px" }}>
-                        <div>
+                    <div style={{position:"relative", width:'65%',marginLeft:"5px",display:"flex", marginTop:"10px" }}>
+                        <div style={{overflow:'hidden'}}>
                             <h3>{writer_profile.username}</h3>
-                        </div>
-                        <div className="post__text">
+                        </div>                                                
+                    </div>
+                    <div className="post__timeline">
                             <span>n일 전</span>
-                        </div>                        
                     </div>
                     {kebabMenu}
                 </div>        

@@ -1,10 +1,9 @@
 const {Post} = require('../../models/post.model');
 const User = require('../../models/user.model');
-const mongoose = require("mongoose");
 const multer = require("multer");
 const path = require('path');
 
-mongoose.connect('mongodb://localhost:27017/Postdb');
+
 
 
 const upload = multer({
@@ -33,68 +32,6 @@ module.exports={
        res.send(IMG_URL);
     },
     upload
-    ,
-    getPost : (req, res, next)=>{        
-
-       const posts_result = Post.find().sort({createdAt:-1}).limit(10).skip(0).exec();
-       
-        posts_result.then(async (posts)=>{
-            let results = [];
-
-            await Promise.all(posts.map(async (post)=>{
-                const result = await Post.findOne({_id:`${post.id}`})
-                .populate('comments').populate('likes').populate('user', '', User).exec();
-                results.push(result);
-            }));
-            
-            return results;
-       }).then(async (results)=>{
-
-        await Promise.all(results.map(async (result)=>{
-            
-            const file = await gfs.files.findOne(result.imgs[0]);
-            
-            if(!file){
-                return res.status(401).send('error file not found');
-            }
-
-            if(file.contentType === 'image/jpeg' || file.contentType === 'image/png'){                
-                const base64 = await readImage(file)
-                const sndData = {
-                    post_id : result.id,
-                    post_username: result.user.profile.username,
-                    post_userProfile: result.user.profile.profile_pic,
-                    post_liked: result.likes,
-                    post_comments: result.comments,
-                    base64};
-                    return sndData 
-                    }
-                })).then((sndData)=>{
-                    console.log('post data sent');
-                    res.send(sndData);
-            })
-           
-        })
-    
-    }
-}
-
-const readImage = (file) => {
-    return new Promise(async (resolve, reject)=>{
-        let buffer = [];
-        const readStream = gridfsBucket.openDownloadStream(file._id);
-
-        readStream.on('data', (chunk)=>{
-            console.log('b');
-            buffer.push(chunk);
-        })
-
-        readStream.on('end', ()=>{
-            console.log('c');
-            const fbuf = Buffer.concat(buffer);
-            base64 = fbuf.toString('base64');  
-            resolve(base64);
-        })
-    });
+    ,    
 }
 

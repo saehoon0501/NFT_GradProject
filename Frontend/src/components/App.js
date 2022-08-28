@@ -7,8 +7,7 @@ import {Header} from "./Header";
 import FeedView from './FeedView';
 import axios from 'axios';
 import { Profile } from "./Profile";
-import {getUser} from './api/UserApi'
-import {useQuery} from 'react-query'
+
 
 
 

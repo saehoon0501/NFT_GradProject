@@ -4,7 +4,7 @@ import './Submit.css';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import axios from 'axios';
-import {addPost} from './api/FeedApi'
+import {addPost} from '../api/FeedApi'
 
 // import emoji from './images/emoji.png';
 // import image_s from './images/image-s.png';
@@ -39,14 +39,6 @@ export const Submit = ({user, setPosts})=>{
     const [open, setOpen] = useState([{
         'name':'sumit_open',
         isActive: false
-    },
-    {
-        'name':'post_switch',
-        isActive: false   
-    },
-    {
-        'name':'emoji_button',
-        isActive: false   
     }]);    
     const [title, setTitle] = useState('');
     const [selectedImage, setImage] = useState(null);
@@ -97,9 +89,8 @@ export const Submit = ({user, setPosts})=>{
         
         const post_title = title
         const post_text = quill.current.getEditor().getContents();
-        const post_user = user;
         
-        addPost(post_title, post_text, post_user)
+        addPost(post_title, post_text)
         .then((res)=>{
             console.log(res.data);
             setPosts(prev=>([res.data, ...prev]))            
@@ -111,8 +102,8 @@ export const Submit = ({user, setPosts})=>{
 
     return(
             <Box>                   
-            <div className={open[1].isActive?'submit_wrapper2':'submit_wrapper'}>
-            {(open[0].isActive&&open[1].isActive)?
+            <div className={'submit_wrapper'}>
+            {/* {(open[0].isActive)?
                 <div>
                     <div style={{borderColor:"black", marginTop:"10px",width:"100%", height:"30px", 
                         borderBottom: "solid 1px lightgray", alignItems:"center", justifyContent:"center"}}>
@@ -137,8 +128,8 @@ export const Submit = ({user, setPosts})=>{
                 }
                      </div>
                     :<div></div>
-                    }
-                    <div className={open[1].isActive?'submit_header2':'submit_header'}>
+                    } */}
+                    <div className={'submit_header'}>
                         <div className='submit_profilePic'>
                             <img 
                                 src={user?.profile.profile_pic}
@@ -148,14 +139,13 @@ export const Submit = ({user, setPosts})=>{
                         </div>                    
                         <div onBlur={e=>{setTitle(e.currentTarget.textContent);}} 
                         onClick={open[0].isActive?undefined:handleClick} contentEditable='true' 
-                        data-ph={open[0].isActive?open[1].isActive?'Text (optional)'
-                        :'Title':'게시물 작성'} data-index='0'
+                        data-ph={open[0].isActive?'Title':'게시물 작성'} data-index='0'
                             className='submit_title'>
                         </div>                                            
                     </div>
                 
                <div>
-                {(open[0].isActive&&!open[1].isActive)?
+                {(open[0].isActive)?
                 <div style={{marginTop:'5px'}}>
                     <ReactQuill ref={quill} modules={qull_modules} placeholder={'Text (Optional)'} theme='snow'/>
                 <div style={{display:'flex', margin:'5px 0px'}}>

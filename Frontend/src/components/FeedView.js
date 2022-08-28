@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useRef} from "react";
-import like_before from "./images/like-before.png";
-import like_after from "./images/like-after.png";
-import comment from "./images/comment.png";
+import like_before from "../images/like-before.png";
+import like_after from "../images/like-after.png";
+import comment from "../images/comment.png";
 import {Button} from '@mui/material';
 import parse from 'html-react-parser';
 import './FeedView.css';
 import 'react-quill/dist/quill.core.css';
 import {likePost, dislikePost, delPost, addComment, getComment, likeComment, delComment
-  , addReply, modifyReply, likeReply, delReply} from './api/FeedApi'
+  , addReply, modifyReply, likeReply, delReply} from '../api/FeedApi'
 import {useLocation} from 'react-router-dom'
 import {useQuery, useMutation, useQueryClient} from 'react-query'
 

@@ -1,9 +1,9 @@
 import {Modal, showModal} from "./Modal";
-import add from "./images/addButton.png";
+import add from "../images/addButton.png";
 import { IconButton } from '@mui/material';
 import "./App.css"
 import {useNavigate} from 'react-router-dom'
-import {getUser} from './api/UserApi'
+import {getUser} from '../api/UserApi'
 import {useQuery} from 'react-query'
 
 

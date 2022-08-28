@@ -5,7 +5,7 @@ const feedApi = axios.create({
 })
 
 feedApi.interceptors.request.use((config)=>{
-    const token = window.localStorage.getItem("NFTLogin");
+    const token = window.localStorage.getItem("accessToken");
     if(!token){        
         return config
     }
@@ -22,11 +22,10 @@ export const getPost = async (signal) => {
     return response.data
 }
 
-export const addPost = async (post_title, post_text, post_user) => {
+export const addPost = async (post_title, post_text) => {
     const response = await feedApi.post('',{
         post_title,
-        post_text,
-        post_user
+        post_text,    
     })
     return response
 } 

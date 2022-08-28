@@ -1,8 +1,8 @@
 import "./Profile.css"
-import img from "./images/user.png";
+import img from "../images/user.png";
 import { useEffect, useRef, useState } from "react";
 import "./Modal.css";
-import {updateUser, updateProfilePic, getUser} from './api/UserApi'
+import {updateUser, updateProfilePic, getUser} from '../api/UserApi'
 import {useQuery, useMutation, useQueryClient} from 'react-query'
 
 

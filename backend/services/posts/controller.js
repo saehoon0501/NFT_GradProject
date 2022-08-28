@@ -8,43 +8,43 @@ const {GridFsStorage} = require("multer-gridfs-storage");
 const Grid = require("gridfs-stream");
 const QuillDeltaToHtmlConverter = require('quill-delta-to-html').QuillDeltaToHtmlConverter;
 
-mongoose.connect('mongodb://localhost:27017/Postdb');
+// mongoose.connect('mongodb://localhost:27017/Postdb');
 
-const conn = mongoose.connection;
-let gfs, gridfsBucket;
+// const conn = mongoose.connection;
+// let gfs, gridfsBucket;
 
-conn.once('open', ()=>{
-    gridfsBucket = new mongoose.mongo.GridFSBucket(conn.db,{
-        bucketName:'uploads'
-    });
-    gfs = Grid(conn.db, mongoose.mongo);
-    gfs.collection("uploads");
-})
+// conn.once('open', ()=>{
+//     gridfsBucket = new mongoose.mongo.GridFSBucket(conn.db,{
+//         bucketName:'uploads'
+//     });
+//     gfs = Grid(conn.db, mongoose.mongo);
+//     gfs.collection("uploads");
+// })
 
-const storage = new GridFsStorage({
-    url: 'mongodb://localhost:27017/Postdb',
-    file: (req, file) => {
-      return new Promise((resolve, reject) => {
-        crypto.randomBytes(16, (err, buf) => {
-          if (err) {
-            return reject(err);
-          }
-          const filename = buf.toString('hex') + path.extname(file.originalname);
-          const fileInfo = {
-            filename: filename,
-            bucketName: 'uploads'
-          };
-          resolve(fileInfo);
-        });
-      });
-    }
-  });
+// const storage = new GridFsStorage({
+//     url: 'mongodb://localhost:27017/Postdb',
+//     file: (req, file) => {
+//       return new Promise((resolve, reject) => {
+//         crypto.randomBytes(16, (err, buf) => {
+//           if (err) {
+//             return reject(err);
+//           }
+//           const filename = buf.toString('hex') + path.extname(file.originalname);
+//           const fileInfo = {
+//             filename: filename,
+//             bucketName: 'uploads'
+//           };
+//           resolve(fileInfo);
+//         });
+//       });
+//     }
+//   });
 
-const upload = multer({ storage });
+// const upload = multer({ storage });
 
 module.exports={
     
-    upload,
+    // upload,
     getPost : (req, res, next)=>{        
 
        const posts_result = Post.find().sort({createdAt:-1}).limit(10).skip(0).exec();
@@ -52,7 +52,7 @@ module.exports={
         posts_result.then(async (posts)=>{
             await Promise.all(posts.map(async (post)=>{
                 const result = await Post.findOne({_id:`${post.id}`})
-                .populate('comments').populate('likes').populate('user', '', User).exec();
+                .populate('comments').populate('likes').populate('user', '', User).lean().exec();
                 return result;
             })).then( (results) => {
                 console.log(results);
@@ -65,10 +65,14 @@ module.exports={
 
     createPost : (req,res,next)=>{
         const publicAddress = res.locals.decoded.publicAddress;                
-        const {post_title, post_text, post_user} = req.body;
+        const {post_title, post_text} = req.body;
 
         const converter = new QuillDeltaToHtmlConverter(post_text.ops,{});
         const content = converter.convert();
+
+        if(post_title == undefined){
+            return res.status(400),send('need title')
+        }
                 
         User.findOne({publicAddr:`${publicAddress}`})
         .then((user)=>{
@@ -76,11 +80,8 @@ module.exports={
                 return res.status(401).send({error: 'User not Found'});
             }
 
-            const like = new Like({
-                
-           });
+            const like = new Like({});
            
-
            const comment = new Comment({
                 comments:[]
            });
@@ -129,14 +130,15 @@ module.exports={
         await User.findOne({publicAddr:publicAddress})
         .then(async (user)=>{            
             if(user.profile.post_ids.includes(post_id)){
-                Post.deleteOne({_id:post_id})
-                .then((result)=>console.log(result))
-                                
+                Post.findOne({_id:post_id}).lean().then((post)=>{
+                    Promise.all([Post.deleteOne({_id:post_id}),Like.deleteOne({_id:post.likes}),
+                    Comment.deleteOne({_id:post.comments})])                                                        
+                })                                                
             }
             user.profile.post_ids.pull(post_id)
             user.save().then( async ()=>{
                 const posts_result = await Post.find().sort({createdAt:-1}).limit(10).skip(0)
-                .populate('comments').populate('likes').populate('user', '', User).exec(); 
+                .populate('comments').populate('likes').populate('user', '', User).lean().exec(); 
                 console.log(posts_result)
                 // return res.send(posts_result)
             })
@@ -365,22 +367,22 @@ module.exports={
     })},
 }
 
-const readImage = (file) => {
-    return new Promise(async (resolve, reject)=>{
-        let buffer = [];
-        const readStream = gridfsBucket.openDownloadStream(file._id);
+// const readImage = (file) => {
+//     return new Promise(async (resolve, reject)=>{
+//         let buffer = [];
+//         const readStream = gridfsBucket.openDownloadStream(file._id);
 
-        readStream.on('data', (chunk)=>{
-            console.log('b');
-            buffer.push(chunk);
-        })
+//         readStream.on('data', (chunk)=>{
+//             console.log('b');
+//             buffer.push(chunk);
+//         })
 
-        readStream.on('end', ()=>{
-            console.log('c');
-            const fbuf = Buffer.concat(buffer);
-            base64 = fbuf.toString('base64');  
-            resolve(base64);
-        })
-    });
-}
+//         readStream.on('end', ()=>{
+//             console.log('c');
+//             const fbuf = Buffer.concat(buffer);
+//             base64 = fbuf.toString('base64');  
+//             resolve(base64);
+//         })
+//     });
+// }
 

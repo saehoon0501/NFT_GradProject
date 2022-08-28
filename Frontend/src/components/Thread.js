@@ -6,12 +6,12 @@ import { CategoryBar } from "./CategoryBar";
 import { Submit } from "./Submit";
 
 import {useNavigate} from 'react-router-dom'
-import {getUser} from './api/UserApi'
-import {getPost} from './api/FeedApi'
-import new_icon from "./images/new.png";
-import new_icon2 from './images/new2.png';
-import best from "./images/best.png";
-import best2 from './images/best2.png';
+import {getUser} from '../api/UserApi'
+import {getPost} from '../api/FeedApi'
+import new_icon from "../images/new.png";
+import new_icon2 from '../images/new2.png';
+import best from "../images/best.png";
+import best2 from '../images/best2.png';
 import {useQuery} from 'react-query'
 
 export const Thread = (props) => {
@@ -41,6 +41,8 @@ export const Thread = (props) => {
       }, []);
 
       if(userQuery.isLoading || postQuery.isLoading){
+        console.log(userQuery.data)
+        console.log(postQuery.data)
         return(
             <div>
                 <p>Loading....</p>
@@ -75,7 +77,9 @@ export const Thread = (props) => {
                     </div>
                     </div>
                 </div>
-            {posts?.map((post)=>(                
+            {(posts==undefined)?undefined
+            :<div>             
+            {posts.map((post)=>(                           
                 <Feed
                 key = {post._id}
                 post_id = {post._id} 
@@ -87,6 +91,8 @@ export const Thread = (props) => {
                 likes={post.likes}                
                 />
             ))}
+            </div>
+            }
                 </div>
             </div>                    
     );

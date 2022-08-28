@@ -1,8 +1,8 @@
-import home from "./images/home.png";
-import star from "./images/star.png";
-import illustrate from "./images/illustrate.png";
-import chat from "./images/chat.png";
-import nft from "./images/nft.png";
+import home from "../images/home.png";
+import star from "../images/star.png";
+import illustrate from "../images/illustrate.png";
+import chat from "../images/chat.png";
+import nft from "../images/nft.png";
 
 
 export const CategoryBar = () =>{

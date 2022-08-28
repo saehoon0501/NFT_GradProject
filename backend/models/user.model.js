@@ -1,7 +1,8 @@
 const mongoose =  require(`mongoose`);
 const Schema = mongoose.Schema;
+const config = require('../config')
 
-const nftDb = mongoose.createConnection("mongodb://localhost:27017/NFTdb")
+const nftDb = mongoose.createConnection(config.mongoPath)
 
 const userSchema = new Schema({
     publicAddr :{

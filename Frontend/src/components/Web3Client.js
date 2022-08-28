@@ -1,6 +1,6 @@
 import axios from "axios";
 import Web3 from "web3/dist/web3.min.js";
-import DistrictK from "./contracts/DistrictK.json";
+import DistrictK from "../contracts/DistrictK.json";
 import {useNavigate} from 'react-router-dom'
 import {useEffect} from 'react';
 
@@ -76,7 +76,7 @@ export const Login = (props) => {
         console.log(JSON.stringify(result));
 
        if(result != null){
-        localStorage.setItem("NFTLogin", result.accessToken);
+        localStorage.setItem("accessToken", result.accessToken);
         props.setIsAuth(true);
         navigate('/home'); 
         }else{
