@@ -30,12 +30,17 @@ app.use(express.static(path.join(__dirname+'public')));
 
 app.use('/api', services);
 
-
-
 const server = app.listen(4000); // port 4000인 server 실행
 const io = require('socket.io')(server)
 
-io.on('connection', (socket)=>{
+//authentication을 위한 함수
+io.use((socket, next)=>{
+    
+})
+
+const namespace = io.of('/comment/:comment_id')
+
+namespace.on('connection', (socket)=>{
     console.log('someone logged in')
 
     socket.on('disconnect', ()=>{
