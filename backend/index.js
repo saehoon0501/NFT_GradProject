@@ -37,9 +37,16 @@ app.use('/api', services);
 const server = app.listen(4000); // port 4000인 server 실행
 const io = require('socket.io')(server)
 
-// const web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:4000'))
-// const contract = new web3.eth.Contract(DistrictK.abi, config.contractAddress)
+const web3 = new Web3(`ws://127.0.0.1:8545`)
 
+const subscription = web3.eth.subscribe('logs',{
+    address: config.contractAddress,
+    topics:[web3.utils.sha3('Transfer(address,address,uint256)')]
+},(err, result)=>{
+    if(err) console.log(err)
+})
+
+subscription.on('data', event=> console.log(event))
 
 //authentication을 위한 함수
 io.use((socket, next)=>{
