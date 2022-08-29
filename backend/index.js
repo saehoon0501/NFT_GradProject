@@ -4,6 +4,10 @@ const bodyParser = require("body-parser");
 const path = require('path');
 const services = require('./services');
 const User = require('./models/user.model');
+const Web3 = require('web3')
+const config = require('./config')
+const DistrictK = require("./contracts/DistrictK.json");
+
 
 const app = express(); // express module on
 
@@ -32,6 +36,10 @@ app.use('/api', services);
 
 const server = app.listen(4000); // port 4000인 server 실행
 const io = require('socket.io')(server)
+
+// const web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:4000'))
+// const contract = new web3.eth.Contract(DistrictK.abi, config.contractAddress)
+
 
 //authentication을 위한 함수
 io.use((socket, next)=>{
