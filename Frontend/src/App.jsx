@@ -2,13 +2,9 @@ import { useEffect } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
 import "./App.css";
-import { Header } from "./components/Header";
-import { init } from "./components/Web3Client";
-
-import FeedView from "./pages/FeedView";
-import Login from "./pages/Login";
-import { Thread } from "./pages/Thread";
-import { Profile } from "./pages/Profile";
+import { Header } from "./components/common/Header";
+import { init } from "./components/login/Web3Client";
+import { FeedView, Login, Profile, Thread } from "./pages";
 
 const App = () => {
   useEffect(() => {
@@ -19,10 +15,10 @@ const App = () => {
     <Router>
       <Header />
       <Routes>
+        <Route exact path="/" element={<Thread />} />
         <Route exact path="/login" element={<Login />} />
         <Route exact path="/profile" element={<Profile />} />
-        <Route exact path="/category" element={<Thread />} />
-        <Route exact path="/category/:post_id" element={<FeedView />} />
+        <Route exact path="/post/:post_id" element={<FeedView />} />
       </Routes>
     </Router>
   );

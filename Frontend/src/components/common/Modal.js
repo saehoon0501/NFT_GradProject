@@ -1,8 +1,8 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import React from "react";
 import "./Modal.css";
 import Avatar from "@mui/material/Avatar";
-import img from "../assets/user.png";
+import img from "../../assets/user.png";
 
 export const showModal = () => {
   let modal = document.getElementById("myModal");

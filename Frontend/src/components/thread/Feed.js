@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
-import "./Feed.css";
-import like_before from "../assets/like-before.png";
-import like_after from "../assets/like-after.png";
-import comment from "../assets/comment.png";
 import parse from "html-react-parser";
 import { useNavigate } from "react-router-dom";
 import { IconButton, Menu, MenuItem } from "@mui/material";
-import { likePost, dislikePost, delPost } from "../api/FeedApi";
-import kebab from "../assets/kebab.png";
+
+import "./Feed.css";
+import like_before from "../../assets/like-before.png";
+import like_after from "../../assets/like-after.png";
+import comment from "../../assets/comment.png";
+import kebab from "../../assets/kebab.png";
+import { likePost, dislikePost, delPost } from "../../api/FeedApi";
 
 function Feed({
   post_id,
@@ -60,7 +61,7 @@ function Feed({
   };
 
   const handleClick = () => {
-    navigate(`/home/${post_id}`, {
+    navigate(`/post/${post_id}`, {
       state: {
         post_id,
         writer_profile,
@@ -72,8 +73,6 @@ function Feed({
       },
     });
   };
-
-  const handleModify = () => {};
 
   const handleDelete = () => {
     delPost(post_id).then((res) => {
@@ -120,7 +119,6 @@ function Feed({
           onClick={(event) => {
             setAnchorEl(null);
             event.stopPropagation();
-            handleModify();
           }}
           sx={{ "&.MuiMenuItem-root": { color: "black" } }}
         >

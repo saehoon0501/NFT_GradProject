@@ -1,13 +1,13 @@
-import { Modal, showModal } from "./Modal";
-import add from "../assets/addButton.png";
-import { IconButton } from "@mui/material";
-import "../App.css";
 import { useNavigate } from "react-router-dom";
-import { getUser } from "../api/UserApi";
-import { useQuery } from "react-query";
 import { useRecoilState } from "recoil";
-import { isLoginState } from "../store";
+import { useQuery } from "react-query";
 import axios from "axios";
+
+import "../../App.css";
+import { Modal, showModal } from "./Modal";
+import { IconButton } from "@mui/material";
+import { getUser } from "../../api/UserApi";
+import { isLoginState } from "../../store";
 
 const baseURL = "http://localhost:4000";
 const token = window.localStorage.getItem("NFTLogin");
@@ -53,7 +53,7 @@ export const Header = (props) => {
   };
 
   const showSns = () => {
-    navigate("/home");
+    navigate("/");
   };
 
   return (
@@ -68,13 +68,13 @@ export const Header = (props) => {
               onClick={showSns}
             />
             <div className="app__headerButtons">
-              <input
+              {/* <input
                 type="image"
                 src={add}
                 alt="add Button"
                 onClick={handleClick}
                 className="addButton"
-              />
+              /> */}
               <Modal username={user?.profile.username} newPosts={createPost} />
               <IconButton
                 size="small"

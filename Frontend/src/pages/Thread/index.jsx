@@ -1,20 +1,20 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useQuery } from "react-query";
-import "./Thread.css";
-
-import Feed from "../components/Feed";
-import { CategoryBar } from "../components/CategoryBar";
-import { Submit } from "../components/Submit";
-
-import { getUser } from "../api/UserApi";
-import { getPost } from "../api/FeedApi";
-import new_icon from "../assets/new.png";
-import new_icon2 from "../assets/new2.png";
-import best from "../assets/best.png";
-import best2 from "../assets/best2.png";
 import { useRecoilState } from "recoil";
-import { isLoginState } from "../store";
+import "./style.css";
+
+import Feed from "../../components/thread/Feed";
+import { CategoryBar } from "../../components/thread/CategoryBar";
+import { Submit } from "../../components/thread/Submit";
+
+import { getUser } from "../../api/UserApi";
+import { getPost } from "../../api/FeedApi";
+import new_icon from "../../assets/new.png";
+import new_icon2 from "../../assets/new2.png";
+import best from "../../assets/best.png";
+import best2 from "../../assets/best2.png";
+import { isLoginState } from "../../store";
 
 export const Thread = () => {
   // const { category } = useParams();

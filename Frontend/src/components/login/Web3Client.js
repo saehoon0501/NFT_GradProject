@@ -1,10 +1,11 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useRecoilState } from "recoil";
 import axios from "axios";
 import Web3 from "web3/dist/web3.min.js";
-import DistrictK from "../contracts/DistrictK.json";
-import { useRecoilState } from "recoil";
-import { isLoginState } from "../store";
+
+import DistrictK from "../../contracts/DistrictK.json";
+import { isLoginState } from "../../store";
 
 export let selectedAccount;
 
@@ -15,7 +16,7 @@ let isInitialized = false;
 const baseURL = "http://localhost:4000";
 
 export const init = async () => {
-  let provider = window.ethereum;
+  const provider = window.ethereum;
 
   if (typeof provider !== "undefined") {
     //MetaMask is installed
@@ -89,7 +90,7 @@ export const NFTLogin = () => {
       if (result != null) {
         localStorage.setItem("accessToken", result.accessToken);
         setIsAuth(true);
-        navigate("/home");
+        navigate("/");
       } else {
         window.alert("Login Failed Try Again");
       }
