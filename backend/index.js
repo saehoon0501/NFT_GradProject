@@ -13,18 +13,6 @@ const app = express(); // express module on
 
 
 
-// const user1 = new User({
-//   publicAddr:"0xbe38d61731fb86d9a981f38f1bd73b106e80ce32",
-// ownerOfNFT:[{collection_id:"azuki", NFT_URL:["https://ikzttp.mypinata.cloud/ipfs/QmYDvPAXtiJg7s8JdRBSLWdgSphQdac8j1YuQNNxcGE1hg/111.png",
-//  "https://ikzttp.mypinata.cloud/ipfs/QmYDvPAXtiJg7s8JdRBSLWdgSphQdac8j1YuQNNxcGE1hg/199.png"]}],
-// profile:{username:"0xbe38d61731FB86D9A981f38F1bD73b106E80ce32", 
-// caption:"", 
-// points: 0, 
-// post_ids:[], 
-// profile_pic:"https://ikzttp.mypinata.cloud/ipfs/QmYDvPAXtiJg7s8JdRBSLWdgSphQdac8j1YuQNNxcGE1hg/199.png"
-// }});
-
-// user1.save();
 
 app.use(cors());
 app.use(express.static("public"));
@@ -46,7 +34,27 @@ const subscription = web3.eth.subscribe('logs',{
     if(err) console.log(err)
 })
 
-subscription.on('data', event=> console.log(event))
+subscription.on('data', event=> {
+    console.log(event)
+    User.findOne({publicAddr:`${event.topics[2]}`})
+    .then((user)=>{
+        if(user) return console.log('user found')
+
+        const user1 = new User({
+        publicAddr: `${event.topics[2]}`,
+        ownerOfNFT:[{collection_id:"NCC 1st", 
+            NFT_URL:["https://ikzttp.mypinata.cloud/ipfs/QmYDvPAXtiJg7s8JdRBSLWdgSphQdac8j1YuQNNxcGE1hg/111.png",
+            "https://ikzttp.mypinata.cloud/ipfs/QmYDvPAXtiJg7s8JdRBSLWdgSphQdac8j1YuQNNxcGE1hg/199.png"]}],
+        profile:{username:"0xbe38d61731FB86D9A981f38F1bD73b106E80ce32", 
+        caption:"", 
+        points: 0, 
+        post_ids:[], 
+        profile_pic:"https://ikzttp.mypinata.cloud/ipfs/QmYDvPAXtiJg7s8JdRBSLWdgSphQdac8j1YuQNNxcGE1hg/199.png"
+    }})
+    console.log(user1)
+    // user1.save();
+    })
+})
 
 //authentication을 위한 함수
 io.use((socket, next)=>{
