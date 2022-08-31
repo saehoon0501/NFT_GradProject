@@ -1,15 +1,25 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "react-query";
 
 import "./style.css";
 import img from "../../assets/user.png";
-import { updateProfilePic, getUser } from "../../api/UserApi";
+import {
+  updateProfilePic,
+  getUser,
+  getUserPosts,
+  getUserComments,
+} from "../../api/UserApi";
 import "../../components/common/Modal.css";
 import { ProfilePic } from "../../components/profile/ProfilePic";
 import { ProfileCaption } from "../../components/profile/ProfileCaption";
 
 export const Profile = (props) => {
   const [onClick, setOnClick] = useState(false);
+
+  console.log(getUserPosts());
+  console.log(getUserComments());
+
+  console.log("123");
 
   const {
     isError,
