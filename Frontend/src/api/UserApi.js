@@ -34,6 +34,16 @@ export const updateUser = async (caption, profileName) => {
     return response
 }
 
+export const getUserPosts = async () => {
+    const response = await userApi.get('/posts')
+    return response
+}
+
+export const getUserComments = async (caption, profileName) => {
+    const response = await userApi.patch('/comments')
+    return response
+}
+
 export const updateProfilePic = async (profile_pic) => {
     const response = await userApi.patch('',{
         profile_pic

@@ -40,5 +40,24 @@ module.exports = {
                 $set:{"profile.profile_pic":`${profile_pic}`}
             }).then(()=>{return res.send("profile_pic updated")});
         }
+    },
+    getUserPost : (req, res, next) => {
+        const publicAddress = res.locals.decoded.publicAddress;
+
+        User.findOne({publicAddr:publicAddress}).populate('post_ids').lean()
+        .then((err, result)=>{
+            if(err) return res.status(400).send('user not found')
+            return res.send(result)
+        })
+        
+    },
+    getUserComment : (req, res, next) => {
+        const publicAddress = res.locals.decoded.publicAddress;
+
+        User.findOne({publicAddr:publicAddress}).populate('comments_ids').lean()
+        .then((err, result)=>{
+            if(err) return res.status(400).send('user not found')
+            return res.send(result)
+        })
     }
 }
