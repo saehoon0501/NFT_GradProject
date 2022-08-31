@@ -44,20 +44,26 @@ module.exports = {
     getUserPost : (req, res, next) => {
         const publicAddress = res.locals.decoded.publicAddress;
 
-        User.findOne({publicAddr:publicAddress}).populate('post_ids').lean()
-        .then((err, result)=>{
-            if(err) return res.status(400).send('user not found')
-            return res.send(result)
+        User.findOne({publicAddr:publicAddress}).populate('profile.post_ids').lean()
+        .then((user)=>{
+            if(!user) return res.status(400).send('user not found')
+            
+            return res.send(user.profile.posts_ids)
         })
         
     },
     getUserComment : (req, res, next) => {
         const publicAddress = res.locals.decoded.publicAddress;
 
-        User.findOne({publicAddr:publicAddress}).populate('comments_ids').lean()
-        .then((err, result)=>{
-            if(err) return res.status(400).send('user not found')
-            return res.send(result)
+        User.findOne({publicAddr:publicAddress}).populate('profile.comments_ids')
+        .then((user)=>{
+            //comments_id가 존재하지 않으면 다 삭제해버리는 기능 추가            
+            if(!user) return res.status(400).send('user not found')
+            user.profile.comments_ids = user.profile.comments_ids.filter((comment)=> comment != null)
+            user.save()
+            .then(()=>{
+                return res.send(user.profile.comments_ids)
+            })                        
         })
     }
 }

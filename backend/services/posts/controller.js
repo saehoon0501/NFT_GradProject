@@ -276,12 +276,12 @@ module.exports={
             .then(async (comment)=>{   
                 console.log(comment)              
                 if(user.id==comment.comments[commentIndex].user.toString()){           
-                    if(comment.comments[commentIndex].reply.length<=0){
-                        comment.comments[commentIndex].caption='삭제'
+                    if(comment.comments[commentIndex].reply.length<=0){                        
                         user.profile.comments_ids.pull(comment.comments[commentIndex].id)
                         comment.comments.splice(commentIndex,1)                                                
                     }else{                
-                   comment.comments[commentIndex].caption='삭제된 내용입니다.'                   
+                   comment.comments[commentIndex].caption='삭제된 내용입니다.'
+                   comment.comments[commentIndex].user = null                   
                    user.profile.comments_ids.pull(comment.comments[commentIndex].id)                   
                    
                    console.log(comment.comments[commentIndex])
@@ -353,7 +353,7 @@ module.exports={
                 if(user.id==comment.comments[commentIndex].reply[replyIndex].user.toString()){                                                       
                     user.profile.comments_ids.pull(comment.comments[commentIndex].reply[replyIndex].id)                    
                     comment.comments[commentIndex].reply[replyIndex].caption='삭제된 내용입니다.'                                 
-                                       
+                    comment.comments[commentIndex].reply[replyIndex].user = null                 
                     user.save()
                     comment.save().then(async ()=>{
                         const result = await Comment.findById(`${comment_id}`).populate('comments.user','',User)
