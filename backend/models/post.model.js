@@ -17,9 +17,9 @@ const postSchema = new Schema({
     likes:{
         type: Schema.Types.ObjectId, ref: 'like'
     },
-    comments:{
+    comments:[{
         type: Schema.Types.ObjectId, ref: 'comment'
-    }
+    }]
 },{timestamps: true});
 
 const likeSchema = new Schema({
@@ -32,28 +32,16 @@ const likeSchema = new Schema({
 })
 
 const commentSchema = new Schema({
-    comments:[{
-        user:{
-            type: Schema.Types.ObjectId, ref:'user'
-        },
-        caption:{
-            type:String
-        },        
-        liked_user:[{
-            type: Schema.Types.ObjectId, ref:'user'  
-        }],
-        reply:[{
-            user:{
-                type: Schema.Types.ObjectId, ref:'user'
-            },
-            caption:{
-                type:String
-            },            
-            liked_user:[{
-                type: Schema.Types.ObjectId, ref:'user'  
-            }],            
-        }]
-    }]
+    user:{
+        type: Schema.Types.ObjectId, ref:'user'
+    },
+    caption:{
+        type:String
+    },        
+    liked_user:[{
+        type: Schema.Types.ObjectId, ref:'user'  
+    }],
+    replies:[this]    
 })
 
 module.exports.Post = postDb.model('post', postSchema);

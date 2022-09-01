@@ -38,7 +38,7 @@ export const getUserPosts = async () => {
 };
 
 export const getUserComments = async (caption, profileName) => {
-  const response = await userApi.patch("/comments");
+  const response = await userApi.get("/comments");
   return response.data;
 };
 

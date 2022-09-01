@@ -16,10 +16,9 @@ export const Comment = ({
   comment_id,
   index,
   writer,
-  reply,
+  replies,
   caption,
-  liked_user,
-  comments_id,
+  liked_user,  
 }) => {
   const [like, setLike] = useState({
     liked: false,
@@ -29,7 +28,7 @@ export const Comment = ({
     reply: false,
     modify: false,
   });
-  const [replyList, setReplyList] = useState(reply);
+  const [replyList, setReplyList] = useState(replies);
   const [value, setValue] = useState();
   const [isOwner, setIsOwner] = useState(false);
   const [context, setContext] = useState(caption);
@@ -60,7 +59,7 @@ export const Comment = ({
 
   const handleLike = () => {
     if (!like.liked) {
-      likeComment(comments_id, index).then((res) => {
+      likeComment(comment_id, index).then((res) => {
         console.log(res.data.length);
         if (res.data.includes(user_id)) {
           setLike({ liked: true, liked_user: res.data });
@@ -70,7 +69,7 @@ export const Comment = ({
   };
 
   const handleReply = (event) => {
-    addReply(comments_id, value, index).then((res) => {
+    addReply(comment_id, value, index).then((res) => {
       console.log(res.data);
       setReplyList(res.data);
     });
@@ -78,7 +77,7 @@ export const Comment = ({
   };
 
   const handleModify = (event) => {
-    modifyReply(comments_id, value, index).then((res) => {
+    modifyReply(comment_id, value, index).then((res) => {
       console.log(res.data);
       setContext(res.data.caption);
     });
@@ -86,7 +85,7 @@ export const Comment = ({
   };
 
   const handleDelete = () => {
-    delComment(comments_id, index).then((res) => {
+    delComment(comment_id, index).then((res) => {
       console.log(res.data);
     });
   };
@@ -215,8 +214,7 @@ export const Comment = ({
       )}
       {replyList.map((replyItem, reply_index) => {
         return (
-          <Reply
-            comments_id={comments_id}
+          <Reply            
             comment_id={comment_id}
             comment_index={index}
             reply_index={reply_index}

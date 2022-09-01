@@ -1,4 +1,5 @@
 const User = require("../../models/user.model");
+const {Post,Like,Comment} = require('../../models/post.model');
 
 
 module.exports = {
@@ -44,24 +45,24 @@ module.exports = {
     getUserPost : (req, res, next) => {
         const publicAddress = res.locals.decoded.publicAddress;
 
-        User.findOne({publicAddr:publicAddress}).populate('profile.post_ids').lean()
+        User.findOne({publicAddr:publicAddress}).populate('profile.post_ids','',Post).lean()
         .then((user)=>{
             if(!user) return res.status(400).send('user not found')
-            
-            return res.send(user.profile.posts_ids)
+            console.log('user Post', user.profile.post_ids)
+            return res.send(user.profile.post_ids)
         })
         
     },
     getUserComment : (req, res, next) => {
         const publicAddress = res.locals.decoded.publicAddress;
 
-        User.findOne({publicAddr:publicAddress}).populate('profile.comments_ids')
-        .then((user)=>{
-            //comments_id가 존재하지 않으면 다 삭제해버리는 기능 추가            
+        User.findOne({publicAddr:publicAddress})
+        .then((user)=>{              
             if(!user) return res.status(400).send('user not found')
-            user.profile.comments_ids = user.profile.comments_ids.filter((comment)=> comment != null)
-            user.save()
-            .then(()=>{
+            // user.profile.comments_ids = user.profile.comments_ids.filter((comment)=> comment != null)
+            console.log('user Comment', user)
+            user.save()            
+            .then(()=>{                
                 return res.send(user.profile.comments_ids)
             })                        
         })

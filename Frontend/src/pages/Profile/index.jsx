@@ -16,11 +16,8 @@ import { ProfileCaption } from "../../components/profile/ProfileCaption";
 export const Profile = (props) => {
   const [onClick, setOnClick] = useState(false);
 
-  console.log(getUserPosts());
-  console.log(getUserComments());
-
-  console.log("123");
-
+  getUserComments().then((result)=>console.log(result))
+  
   const {
     isError,
     isLoading,

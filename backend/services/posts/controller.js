@@ -52,10 +52,10 @@ module.exports={
         posts_result.then(async (posts)=>{
             await Promise.all(posts.map(async (post)=>{
                 const result = await Post.findOne({_id:`${post.id}`})
-                .populate('comments').populate('likes').populate('user', '', User).lean().exec();
-                return result;
-            })).then( (results) => {
-                console.log(results);
+                .populate('comments').populate('comments.replies').populate('likes').populate('user', '', User).lean().exec();
+                return result
+            })).then((results) => {
+                console.log('getPost 실행', results);
                 res.send(results);                
             })
            
@@ -82,24 +82,17 @@ module.exports={
 
             const like = new Like({});
            
-           const comment = new Comment({
-                comments:[]
-           });
-            
-
            const post = new Post({
             user: user.id,
             title: post_title,
             text: content,
-            likes: like,
-            comments: comment
+            likes: like,            
         });
-            like.save();
-            comment.save();
+            like.save();            
             post.save();
-            return {user, post,like, comment};
+            return {user, post,like};
         })
-        .then( async ({user, post, like, comment})=>{
+        .then( async ({user, post, like})=>{
             await User.updateOne({
                 id: user._id
             },
@@ -113,8 +106,7 @@ module.exports={
                     user: user,                    
                     title: post.title,
                     text: post.text,
-                    likes: like,
-                    comments: comment,
+                    likes: like,                    
                     createdAt:post.createdAt,                    
                 };
 
@@ -132,15 +124,20 @@ module.exports={
             if(user.profile.post_ids.includes(post_id)){
                 Post.findOne({_id:post_id}).lean().then((post)=>{
                     Promise.all([Post.deleteOne({_id:post_id}),Like.deleteOne({_id:post.likes}),
-                    Comment.deleteOne({_id:post.comments})])                                                        
+                    post.comments.map((comment_id)=>{
+                        Comment.findById(comment_id).lean()
+                        .then((comment)=>{
+                            comment.replies.map((reply_id)=>Comment.deleteOne({_id:reply_id}))                            
+                        })                                             
+                    }),Comment.deleteOne({_id:comment_id})])                                                        
                 })                                                
             }
             user.profile.post_ids.pull(post_id)
             user.save().then( async ()=>{
                 const posts_result = await Post.find().sort({createdAt:-1}).limit(10).skip(0)
                 .populate('comments').populate('likes').populate('user', '', User).lean().exec(); 
-                console.log(posts_result)
-                // return res.send(posts_result)
+                
+                return res.send(posts_result)
             })
         })
     },
@@ -187,36 +184,38 @@ module.exports={
     },
 
     getComment: async(req,res,next)=>{
-        const comment_id = req.params.comment_id;
+        const post_id = req.params.post_id;
         console.log(req.params);
         
-        const result = await Comment.findById(`${comment_id}`).populate('comments.user','',User)
-        .populate('comments.reply.user','',User).exec();        
+        const result = await Post.findById(`${post_id}`).populate({
+            path: 'comments',
+            populate:{
+                path: 'user',
+                model: User
+            }
+        })
+        .lean().exec();        
         return res.send(result);
     },
 
     addComment: async (req,res,next)=>{
         const publicAddress = res.locals.decoded.publicAddress;
         const {context} = req.body;
-        const comment_id = req.params.comment_id;
+        const post_id = req.params.post_id;
 
         if(!context) return res.status(400).send('invalid context');
 
-        await User.findOne({publicAddr:publicAddress})
-            .then((user)=>{            
-            Comment.findOne({_id:comment_id})
-             .then( async (comment)=>{            
-            comment.comments.push({user:user.id,caption:context,});            
-            user.profile.comments_ids.addToSet(comment.comments[comment.comments.length-1].id);                        
-            user.save();
-            comment.save().then(async ()=>{
-                const result = await Comment.findById(`${comment_id}`).populate('comments.user','',User)
-                .populate('comments.reply.user','',User).exec();
-                return res.send(result);
-            })                        
-        }).catch(err=>{return res.send(err)})
-        })
+        let user = await User.findOne({publicAddr:publicAddress}).lean()
 
+        console.log('댓글 추가 user Found', user)
+
+        const comment = new Comment({
+            user:user._id,
+            caption:context,
+        })        
+
+        await Promise.all([User.updateOne({publicAddr:publicAddress},{$addToSet:{'profile.comment_ids':comment._id}}),
+        Post.updateOne({_id:post_id},{$addToSet:{comments:comment._id}}),comment.save()])        
     },
 
     likeComment:(req,res,next)=>{
@@ -228,12 +227,12 @@ module.exports={
         User.findOne({publicAddr:publicAddress})
         .then((user)=>{
             Comment.findById(comment_id)
-        .then(async (comment)=>{
+        .then((comment)=>{
             console.log(comment);
-            comment.comments[commentIndex].liked_user.addToSet(user.id);
-            await comment.save();
+            comment.liked_user.addToSet(user.id);
+            comment.save();
 
-            return res.send(comment.comments[commentIndex].liked_user);
+            return res.send(comment.liked_user);
         })
         })        
     },
@@ -249,12 +248,12 @@ module.exports={
              .then( async (comment)=>{
                  
                 if(user.id==comment.comments[commentIndex].user.toString()){                
-                comment.comments[commentIndex].caption=context
-                console.log(comment.comments[commentIndex].caption)           
+                comment.caption=context
+                console.log(comment.caption)           
                 comment.save().then(async ()=>{
-                    const result = await Comment.findById(`${comment_id}`).populate('comments.user','',User)
-                    .populate('comments.reply.user','',User).exec()
-                    return res.send(result.comments[commentIndex])
+                    const result = await Comment.findById(`${comment_id}`).populate('user','',User)
+                    .populate('reply.user','',User).exec()
+                    return res.send(result)
                 })
             }else{
                 return res.status(400).send('not a owner of comment')
@@ -274,17 +273,18 @@ module.exports={
         .then((user)=>{
             Comment.findOne({_id:comment_id})
             .then(async (comment)=>{   
-                console.log(comment)              
-                if(user.id==comment.comments[commentIndex].user.toString()){           
-                    if(comment.comments[commentIndex].reply.length<=0){                        
-                        user.profile.comments_ids.pull(comment.comments[commentIndex].id)
-                        comment.comments.splice(commentIndex,1)                                                
+                console.log(comment)
+                
+                if(user.id==comment.user.toString()){           
+                    if(comment.replies.length<=0){                        
+                        user.profile.comments_ids.pull(comment.id)
+                        Comment.deleteOne({_id:comment_id})                                                
                     }else{                
-                   comment.comments[commentIndex].caption='삭제된 내용입니다.'
-                   comment.comments[commentIndex].user = null                   
-                   user.profile.comments_ids.pull(comment.comments[commentIndex].id)                   
+                   comment.caption='삭제된 내용입니다.'
+                   comment.user = null                   
+                   user.profile.comment_ids.pull(comment_id)                   
                    
-                   console.log(comment.comments[commentIndex])
+                   console.log(comment)
                 }
                 user.save()
                 comment.save().then(async ()=>{

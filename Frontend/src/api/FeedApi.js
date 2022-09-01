@@ -49,28 +49,27 @@ export const delPost = async (post_id)=>{
     return response
 }
 
-export const addComment = async ({comments_id, value}) => {
-    console.log(comments_id, value)
-    const response = await feedApi.post(`/comment/${comments_id}`,{
+export const addComment = async ({post_id, value}) => {
+    const response = await feedApi.post(`/comment/${post_id}`,{
         context: value,
     })
     return response
 }
 
-export const getComment = async (comments_id) => {
-    const response = await feedApi.get(`/comment/${comments_id}`)
+export const getComment = async (post_id) => {
+    const response = await feedApi.get(`/comment/${post_id}`)
     return response.data
 }
 
-export const likeComment = async (comments_id, index) => {
-    const response = await feedApi.post(`/comment/like/${comments_id}`,{
+export const likeComment = async (comment_id, index) => {
+    const response = await feedApi.post(`/comment/like/${comment_id}`,{
         commentIndex: index
     })
     return response
 }
 
-export const delComment = async (comments_id, commentIndex) => {
-    const response = await feedApi.delete(`/comment/${comments_id}`,{
+export const delComment = async (comment_id, commentIndex) => {
+    const response = await feedApi.delete(`/comment/${comment_id}`,{
         data:{
             commentIndex
         }
@@ -78,16 +77,16 @@ export const delComment = async (comments_id, commentIndex) => {
     return response
 }
 
-export const likeReply = async (comments_id, commentIndex, replyIndex)=>{
-    const response = await feedApi.post(`/comment/reply/${comments_id}`,{        
+export const likeReply = async (comment_id, commentIndex, replyIndex)=>{
+    const response = await feedApi.post(`/comment/reply/${comment_id}`,{        
         commentIndex,
         replyIndex
     })    
     return response
 }
 
-export const addReply = async (comments_id, context, commentIndex) => {
-    const response = await feedApi.post(`/comment/reply/${comments_id}`,{
+export const addReply = async (comment_id, context, commentIndex) => {
+    const response = await feedApi.post(`/comment/reply/${comment_id}`,{
         context,
         commentIndex,        
     })
@@ -95,16 +94,16 @@ export const addReply = async (comments_id, context, commentIndex) => {
     return response
 }
 
-export const modifyReply = async (comments_id, context, commentIndex) => {
-    const response = await feedApi.patch(`/comment/${comments_id}`,{
+export const modifyReply = async (comment_id, context, commentIndex) => {
+    const response = await feedApi.patch(`/comment/${comment_id}`,{
         context,
         commentIndex
     })
     return response
 }
 
-export const delReply = async (comments_id, commentIndex, replyIndex) => {
-    const response = await feedApi.delete(`/comment/reply/${comments_id}`,{
+export const delReply = async (comment_id, commentIndex, replyIndex) => {
+    const response = await feedApi.delete(`/comment/reply/${comment_id}`,{
         data:{
             commentIndex,
             replyIndex

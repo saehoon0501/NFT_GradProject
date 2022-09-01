@@ -69,7 +69,7 @@ function Feed({
         caption,
         title,
         likes,
-        comments_id: comments._id,
+        comment_ids: comments,
       },
     });
   };
@@ -204,7 +204,7 @@ function Feed({
       {/* INFO */}
       <div style={{ display: "flex", padding: "10px 10px 5px 15px" }}>
         <div onClick={handleClick} className="feed_click">
-          <h4>댓글 {comments.comments.length}개</h4>
+          <h4>댓글 {comments?.length}개</h4>
         </div>
         <div
           onClick={handleClick}

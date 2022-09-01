@@ -19,7 +19,7 @@ import { Comment } from "../../components/feedView/Comment";
 
 export const FeedView = () => {
   const { state } = useLocation();
-  const { id, writer_profile, user_id, caption, title, comments_id } = state;
+  const { post_id, writer_profile, user_id, caption, title} = state;
   let { likes } = state;
 
   const [value, setValue] = useState("");
@@ -31,8 +31,8 @@ export const FeedView = () => {
   const queryClient = useQueryClient();
 
   const { isLoading, data } = useQuery(
-    ["comments", comments_id],
-    () => getComment(comments_id),
+    ["comments", post_id],
+    () => getComment(post_id),
     {
       onSuccess: () => {
         console.log(data);
@@ -40,9 +40,9 @@ export const FeedView = () => {
     }
   );
 
-  const commentMutate = useMutation(["comments", comments_id], addComment, {
+  const commentMutate = useMutation(["comments", post_id], addComment, {
     onSuccess: () => {
-      queryClient.invalidateQueries(["comments", comments_id]);
+      queryClient.invalidateQueries(["comments", post_id]);
     },
   });
 
@@ -66,7 +66,7 @@ export const FeedView = () => {
 
   const handleLike = async () => {
     if (!like.liked) {
-      likePost(id, likes)
+      likePost(post_id, likes)
         .then((res) => {
           likes = res.data;
           if (likes.liked_user.includes(user_id)) {
@@ -75,7 +75,7 @@ export const FeedView = () => {
         })
         .catch((err) => console.log(err));
     } else {
-      dislikePost(id, likes).then((res) => {
+      dislikePost(post_id, likes).then((res) => {
         likes = res.data;
         setLike({ liked: false, liked_user: likes.liked_user });
       });
@@ -85,7 +85,7 @@ export const FeedView = () => {
   const handleComment = (event) => {
     console.log(value);
     const para = {
-      comments_id,
+      post_id,
       value,
     };
     commentMutate.mutate(para);
@@ -234,18 +234,17 @@ export const FeedView = () => {
       <div className="commenter">댓글들</div>
       <div className="comment_list">
         {data.comments.map((comment, index) => {
-          console.log(comment);
+          
           return (
             <Comment
               key={comment._id}
               index={index}
-              comment_id={comment._id}
-              comments_id={comments_id}
+              comment_id={comment._id}              
               user_id={user_id}
               writer={comment.user}
               caption={comment.caption}
               liked_user={comment.liked_user}
-              reply={comment.reply}
+              replies={comment.replies}
             />
           );
         })}

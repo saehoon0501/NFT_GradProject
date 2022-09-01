@@ -21,7 +21,7 @@ const userSchema = new Schema({
         caption : {type:String},
         points : {type:Number},
         post_ids : [{type: Schema.Types.ObjectId, ref:`post`}],
-        comments_ids: [{type: Schema.Types.ObjectId, ref:`comment`}],
+        comment_ids: [{type: Schema.Types.ObjectId, ref:`comment`},],
         likes_ids: [{type: Schema.Types.ObjectId, ref:`like`}],
         profile_pic : {type:String}
     }
