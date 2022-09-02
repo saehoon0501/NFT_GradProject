@@ -61,6 +61,7 @@ module.exports = {
             if(!user) return res.status(400).send('user not found')
                         
             console.log('getUserComment 실행 결과', user.profile.comment_ids)
+            return res.send(user.profile.comment_ids)
         })
     }
 }

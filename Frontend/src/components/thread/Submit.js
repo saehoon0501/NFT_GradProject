@@ -12,7 +12,7 @@ import { addPost } from "../../api/FeedApi";
 
 const maxSize = 30 * 1000 * 1000;
 
-const token = window.localStorage.getItem("NFTLogin");
+const token = window.localStorage.getItem("accessToken");
 const baseURL = "http://localhost:4000";
 
 const uploadURL = (file) => {
