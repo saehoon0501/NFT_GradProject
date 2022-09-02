@@ -8,9 +8,6 @@ import { Button } from "@mui/material";
 export const Reply = ({
   user_id,
   comment_id,
-  comments_id,
-  comment_index,
-  reply_index,
   writer,
   caption,
   liked_user,
@@ -53,7 +50,7 @@ export const Reply = ({
 
   const handleLike = () => {
     if (!like.liked) {
-      likeReply(comments_id, comment_index, reply_index).then((res) => {
+      likeReply(comment_id).then((res) => {
         console.log(res.data.length);
         if (res.data.includes(user_id)) {
           setLike({ liked: true, liked_user: res.data });
@@ -65,7 +62,7 @@ export const Reply = ({
   const handleReply = (event) => {
     event.preventDefault();
     console.log(value);
-    addReply(comments_id, value, comment_index).then((res) => {
+    addReply(comment_id, value).then((res) => {
       console.log(res.data);
       setReplyList(res.data);
     });
@@ -73,7 +70,7 @@ export const Reply = ({
   };
 
   const handleDelete = () => {
-    delReply(comments_id, comment_index, reply_index).then((res) => {
+    delReply(comment_id).then((res) => {
       console.log(res.data);
       setReplyList(res.data);
     });

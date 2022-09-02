@@ -41,7 +41,9 @@ const commentSchema = new Schema({
     liked_user:[{
         type: Schema.Types.ObjectId, ref:'user'  
     }],
-    replies:[this]    
+    replies:[{
+        type: Schema.Types.ObjectId, ref:'comment'
+    }] 
 })
 
 module.exports.Post = postDb.model('post', postSchema);

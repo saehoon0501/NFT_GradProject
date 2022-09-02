@@ -169,7 +169,7 @@ export const FeedView = () => {
         {/* INFO */}
         <div style={{ display: "flex", padding: "10px 10px 5px 15px" }}>
           <div>
-            <h4>댓글 {data.comments.length}개</h4>
+            <h4>댓글 {data.length}개</h4>
           </div>
           <div
             className="clickable"
@@ -233,7 +233,7 @@ export const FeedView = () => {
       </div>
       <div className="commenter">댓글들</div>
       <div className="comment_list">
-        {data.comments.map((comment, index) => {
+        {data?.map((comment, index) => {
           
           return (
             <Comment

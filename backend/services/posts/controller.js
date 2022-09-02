@@ -185,17 +185,22 @@ module.exports={
 
     getComment: async(req,res,next)=>{
         const post_id = req.params.post_id;
-        console.log(req.params);
         
-        const result = await Post.findById(`${post_id}`).populate({
-            path: 'comments',
+        const result = await Post.findById(`${post_id}`).lean().exec()
+        Promise.all(result.comments.map(async (comment)=>{
+           const result = await Comment.findById(`${comment}`).populate('user','',User).populate({
+            path:'replies',
+            model:Comment,
             populate:{
-                path: 'user',
-                model: User
+                path:'user',
+                model:User
             }
-        })
-        .lean().exec();        
-        return res.send(result);
+           })
+           return result
+        })).then((result)=>{
+            console.log('getComment 실행', result)
+            return res.send(result);
+        })               
     },
 
     addComment: async (req,res,next)=>{
@@ -212,6 +217,7 @@ module.exports={
         const comment = new Comment({
             user:user._id,
             caption:context,
+            replies:[]
         })        
 
         await Promise.all([User.updateOne({publicAddr:publicAddress},{$addToSet:{'profile.comment_ids':comment._id}}),
@@ -300,25 +306,41 @@ module.exports={
 
     addReply : async (req, res, next)=>{
         const publicAddress = res.locals.decoded.publicAddress;
-        const {commentIndex, context} = req.body;
+        const {context} = req.body;
         const comment_id = req.params.comment_id;
 
-        if(!context) return res.status(400).send('invalid context');
+        if(!context) return res.status(400).send('invalid context')
 
-        await User.findOne({publicAddr:publicAddress})
-            .then((user)=>{            
-            Comment.findOne({_id:comment_id})
-             .then( async (comment)=>{            
-            comment.comments[commentIndex].reply.push({user:user.id, caption: context,});
-            user.profile.comments_ids.addToSet(comment.comments[commentIndex].reply[comment.comments[commentIndex].reply.length-1].id)
+        let user = await User.findOne({publicAddr:publicAddress})
                         
-            user.save()                        
-            comment.save().then(async ()=>{
-                const result = await Comment.findById(`${comment_id}`).populate('comments.reply.user','',User).exec();
-                return res.send(result.comments[commentIndex].reply);
-            })                        
-        }).catch(err=>{return res.send(err)})
+        let comment = await Comment.findOne({_id:comment_id})
+            
+        const newComment = new Comment({
+                user:user._id,
+                caption:context,
+                replies:null
         })
+        
+        console.log('작성된 답글', newComment)        
+        comment.replies.push(newComment._id)                        
+        comment.markModified('replies')
+        user.profile.comment_ids.addToSet(newComment._id)
+        
+        await Promise.all([newComment.save(),user.save(),comment.save()])
+                
+        console.log(comment.replies)
+        const result = await Comment.findById(`${comment_id}`)
+        .populate({
+            path:'replies',
+            model: Comment,
+            populate:{
+                path:'user',
+                model:User
+            }
+        }).lean().exec();
+            
+            console.log('addReply 실행', result)
+            // return res.send(result.replies)                    
     },
 
     likeReply: (req,res,next)=>{

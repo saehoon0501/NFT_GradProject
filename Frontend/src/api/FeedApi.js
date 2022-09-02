@@ -85,10 +85,9 @@ export const likeReply = async (comment_id, commentIndex, replyIndex)=>{
     return response
 }
 
-export const addReply = async (comment_id, context, commentIndex) => {
+export const addReply = async (comment_id, context) => {
     const response = await feedApi.post(`/comment/reply/${comment_id}`,{
         context,
-        commentIndex,        
     })
 
     return response

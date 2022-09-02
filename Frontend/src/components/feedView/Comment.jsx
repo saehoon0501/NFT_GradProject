@@ -47,7 +47,7 @@ export const Comment = ({
     if (
       writer._id === user_id &&
       isOwner === false &&
-      writer.profile.comments_ids.includes(comment_id)
+      writer.profile.comment_ids.includes(comment_id)
     ) {
       setIsOwner(true);
     }
@@ -93,10 +93,10 @@ export const Comment = ({
   return (
     <div style={{ display: "block" }}>
       <div className="commenter">
-        <img src={writer.profile.profile_pic} alt="comment_profilePic" />
+        <img src={writer?.profile.profile_pic} alt="comment_profilePic" />
         <div style={{ display: "block" }}>
           <div style={{ display: "flex" }}>
-            <h5>{writer.profile.username}</h5>
+            <h5>{writer?.profile.username}</h5>
             <h5> · </h5>
             <h5>n 시간 전</h5>
           </div>
@@ -212,12 +212,11 @@ export const Comment = ({
       ) : (
         <div></div>
       )}
-      {replyList.map((replyItem, reply_index) => {
+      {/* {replyList.map((replyItem) => {
         return (
           <Reply            
             comment_id={comment_id}
-            comment_index={index}
-            reply_index={reply_index}
+            comment_index={index}            
             user_id={user_id}
             writer={replyItem.user}
             caption={replyItem.caption}
@@ -225,7 +224,7 @@ export const Comment = ({
             setReplyList={setReplyList}
           />
         );
-      })}
+      })} */}
     </div>
   );
 };
