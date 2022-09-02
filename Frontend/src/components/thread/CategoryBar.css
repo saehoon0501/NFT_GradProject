@@ -1,0 +1,15 @@
+.categoryBar_wrapper {
+  position: absolute;
+  padding: 10px;
+  border: 1px solid lightgray;
+  width: 180px;
+  height: 210px;
+  text-align: left;
+  left: -200px;
+}
+
+@media (max-width: 915px) {
+  .categoryBar_wrapper {
+    display: none;
+  }
+}

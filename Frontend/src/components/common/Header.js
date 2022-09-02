@@ -22,15 +22,16 @@ export const Header = (props) => {
   return (
     <>
       {!isAuth && (
-        <div className="wrapper">
+        <div className="header_wrapper">
           <img
+            className="header_homeBtn"
             src=" https://www.instagram.com/static/images/web/mobile_nav_type_logo.png/735145cfe0a4.png"
             alt="Instagram original logo"
             onClick={showSns}
           />
           <img
             onClick={showProfile}
-            className="profile_img"
+            className="header_profileBtn"
             src={user?.profile.profile_pic}
             alt="profile picture"
           />

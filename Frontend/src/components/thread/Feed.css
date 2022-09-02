@@ -1,118 +1,126 @@
-.feed {
-    background-color: white;
-    width: 500px;
-    max-height: 600px;
-    margin-bottom: 20px;
-    display: inline-block;
-    overflow: hidden;
-  }
+.feed_wrapper {
+  background-color: white;
+  max-height: 600px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border: 1px solid lightgray;
+  border-radius: 5px;
+  width: 500px;
+}
 
-  .feed_image img{
-    width: 100%;
-    border-radius: 10px;
-    margin: auto;
-  }
+.feed_header {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 10px;
+}
 
-  .post__timeline{
-    position: relative;
-    margin-top: 10px;
-    font-weight: normal;
-    height: 10%;
-    padding: 0px 10px;
-    text-align: right;
-  }
-  .feed_header {
-    display: flex;
-    align-items: center;
-    padding: 5px 10px;
-    background-color: white;
-  }
-  .feed_click :hover{
-    cursor: pointer;
-  }
+.feed_user_info {
+  display: flex;
+}
 
-  .feed_avatar {
-    border-radius: 10px;
-    margin-top: 5px;
-    margin-right: 10px;
-    width: 54px;
-    height: 54px;
-    object-fit: contain;
-  }
+.feed_user_img {
+  width: 60px;
+  height: 60px;
+  border-radius: 10px;
+}
 
-  .ql-editor img{
-    max-width: 100%;
-    border-radius: 5px;
-    text-align: center;
-  }
+.feed_name_and_title {
+  margin-left: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+}
 
-  .feed_avatar img{
-    width: 100% !important;
-    height: 100% !important;
-    border-radius: 10px;
-  }
+.feed_date {
+  margin-right: 10px;
+  margin-top: 10px;
+}
 
-  .post_header h3{
-    position: relative;
-    margin-top: -10px;
-  }
+.ql-editor img {
+  max-width: 100%;
+  border-radius: 5px;
+  text-align: center;
+}
 
-  .timeline {
-    margin: 0 auto;
-    max-width: 500px;
-    padding: 20px;
-  }
+.feed_menu {
+  display: flex;
+  padding: 10px 10px 5px 15px;
+}
 
-  .clickable{
-    cursor: pointer;
-  }
+.feed_menu_comments {
+  cursor: pointer;
+  display: flex;
+}
 
-  .post_headerinfo{
-    position: relative; 
-    marginTop: -10px;
-    marginLeft: 20px;
-    marginRight: 20px;
-  }
+.feed_menu_like {
+  display: flex;
+}
 
-  .icon_anime1 :hover{
-    cursor: pointer;
-  }
+.feed_like_icon {
+  margin-top: -3px;
+  margin-left: 10px;
+  cursor: pointer;
+}
 
-  .icon_anime2 {
-    cursor: pointer;
-    animation: zoomin_out 0.4s;
-    animation-fill-mode: forwards;
-  }
+.clickable {
+  cursor: pointer;
+}
 
-  @keyframes zoomin_out {
-    0%{
-      transform: scale(1.2,1.2);
-    }
-    50%{
-      transform: scale(1.1,1.1);
-    }
-    100%{
-      transform: scale(1,1);
-    }
-  }
+.post_headerinfo {
+  position: relative;
+  margin-top: -10px;
+  margin-left: 20px;
+  margin-right: 20px;
+}
 
-  @keyframes zoomout_in {
-    100%{
-      transform: scale(1.2,1.2);
-    }
-    50%{
-      transform: scale(1.1,1.1);
-    }
-    0%{
-      transform: scale(1,1);
-    }
-  }
+.icon_anime1 :hover {
+  cursor: pointer;
+}
 
-  div::-webkit-scrollbar {
-    display: none;
-  }
+.icon_anime2 {
+  cursor: pointer;
+  animation: zoomin_out 0.4s;
+  animation-fill-mode: forwards;
+}
 
-  textarea::-webkit-scrollbar {
-    display: none;
+@keyframes zoomin_out {
+  0% {
+    transform: scale(1.2, 1.2);
   }
-  
+  50% {
+    transform: scale(1.1, 1.1);
+  }
+  100% {
+    transform: scale(1, 1);
+  }
+}
+
+@keyframes zoomout_in {
+  100% {
+    transform: scale(1.2, 1.2);
+  }
+  50% {
+    transform: scale(1.1, 1.1);
+  }
+  0% {
+    transform: scale(1, 1);
+  }
+}
+
+div::-webkit-scrollbar {
+  display: none;
+}
+
+textarea::-webkit-scrollbar {
+  display: none;
+}
+
+@media (max-width: 915px) {
+  .feed_wrapper {
+    width: 90vw;
+    height: 30vh;
+  }
+}

@@ -1,4 +1,4 @@
-.wrapper {
+.header_wrapper {
   position: sticky;
   top: 0;
   z-index: 9999;
@@ -12,9 +12,14 @@
   max-width: 1120px;
   margin: 0 auto;
   padding: 0 40px;
+  background-color: white;
 }
 
-.profile_img {
+.header_homeBtn {
+  cursor: pointer;
+}
+
+.header_profileBtn {
   width: 40px;
   height: 40px;
   border-radius: 10px;
