@@ -1,17 +1,12 @@
 import { useRef, useState, useMemo } from "react";
-import { Box, Button, Switch } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import "./Submit.css";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import axios from "axios";
 import { addPost } from "../../api/FeedApi";
 
-// import emoji from './images/emoji.png';
-// import image_s from './images/image-s.png';
-// import gif from './images/gif2.png';
-
 const maxSize = 30 * 1000 * 1000;
-
 const token = window.localStorage.getItem("accessToken");
 const baseURL = "http://localhost:4000";
 
@@ -107,99 +102,66 @@ export const Submit = ({ user, setPosts }) => {
   };
 
   return (
-    <Box>
-      <div className={"submit_wrapper"}>
-        {/* {(open[0].isActive)?
-                <div>
-                    <div style={{borderColor:"black", marginTop:"10px",width:"100%", height:"30px", 
-                        borderBottom: "solid 1px lightgray", alignItems:"center", justifyContent:"center"}}>
-                        {selectedImage==null?<h3 >이미지 추가</h3>:<div><span style={{marginRight:"10px"}} class="close" 
-                        onClick={handleImage}>&times;</span>
-                        <h3 style={{marginLeft:'30px'}}>이미지 추가</h3></div>}                        
-                    </div>                               
-                {selectedImage==null?<div>
-                    <input                                                
-                        type="file"
-                        accept='.jpg, .png'
-                        class="modal-input"
-                        onChange={(event)=>{
-                            setImage(event.target.files[0]);
-                        }}
-                    />
-                </div>
-                :
-                <div className='submit_insta'>                                                                                  
-                    <img src={`${URL.createObjectURL(selectedImage)}`} alt="selectedImage"/>                                                                
-                </div>
-                }
-                     </div>
-                    :<div></div>
-                    } */}
-        <div className={"submit_header"}>
-          <div className="submit_profilePic">
-            <img
-              src={user?.profile.profile_pic}
-              alt="profile picture"
-              style={{ width: "45px", height: "45px", borderRadius: "10px" }}
-            />
-          </div>
-          <div
-            onBlur={(e) => {
-              setTitle(e.currentTarget.textContent);
-            }}
-            onClick={open[0].isActive ? undefined : handleClick}
-            contentEditable="true"
-            data-ph={open[0].isActive ? "Title" : "게시물 작성"}
-            data-index="0"
-            className="submit_title"
-          ></div>
+    <div className="submit_wrapper">
+      <div className="submit_header">
+        <div className="submit_profilePic">
+          <img
+            src={user?.profile.profile_pic}
+            alt="profile picture"
+            style={{ width: "45px", height: "45px", borderRadius: "10px" }}
+          />
         </div>
-
-        <div>
-          {open[0].isActive ? (
-            <div style={{ marginTop: "5px" }}>
-              <ReactQuill
-                ref={quill}
-                modules={qull_modules}
-                placeholder={"Text (Optional)"}
-                theme="snow"
-              />
-              <div style={{ display: "flex", margin: "5px 0px" }}></div>
-            </div>
-          ) : (
-            <div></div>
-          )}
-          <div
-            className={open[0].isActive ? "submit_switch2" : "submit_switch"}
-          >
-            {/* 스타일                     */}
-            {/* <Switch onChange={handleClick} data-index='1'/> */}
-            <Button
-              onClick={handleClick}
-              data-index="0"
-              sx={{
-                backgroundColor: "lightgray",
-                margin: "10px 10px",
-                padding: "0 15px",
-                color: "white",
-              }}
-            >
-              취소
-            </Button>
-            <Button
-              onClick={handleSubmit}
-              sx={{
-                backgroundColor: "#26a7de",
-                margin: "10px 0px",
-                padding: "0 15px",
-                color: "white",
-              }}
-            >
-              완료
-            </Button>
+        <div
+          onBlur={(e) => {
+            setTitle(e.currentTarget.textContent);
+          }}
+          onClick={open[0].isActive ? undefined : handleClick}
+          contentEditable="true"
+          data-ph={open[0].isActive ? "Title" : "게시물 작성"}
+          data-index="0"
+          className="submit_title"
+        ></div>
+      </div>
+      <div>
+        {open[0].isActive ? (
+          <div style={{ marginTop: "5px" }}>
+            <ReactQuill
+              ref={quill}
+              modules={qull_modules}
+              placeholder={"Text (Optional)"}
+              theme="snow"
+            />
+            <div style={{ display: "flex", margin: "5px 0px" }}></div>
           </div>
+        ) : (
+          <div></div>
+        )}
+        <div className={open[0].isActive ? "submit_switch2" : "submit_switch"}>
+          <Button
+            onClick={handleClick}
+            data-index="0"
+            sx={{
+              backgroundColor: "lightgray",
+              margin: "10px 10px",
+              padding: "0 15px",
+              color: "white",
+            }}
+          >
+            취소
+          </Button>
+          <Button
+            onClick={handleSubmit}
+            sx={{
+              backgroundColor: "#26a7de",
+              margin: "10px 0px",
+              padding: "0 15px",
+              color: "white",
+            }}
+          >
+            완료
+          </Button>
         </div>
       </div>
-    </Box>
+    </div>
   );
 };
