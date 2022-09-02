@@ -1,0 +1,17 @@
+.categoryBar_wrapper {
+  display: block;
+  position: fixed;
+  padding: 10px;
+  border: 1px solid lightgray;
+  width: 180px;
+  height: 210px;
+  text-align: left;
+  top: 75px;
+  margin: 0 -200px;
+}
+
+@media (max-width: 768px) {
+  .categoryBar_wrapper {
+    display: none;
+  }
+}

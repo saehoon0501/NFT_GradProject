@@ -1,0 +1,40 @@
+.main_wrapper {
+  width: 100%;
+  max-width: 100%;
+  min-height: 100vh;
+  text-align: center;
+  margin: 0 auto;
+  max-width: 500px;
+  margin-top: 20px;
+}
+
+.main_icons_wrapper {
+  display: flex;
+  border: 1px solid lightgray;
+  padding: 10px;
+  border-radius: 5px;
+  width: 500px;
+  margin-bottom: 10px;
+}
+
+.main_filter_icon {
+  background-color: #e3e3e3;
+  color: #0095f6;
+}
+
+.main_default_icon {
+  cursor: pointer;
+  border: 1px solid lightgray;
+  border-radius: 10px;
+  padding: 6px;
+  margin: 0 5px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+@media (max-width: 768px) {
+  .main_icons_wrapper {
+    width: 65vw;
+  }
+}

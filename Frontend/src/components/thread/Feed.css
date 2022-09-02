@@ -1,118 +1,117 @@
 .feed {
-    background-color: white;
-    width: 500px;
-    max-height: 600px;
-    margin-bottom: 20px;
-    display: inline-block;
-    overflow: hidden;
-  }
+  background-color: white;
+  width: 500px;
+  max-height: 600px;
+  margin-bottom: 20px;
+  display: inline-block;
+  overflow: hidden;
+}
 
-  .feed_image img{
-    width: 100%;
-    border-radius: 10px;
-    margin: auto;
-  }
+.feed_image img {
+  width: 100%;
+  border-radius: 10px;
+  margin: auto;
+}
 
-  .post__timeline{
-    position: relative;
-    margin-top: 10px;
-    font-weight: normal;
-    height: 10%;
-    padding: 0px 10px;
-    text-align: right;
-  }
-  .feed_header {
-    display: flex;
-    align-items: center;
-    padding: 5px 10px;
-    background-color: white;
-  }
-  .feed_click :hover{
-    cursor: pointer;
-  }
+.post__timeline {
+  position: relative;
+  margin-top: 10px;
+  font-weight: normal;
+  height: 10%;
+  padding: 0px 10px;
+  text-align: right;
+}
+.feed_header {
+  display: flex;
+  align-items: center;
+  padding: 5px 10px;
+  background-color: white;
+}
+.feed_click :hover {
+  cursor: pointer;
+}
 
-  .feed_avatar {
-    border-radius: 10px;
-    margin-top: 5px;
-    margin-right: 10px;
-    width: 54px;
-    height: 54px;
-    object-fit: contain;
-  }
+.feed_avatar {
+  border-radius: 10px;
+  margin-top: 5px;
+  margin-right: 10px;
+  width: 54px;
+  height: 54px;
+  object-fit: contain;
+}
 
-  .ql-editor img{
-    max-width: 100%;
-    border-radius: 5px;
-    text-align: center;
-  }
+.ql-editor img {
+  max-width: 100%;
+  border-radius: 5px;
+  text-align: center;
+}
 
-  .feed_avatar img{
-    width: 100% !important;
-    height: 100% !important;
-    border-radius: 10px;
-  }
+.feed_avatar img {
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: 10px;
+}
 
-  .post_header h3{
-    position: relative;
-    margin-top: -10px;
-  }
+.post_header h3 {
+  position: relative;
+  margin-top: -10px;
+}
 
-  .timeline {
-    margin: 0 auto;
-    max-width: 500px;
-    padding: 20px;
-  }
+.timeline {
+  margin: 0 auto;
+  max-width: 500px;
+  padding: 20px;
+}
 
-  .clickable{
-    cursor: pointer;
-  }
+.clickable {
+  cursor: pointer;
+}
 
-  .post_headerinfo{
-    position: relative; 
-    marginTop: -10px;
-    marginLeft: 20px;
-    marginRight: 20px;
-  }
+.post_headerinfo {
+  position: relative;
+  margintop: -10px;
+  marginleft: 20px;
+  marginright: 20px;
+}
 
-  .icon_anime1 :hover{
-    cursor: pointer;
-  }
+.icon_anime1 :hover {
+  cursor: pointer;
+}
 
-  .icon_anime2 {
-    cursor: pointer;
-    animation: zoomin_out 0.4s;
-    animation-fill-mode: forwards;
-  }
+.icon_anime2 {
+  cursor: pointer;
+  animation: zoomin_out 0.4s;
+  animation-fill-mode: forwards;
+}
 
-  @keyframes zoomin_out {
-    0%{
-      transform: scale(1.2,1.2);
-    }
-    50%{
-      transform: scale(1.1,1.1);
-    }
-    100%{
-      transform: scale(1,1);
-    }
+@keyframes zoomin_out {
+  0% {
+    transform: scale(1.2, 1.2);
   }
+  50% {
+    transform: scale(1.1, 1.1);
+  }
+  100% {
+    transform: scale(1, 1);
+  }
+}
 
-  @keyframes zoomout_in {
-    100%{
-      transform: scale(1.2,1.2);
-    }
-    50%{
-      transform: scale(1.1,1.1);
-    }
-    0%{
-      transform: scale(1,1);
-    }
+@keyframes zoomout_in {
+  100% {
+    transform: scale(1.2, 1.2);
   }
+  50% {
+    transform: scale(1.1, 1.1);
+  }
+  0% {
+    transform: scale(1, 1);
+  }
+}
 
-  div::-webkit-scrollbar {
-    display: none;
-  }
+div::-webkit-scrollbar {
+  display: none;
+}
 
-  textarea::-webkit-scrollbar {
-    display: none;
-  }
-  
+textarea::-webkit-scrollbar {
+  display: none;
+}

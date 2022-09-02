@@ -3,21 +3,11 @@ import illustrate from "../../assets/illustrate.png";
 import chat from "../../assets/chat.png";
 import nft from "../../assets/nft.png";
 
+import "./CategoryBar.css";
+
 export const CategoryBar = () => {
   return (
-    <div
-      style={{
-        display: "block",
-        position: "fixed",
-        padding: "10px",
-        border: "1px solid lightgray",
-        width: "180px",
-        height: "210px",
-        textAlign: "left",
-        top: "75px",
-        margin: "0 -200px",
-      }}
-    >
+    <div className="categoryBar_wrapper">
       <div style={{ margin: "0 0 10px 0" }}>
         <span>Feeds</span>
       </div>
@@ -29,14 +19,6 @@ export const CategoryBar = () => {
           <span>Home</span>
         </div>
       </div>
-      {/* <div style={{display:"flex", margin:"0 0 5px 5px"}}>
-            <div>
-            <img src={star} alt="home_icon" />
-            </div>
-            <div style={{position:"relative", margin:"4px 0 0 4px"}}>
-            <span>Popular</span>
-            </div>
-        </div> */}
       <div style={{ margin: "10px 0 10px 0" }}>
         <span>Explore</span>
       </div>

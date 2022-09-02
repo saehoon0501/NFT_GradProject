@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import "./App.css";
 import { Header } from "./components/common/Header";
 import { init } from "./components/login/Web3Client";
-import { FeedView, Login, Profile, Thread } from "./pages";
+import { FeedView, Login, Profile, Main } from "./pages";
 
 const App = () => {
   useEffect(() => {
@@ -15,7 +15,7 @@ const App = () => {
     <Router>
       <Header />
       <Routes>
-        <Route exact path="/" element={<Thread />} />
+        <Route exact path="/" element={<Main />} />
         <Route exact path="/login" element={<Login />} />
         <Route exact path="/profile" element={<Profile />} />
         <Route exact path="/post/:post_id" element={<FeedView />} />
