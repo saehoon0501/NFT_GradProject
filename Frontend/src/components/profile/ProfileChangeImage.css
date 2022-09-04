@@ -33,24 +33,9 @@
   margin: 15% auto; /* 15% from the top and centered */
   padding: 20px;
   border: 1px solid #888;
-  max-width: 855px;
-  width: 855px !important; /* Could be more or less, depending on screen size */
+  width: 855px; /* Could be more or less, depending on screen size */
   height: 855px;
   padding: 0;
-  transition: all 0.25s linear;
-}
-
-.modal-content2 {
-  border-radius: 2ex;
-  background-color: #fefefe;
-  margin: 15% auto; /* 15% from the top and centered */
-  padding: 20px;
-  border: 1px solid #888;
-  max-width: 1195px;
-  width: 1343px !important; /* Could be more or less, depending on screen size */
-  height: 855px;
-  padding: 0;
-  transition: all 0.25s linear;
 }
 
 .modal-menu {
@@ -80,13 +65,22 @@
   margin-left: 30px;
 }
 
-.modal-input {
-  margin: 45% auto;
-  display: block;
-  width: 68px;
-}
-
 .modal-nfts-imgs {
   display: flex;
   margin: 32px 0px;
+}
+
+.modal-nft-img {
+  width: 250px;
+  border-radius: 20px;
+}
+
+@media (max-width: 915px) {
+  .modal-content {
+    width: 90vw;
+  }
+
+  .modal-nft-img {
+    width: 30vw;
+  }
 }
