@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Button } from "@mui/material";
 import parse from "html-react-parser";
 import "react-quill/dist/quill.core.css";
 import { useLocation } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "react-query";
+
 import "./style.css";
 
 import like_before from "../../assets/like-before.png";
@@ -19,7 +19,7 @@ import { Comment } from "../../components/feedView/Comment";
 
 export const FeedView = () => {
   const { state } = useLocation();
-  const { post_id, writer_profile, user_id, caption, title} = state;
+  const { post_id, writer_profile, user_id, caption, title } = state;
   let { likes } = state;
 
   const [value, setValue] = useState("");
@@ -101,113 +101,39 @@ export const FeedView = () => {
   }
 
   return (
-    <div>
-      <div
-        className="feedview"
-        style={{
-          display: "block",
-          border: "1px solid lightgray",
-          borderRadius: "5px",
-        }}
-      >
-        <div className="" style={{ width: "500px" }}>
-          <div className="feedview_header" style={{ display: "block" }}>
-            <div style={{ display: "flex" }}>
-              <div className="feed_avatar">
-                <img
-                  src={writer_profile.profile_pic}
-                  alt="profile picture"
-                  style={{
-                    width: "40px",
-                    height: "40px",
-                    borderRadius: "10px",
-                  }}
-                />
-              </div>
-              <div
-                style={{
-                  position: "relative",
-                  marginLeft: "5px",
-                  display: "flex",
-                  marginTop: "10px",
-                }}
-              >
-                <div>
-                  <h3>{writer_profile.username}</h3>
-                </div>
-                <div className="post__text">
-                  <span>n일 전</span>
-                </div>
-              </div>
-            </div>
+    <div className="feedview-wrapper">
+      <div className="feedview-content">
+        <div className="feedview-header">
+          <img
+            className="feedview-header-img"
+            src={writer_profile.profile_pic}
+            alt="profile picture"
+          />
+          <div className="feedview-header-name">
+            <p>{writer_profile.username}</p>
+            <span>{title}</span>
           </div>
-          <div style={{ maxWidth: "700px", width: "700px" }}>
-            {/* Title */}
-            <div
-              style={{
-                textAlign: "left",
-                padding: "10px 10px 10px 80px",
-                position: "relative",
-                marginTop: "-40px",
-              }}
-            >
-              <h2 style={{ lineHeight: "22px" }}>{title}</h2>
-            </div>
-            {/* Content */}
-            <div
-              className="ql-editor"
-              style={{
-                textAlign: "left",
-                padding: "10px 10px 10px 10px",
-                width: "100%",
-              }}
-            >
-              {parse(caption)}
-            </div>
-          </div>
+          <span className="feedview-header-date">n일 전</span>
         </div>
+        {/* Content */}
+        <div className="ql-editor">{parse(caption)}</div>
         {/* INFO */}
-        <div style={{ display: "flex", padding: "10px 10px 5px 15px" }}>
-          <div>
+        <div className="feedview-menus">
+          <div className="feedview-menu">
             <h4>댓글 {data.length}개</h4>
-          </div>
-          <div
-            className="clickable"
-            style={{ position: "relative", margin: "-3px 5px 0 5px" }}
-          >
             <img src={comment} />
           </div>
-          <div>
+          <div className="feedview-menu">
             <h4>좋아요 {like.liked_user.length}개</h4>
-          </div>
-          {like.liked ? (
-            <div
-              className="clickable_icon icon_anime2"
-              style={{
-                position: "relative",
-                marginTop: "-3px",
-                marginLeft: "10px",
-              }}
-            >
+            {like.liked ? (
               <img src={like_after} onClick={handleLike} />
-            </div>
-          ) : (
-            <div
-              className="clickable"
-              style={{
-                position: "relative",
-                marginTop: "-3px",
-                marginLeft: "10px",
-              }}
-            >
+            ) : (
               <img src={like_before} onClick={handleLike} />
-            </div>
-          )}
+            )}
+          </div>
         </div>
-        <div className="comment">
-          <p>
-            <h4>댓글 쓰기</h4>
-          </p>
+        <div className="feedview-comment">
+          <h4>댓글 쓰기</h4>
           <textarea
             ref={textareaRef}
             value={value}
@@ -215,31 +141,22 @@ export const FeedView = () => {
               setValue(e.target.value);
             }}
             placeholder="매너있는 댓글 작성 부탁드립니다."
-          ></textarea>
+          />
           <div style={{ textAlign: "right" }}>
-            <Button
-              onClick={handleComment}
-              sx={{
-                backgroundColor: "#26a7de",
-                margin: "5px 0px 0px 0px",
-                padding: "0 15px",
-                color: "white",
-              }}
-            >
+            <button className="feedview-comment-btn" onClick={handleComment}>
               완료
-            </Button>
+            </button>
           </div>
         </div>
       </div>
       <div className="commenter">댓글들</div>
       <div className="comment_list">
         {data?.map((comment, index) => {
-          
           return (
             <Comment
               key={comment._id}
               index={index}
-              comment_id={comment._id}              
+              comment_id={comment._id}
               user_id={user_id}
               writer={comment.user}
               caption={comment.caption}
