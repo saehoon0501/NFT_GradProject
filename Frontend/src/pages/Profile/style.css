@@ -1,86 +1,69 @@
-.profile-container{
-    margin: 2% auto;
+.profile-container {
+  margin: 24px 0px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-.profile-wrapper{
-    max-width: 975px;
-    display: flex;
-    justify-content: center;
-    margin: 0 auto;
+.profile-wrapper {
+  width: 900px;
+  display: flex;
 }
 
-.profile-info{
-    margin: 0 2%;
+.profile-post-title {
+  display: flex;
+  margin: 2% auto;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 700;
 }
 
-.profile-about{
-    text-align: left;
+.profile-post-wrapper {
+  border-top: 1px solid lightgray;
+  margin: 24px 0px;
+  width: 90vw;
 }
 
-.profile-text{
-    margin: 8%;
-    margin-left: 0;
-    margin-right: 8%;
-    display: flex;
+.profile-post {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: left;
+  margin: 0 auto;
 }
 
-.profile-text h3{
-    margin-left: 0;
-    margin-right: 8%;
-    text-align: left;
+.profile-post-img {
+  width: 270px;
+  margin: 0px 10px;
 }
 
-.profile-post h4{
-    display: flex;
-    margin: 2% auto;
-    justify-content: center;
+.clickable {
+  cursor: pointer;
 }
 
-.profile-post{
-    display: flex;
-    text-align: left;
-    margin: 0 auto;
+textarea::placeholder {
+  color: lightgrey;
+  font-size: 20px;
 }
 
-.profile-post img{
-    margin: 0 1.7%;
+textarea {
+  color: black;
+  font-size: 20px;
 }
 
-.clickable{
-    cursor: pointer;
-}
+@media (max-width: 915px) {
+  .profile-wrapper {
+    width: 100vw;
+    flex-direction: column;
+  }
 
-.clickable-img:hover{
-    cursor: pointer;
-    transition: 0.5s;
-    opacity: 1;
-    filter: grayscale(100%);
-}
+  .profile-post {
+    flex-direction: column;
+  }
 
-.clickable-img:hover .description{
-    opacity: 1;
-    font-size: 2em;
-    color: white;
-}
-
-.description{
- position: relative;
- top: -250px;
- font-size: 0em;
- opacity: 0;
-}
-
-.clickable-input{
-cursor: pointer;
-font-size:16px;
-padding:0 16px; 
-margin:auto 5%;
-background-color:white;
-border:0; 
-border-radius:2pt;
-box-shadow:0 0 0 1px lightgray;
-}
-
-.clickable-input:hover{
-    background-color: skyblue;
+  .profile-post-img {
+    width: 60vw;
+    margin: 10px 0px;
+  }
 }

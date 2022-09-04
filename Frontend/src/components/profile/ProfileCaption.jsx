@@ -1,10 +1,13 @@
 import { useRef, useState } from "react";
+
+import "./ProfileCaption.css";
+
 import { updateUser } from "../../api/UserApi";
 
 export const ProfileCaption = ({ userProfile }) => {
   const [caption, setCaption] = useState(`${userProfile.caption}`);
   const [profileName, setProfileName] = useState(`${userProfile.username}`);
-  const [edit, setEdit] = useState(true);
+  const [editProfile, setEditProfile] = useState(true);
 
   const nameRef = useRef(profileName);
   const captionRef = useRef(caption);
@@ -12,76 +15,55 @@ export const ProfileCaption = ({ userProfile }) => {
   const update = async () => {
     nameRef.current = profileName;
     captionRef.current = caption;
-
     updateUser(caption, profileName).then((res) => {
       console.log(res.data);
     });
-
-    setEdit(true);
+    setEditProfile(true);
   };
 
   const updateNot = () => {
     setProfileName(nameRef.current);
     setCaption(captionRef.current);
-    setEdit(true);
+    setEditProfile(true);
   };
 
   return (
-    <div
-      className="profile-info profile-about"
-      style={{ width: "400px", padding: "1% 5%" }}
-    >
-      <div style={{ width: "100%", fontSize: "1.3em" }}>
-        {edit ? (
-          <div style={{ display: "flex", width: "100%" }}>
-            <div
-              style={{
-                wordWrap: "break-word",
-                width: "100%",
-                marginRight: "auto",
-              }}
-            >
-              <h3>{nameRef.current}</h3>
-            </div>
+    <div className="profile-caption-wrapper">
+      {editProfile ? (
+        <div>
+          <div className="profile-about-wrapper">
+            <h3>{nameRef.current}</h3>
             <input
-              className="clickable-input"
+              className="profile-edit-btn"
               onClick={() => {
-                setEdit(false);
+                setEditProfile(false);
               }}
               type="button"
               value="프로필 편집"
             />
           </div>
-        ) : (
-          <div style={{ display: "block", width: "100%" }}>
-            사용자 이름
-            <textarea
-              onChange={(event) => {
-                setProfileName(event.target.value);
-              }}
-              value={profileName}
-              style={{
-                width: "100%",
-                wordWrap: "break-word",
-                fontSize: "1.1em",
-                fontWeight: "bolder",
-                resize: "none",
-                padding: "2%",
-              }}
-            />
+          <div className="profile-text">
+            <h3>게시물 {userProfile.post_ids.length}</h3>
+            <h3 style={{ color: "blue" }}>RGB {userProfile.points}</h3>
           </div>
-        )}
-
-        <div className="profile-text">
-          <h3>게시물 {userProfile.post_ids.length}</h3>
-          <h3 style={{ color: "blue" }}>RGB {userProfile.points}</h3>
         </div>
-      </div>
-
-      <div style={{ fontSize: "1.3em" }}>
-        {edit ? (
-          <span>{captionRef.current}</span>
-        ) : (
+      ) : (
+        <div style={{ display: "block", width: "100%" }}>
+          사용자 이름
+          <textarea
+            onChange={(event) => {
+              setProfileName(event.target.value);
+            }}
+            value={profileName}
+            style={{
+              width: "100%",
+              wordWrap: "break-word",
+              fontSize: "1.1em",
+              fontWeight: "bolder",
+              resize: "none",
+              padding: "2%",
+            }}
+          />
           <div>
             소개
             <textarea
@@ -105,21 +87,21 @@ export const ProfileCaption = ({ userProfile }) => {
               }}
             >
               <input
-                className=" clickable-input"
+                className="profile-edit-btn"
                 onClick={update}
                 type="button"
                 value="확인"
               />
               <input
-                className=" clickable-input"
+                className="profile-edit-btn"
                 onClick={updateNot}
                 type="button"
                 value="취소"
               />
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };

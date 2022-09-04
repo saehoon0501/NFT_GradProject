@@ -1,0 +1,32 @@
+.profile-info {
+  margin: 0 18px;
+  cursor: pointer;
+}
+
+.profile-info:hover {
+  filter: grayscale(100%);
+}
+
+.profile-info:hover .profile-edit-img {
+  opacity: 1;
+  font-size: 28px;
+  font-weight: 600;
+  color: white;
+}
+
+.profile-info-img {
+  width: 450px;
+  border-radius: 20px;
+}
+
+.profile-edit-img {
+  position: relative;
+  top: -250px;
+  opacity: 0;
+}
+
+@media (max-width: 915px) {
+  .profile-info-img {
+    width: 60vw;
+  }
+}
