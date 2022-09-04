@@ -9,3 +9,8 @@ export const isLoginState = atom({
   key: "isLoginState",
   default: false,
 });
+
+export const changeImageState = atom({
+  key: "changeImageState",
+  default: false,
+});
