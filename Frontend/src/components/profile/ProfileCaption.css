@@ -25,6 +25,19 @@
   background-color: skyblue;
 }
 
+.profile-text {
+  margin: 8%;
+  margin-left: 0;
+  margin-right: 8%;
+  display: flex;
+}
+
+.profile-text h3 {
+  margin-left: 0;
+  margin-right: 8%;
+  text-align: left;
+}
+
 @media (max-width: 915px) {
   .profile-caption-wrapper {
     display: flex;

@@ -23,20 +23,11 @@ export const Profile = () => {
         <ProfilePic userProfile={user?.profile} />
         <ProfileCaption userProfile={user?.profile} />
       </div>
-      <div
-        style={{
-          width: "900px",
-          height: "1px",
-          borderBottom: "1px solid lightgray",
-          margin: "3% auto",
-        }}
-      >
-        <div className="profile-post">
-          <h4>게시물</h4>
-        </div>
+      <div className="profile-post-wrapper">
+        <span className="profile-post-title">게시물</span>
         <div className="profile-post">
           {[1, 2, 3].map(() => (
-            <img src={img} style={{ width: "30%" }} />
+            <img className="profile-post-img" src={img} />
           ))}
         </div>
       </div>
