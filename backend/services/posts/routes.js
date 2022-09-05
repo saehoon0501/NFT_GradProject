@@ -11,7 +11,6 @@ postRouter.route('/').post(verify, controller.createPost);
 postRouter.route('/comment/:post_id').post(verify, controller.addComment);
 postRouter.route('/comment/like/:comment_id').post(verify, controller.likeComment);
 postRouter.route('/comment/reply/:comment_id').post(verify, controller.addReply);
-postRouter.route('/comment/reply/like/:comment_id').post(verify, controller.likeReply);
 postRouter.route('/like/:post_id').post(verify, controller.addLike);
 
 postRouter.route('/comment/:comment_id').patch(verify, controller.modifyComment);

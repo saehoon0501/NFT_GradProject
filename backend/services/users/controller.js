@@ -56,11 +56,14 @@ module.exports = {
     getUserComment : (req, res, next) => {
         const publicAddress = res.locals.decoded.publicAddress;
 
-        User.findOne({publicAddr:publicAddress}).populate('profile.comment_ids','',Comment).lean()
+        User.findOne({publicAddr:publicAddress}).populate('profile.comment_ids','',Comment)
         .then((user)=>{              
             if(!user) return res.status(400).send('user not found')
                         
-            console.log('getUserComment 실행 결과', user.profile.comment_ids)
+            console.log('getUserComment 실행 결과', user)
+            user.profile.comment_ids = user.profile.comment_ids.filter((comment)=> comment != null)
+            user.markModified('profile.comment_ids')
+            user.save().then((result)=>console.log(result))
             return res.send(user.profile.comment_ids)
         })
     }

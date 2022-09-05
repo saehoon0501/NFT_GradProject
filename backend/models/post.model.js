@@ -44,7 +44,7 @@ const commentSchema = new Schema({
     replies:[{
         type: Schema.Types.ObjectId, ref:'comment'
     }] 
-})
+},{timestamps: true})
 
 module.exports.Post = postDb.model('post', postSchema);
 module.exports.Like = postDb.model('like', likeSchema);
