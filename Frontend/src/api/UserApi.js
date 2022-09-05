@@ -3,9 +3,7 @@ import axios from "axios";
 const userApi = axios.create({
   baseURL: "http://localhost:4000/api/user",
 });
-// headers:{
-//     Authorization: `Bearer ${token}`,
-// }
+
 userApi.interceptors.request.use((config) => {
   const token = window.localStorage.getItem("accessToken");
   if (!token) {

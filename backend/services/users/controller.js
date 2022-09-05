@@ -7,12 +7,12 @@ module.exports = {
         const publicAddress = res.locals.decoded.publicAddress;
 
         User.findOne({publicAddr:`${publicAddress}`})
-        .then((usr)=>{
-            if(!usr){
+        .then((user)=>{
+            if(!user){
                 return res.status(401).send({error: 'User not Found'});
             }
-            console.log(usr);
-            return res.json(usr);
+            console.log('sndProfile 실행 결과', user);
+            return res.json(user);
         })
     },
     updateProfile : (req, res, next) => {
@@ -27,7 +27,7 @@ module.exports = {
             {
                 $set:{"profile.username":`${profileName}`, "profile.caption":`${caption}`}
             }).then((result)=>{
-                console.log(result)
+                console.log('updateProfile 실행 결과', result)
                 return res.send("user info updated")
             });
         }
@@ -39,7 +39,7 @@ module.exports = {
                 {"ownerOfNFT.NFT_URL":`${profile_pic}`}
             ]},{
                 $set:{"profile.profile_pic":`${profile_pic}`}
-            }).then(()=>{return res.send("profile_pic updated")});
+            }).then(()=>{return res.send("user info updated")});
         }
     },
     getUserPost : (req, res, next) => {
@@ -48,7 +48,7 @@ module.exports = {
         User.findOne({publicAddr:publicAddress}).populate('profile.post_ids','',Post).lean()
         .then((user)=>{
             if(!user) return res.status(400).send('user not found')
-            console.log('user Post', user.profile.post_ids)
+            console.log('user Post', user)
             return res.send(user.profile.post_ids)
         })
         

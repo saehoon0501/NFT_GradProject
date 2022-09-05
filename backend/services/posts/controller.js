@@ -8,43 +8,7 @@ const {GridFsStorage} = require("multer-gridfs-storage");
 const Grid = require("gridfs-stream");
 const QuillDeltaToHtmlConverter = require('quill-delta-to-html').QuillDeltaToHtmlConverter;
 
-// mongoose.connect('mongodb://localhost:27017/Postdb');
-
-// const conn = mongoose.connection;
-// let gfs, gridfsBucket;
-
-// conn.once('open', ()=>{
-//     gridfsBucket = new mongoose.mongo.GridFSBucket(conn.db,{
-//         bucketName:'uploads'
-//     });
-//     gfs = Grid(conn.db, mongoose.mongo);
-//     gfs.collection("uploads");
-// })
-
-// const storage = new GridFsStorage({
-//     url: 'mongodb://localhost:27017/Postdb',
-//     file: (req, file) => {
-//       return new Promise((resolve, reject) => {
-//         crypto.randomBytes(16, (err, buf) => {
-//           if (err) {
-//             return reject(err);
-//           }
-//           const filename = buf.toString('hex') + path.extname(file.originalname);
-//           const fileInfo = {
-//             filename: filename,
-//             bucketName: 'uploads'
-//           };
-//           resolve(fileInfo);
-//         });
-//       });
-//     }
-//   });
-
-// const upload = multer({ storage });
-
 module.exports={
-    
-    // upload,
     getPost : (req, res, next)=>{        
 
        const posts_result = Post.find().sort({createdAt:-1}).limit(10).skip(0).exec();
@@ -52,7 +16,7 @@ module.exports={
         posts_result.then(async (posts)=>{
             await Promise.all(posts.map(async (post)=>{
                 const result = await Post.findOne({_id:`${post.id}`})
-                .populate('comments').populate('comments.replies').populate('likes').populate('user', '', User).lean().exec();
+                .populate('comments').populate('likes').populate('user', '', User).lean().exec();
                 return result
             })).then((results) => {
                 console.log('getPost 실행', results);
@@ -74,7 +38,7 @@ module.exports={
             return res.status(400),send('need title')
         }
                 
-        User.findOne({publicAddr:`${publicAddress}`})
+        User.findOne({publicAddr:publicAddress})
         .then((user)=>{
             if(!user){
                 return res.status(401).send({error: 'User not Found'});
@@ -88,13 +52,12 @@ module.exports={
             text: content,
             likes: like,            
         });
-            like.save();            
-            post.save();
-            return {user, post,like};
-        })
-        .then( async ({user, post, like})=>{
+            like.save()            
+            post.save()
+            return {user, post,like}
+        }).then( async ({user, post, like})=>{
             await User.updateOne({
-                id: user._id
+                _id: user.id
             },
             {
                 $push:{"profile.post_ids": post._id}
@@ -106,7 +69,8 @@ module.exports={
                     user: user,                    
                     title: post.title,
                     text: post.text,
-                    likes: like,                    
+                    likes: like,           
+                    comments: [],         
                     createdAt:post.createdAt,                    
                 };
 
@@ -245,21 +209,19 @@ module.exports={
 
     modifyComment:(req,res,next)=>{
         const publicAddress = res.locals.decoded.publicAddress
-        const {context, commentIndex} = req.body
+        const {context} = req.body
         const comment_id = req.params.comment_id
 
         User.findOne({publicAddr:publicAddress})
         .then((user)=>{
+            if(!user) return res.status(400).send('user not found')
+            
             Comment.findOne({_id:comment_id})
-             .then( async (comment)=>{
-                 
-                if(user.id==comment.comments[commentIndex].user.toString()){                
-                comment.caption=context
-                console.log(comment.caption)           
-                comment.save().then(async ()=>{
-                    const result = await Comment.findById(`${comment_id}`).populate('user','',User)
-                    .populate('reply.user','',User).exec()
-                    return res.send(result)
+             .then(async (comment)=>{
+                if(user.id==comment.user.toString()){                
+                    comment.caption=context                         
+                    comment.save().then(async ()=>{                        
+                    return res.send('comment modified')
                 })
             }else{
                 return res.status(400).send('not a owner of comment')
@@ -268,41 +230,38 @@ module.exports={
         })
     },
 
-    delComment:(req,res,next)=>{
+    delComment: async (req,res,next)=>{
         const publicAddress = res.locals.decoded.publicAddress
-        const {commentIndex} = req.body
+        const {post_id} = req.body
         const comment_id = req.params.comment_id
         
-        console.log(commentIndex)
+        let result = await Promise.all([User.findOne({publicAddr:publicAddress}),
+            Comment.findOne({_id:comment_id}), Post.findOne({_id:post_id})])
+        
+        let user = result[0]
+        let comment = result[1]
+        let post = result[2]
 
-        User.findOne({publicAddr:publicAddress})
-        .then((user)=>{
-            Comment.findOne({_id:comment_id})
-            .then(async (comment)=>{   
-                console.log(comment)
-                
-                if(user.id==comment.user.toString()){           
-                    if(comment.replies.length<=0){                        
-                        user.profile.comments_ids.pull(comment.id)
-                        Comment.deleteOne({_id:comment_id})                                                
-                    }else{                
-                   comment.caption='삭제된 내용입니다.'
-                   comment.user = null                   
-                   user.profile.comment_ids.pull(comment_id)                   
-                   
-                   console.log(comment)
-                }
-                user.save()
-                comment.save().then(async ()=>{
-                    const result = await Comment.findById(`${comment_id}`).populate('comments.user','',User)
-                    .populate('comments.reply.user','',User).exec()
-                    return res.send(result.comments)
-                })
-            }else{
-                return res.status(400).send('not a owner of comment')
-            }                        
+        if(user.id==comment.user.toString()){           
+            if(comment.replies.length<=0){                        
+            Comment.deleteOne({_id:comment_id})                                                
+            }else{                
+            comment.caption='삭제된 내용입니다.'
+            comment.user = null                               
+            commnet.save()            
+        }
+        user.profile.comment_ids.pull(comment_id)
+        post.comments.pull(comment_id)         
+
+        user.save()
+        post.save()        
+        .then(async ()=>{            
+            return res.send('message deleted')
         })
-    })},
+        }else{
+            return res.status(400).send('not a owner of comment')
+        }                        
+    },
 
     addReply : async (req, res, next)=>{
         const publicAddress = res.locals.decoded.publicAddress;
@@ -340,7 +299,7 @@ module.exports={
         }).lean().exec();
             
             console.log('addReply 실행', result)
-            // return res.send(result.replies)                    
+            return res.send(result.replies)                    
     },
 
     likeReply: (req,res,next)=>{
@@ -388,23 +347,3 @@ module.exports={
         })
     })},
 }
-
-// const readImage = (file) => {
-//     return new Promise(async (resolve, reject)=>{
-//         let buffer = [];
-//         const readStream = gridfsBucket.openDownloadStream(file._id);
-
-//         readStream.on('data', (chunk)=>{
-//             console.log('b');
-//             buffer.push(chunk);
-//         })
-
-//         readStream.on('end', ()=>{
-//             console.log('c');
-//             const fbuf = Buffer.concat(buffer);
-//             base64 = fbuf.toString('base64');  
-//             resolve(base64);
-//         })
-//     });
-// }
-
