@@ -5,9 +5,11 @@ import { useQuery } from "react-query";
 import "./Header.css";
 import { getUser } from "../../api/UserApi";
 import { isLoginState } from "../../store";
+import { useState } from "react";
 
 export const Header = (props) => {
   const [isAuth, setIsAuth] = useRecoilState(isLoginState);
+  const [showAlarm, setShowAlarm] = useState(false);
   const navigate = useNavigate();
   const { data: user } = useQuery("user", ({ signal }) => getUser(signal));
 
@@ -27,6 +29,10 @@ export const Header = (props) => {
     navigate("/comments");
   };
 
+  const onClickToggleAlarm = () => {
+    setShowAlarm(!showAlarm);
+  };
+
   return (
     <>
       {!isAuth && (
@@ -44,7 +50,7 @@ export const Header = (props) => {
           <div className="header_menus">
             <button onClick={onClickCreatePost}>게시물 작성</button>
             <button onClick={onClickMyComments}>내 댓글</button>
-            <button>알람</button>
+            <button onClick={onClickToggleAlarm}>알람</button>
           </div>
           <img
             onClick={showProfile}
@@ -52,6 +58,14 @@ export const Header = (props) => {
             src={user?.profile.profile_pic}
             alt="profile picture"
           />
+          {showAlarm && (
+            <div className="alarm_menu_wrapper">
+              <div className="alarm_menu_header">
+                <h3>알람 목록</h3>
+                <button onClick={onClickToggleAlarm}>X</button>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </>
