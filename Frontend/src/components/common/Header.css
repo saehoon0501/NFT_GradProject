@@ -25,3 +25,20 @@
   border-radius: 10px;
   cursor: pointer;
 }
+
+.header_searchBar_wrapper {
+  display: flex;
+  align-items: center;
+  padding: 5px 10px;
+  border: 1px solid lightgray;
+  border-radius: 10px;
+}
+
+.header_searchBar_wrapper input {
+  border: white;
+  outline: none;
+}
+
+.header_searchBar_wrapper button {
+  background-color: white;
+}

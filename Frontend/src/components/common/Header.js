@@ -29,6 +29,10 @@ export const Header = (props) => {
             alt="Instagram original logo"
             onClick={showSns}
           />
+          <div className="header_searchBar_wrapper">
+            <input type="text" />
+            <button>🔍</button>
+          </div>
           <img
             onClick={showProfile}
             className="header_profileBtn"
