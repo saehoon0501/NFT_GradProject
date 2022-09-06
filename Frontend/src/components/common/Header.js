@@ -19,6 +19,10 @@ export const Header = (props) => {
     navigate("/");
   };
 
+  const onClickCreatePost = () => {
+    window.scrollTo(0, 0);
+  };
+
   return (
     <>
       {!isAuth && (
@@ -32,6 +36,11 @@ export const Header = (props) => {
           <div className="header_searchBar_wrapper">
             <input type="text" />
             <button>🔍</button>
+          </div>
+          <div className="header_menus">
+            <button onClick={onClickCreatePost}>게시물 작성</button>
+            <button>내 댓글</button>
+            <button>알람</button>
           </div>
           <img
             onClick={showProfile}

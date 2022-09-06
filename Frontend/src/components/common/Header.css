@@ -35,10 +35,31 @@
 }
 
 .header_searchBar_wrapper input {
+  width: 300px;
   border: white;
   outline: none;
 }
 
 .header_searchBar_wrapper button {
   background-color: white;
+}
+
+.header_searchBar_wrapper button:hover {
+  transform: scale(1.2);
+}
+
+.header_menus {
+  display: flex;
+  gap: 5px;
+}
+
+.header_menus button {
+  border: 1px solid lightgray;
+  padding: 5px;
+  background-color: white;
+  border-radius: 10px;
+}
+
+.header_menus button:hover {
+  background-color: lightgray;
 }
