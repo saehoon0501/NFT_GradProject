@@ -23,6 +23,10 @@ export const Header = (props) => {
     window.scrollTo(0, 0);
   };
 
+  const onClickMyComments = () => {
+    navigate("/comments");
+  };
+
   return (
     <>
       {!isAuth && (
@@ -39,7 +43,7 @@ export const Header = (props) => {
           </div>
           <div className="header_menus">
             <button onClick={onClickCreatePost}>게시물 작성</button>
-            <button>내 댓글</button>
+            <button onClick={onClickMyComments}>내 댓글</button>
             <button>알람</button>
           </div>
           <img
