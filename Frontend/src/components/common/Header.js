@@ -48,9 +48,9 @@ export const Header = (props) => {
             <button>🔍</button>
           </div>
           <div className="header_menus">
-            <button onClick={onClickCreatePost}>게시물 작성</button>
-            <button onClick={onClickMyComments}>내 댓글</button>
-            <button onClick={onClickToggleAlarm}>알람</button>
+            <button onClick={onClickCreatePost}>➕</button>
+            <button onClick={onClickMyComments}>📝</button>
+            <button onClick={onClickToggleAlarm}>🔔</button>
           </div>
           <img
             onClick={showProfile}
