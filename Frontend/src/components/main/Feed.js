@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import parse from "html-react-parser";
 import { useNavigate } from "react-router-dom";
-import { IconButton, Menu, MenuItem } from "@mui/material";
 
 import "./Feed.css";
 import like_before from "../../assets/like-before.png";
