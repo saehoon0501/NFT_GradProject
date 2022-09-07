@@ -1,10 +1,10 @@
-const mongoose =  require(`mongoose`);
-const Schema = mongoose.Schema;
-const config = require('../config');
+const mongoose =  require(`mongoose`)
+const Schema = mongoose.Schema
+const config = require('../config')
 
 const postDb = mongoose.createConnection(config.mongoPath)
 
-const postSchema = new Schema({
+let postSchema = new Schema({
     user:{
        type: Schema.Types.ObjectId, ref: 'user', required: true
     },
@@ -20,9 +20,9 @@ const postSchema = new Schema({
     comments:[{
         type: Schema.Types.ObjectId, ref: 'comment'
     }]
-},{timestamps: true});
+},{timestamps: true})
 
-const likeSchema = new Schema({
+let likeSchema = new Schema({
     liked_num :{
         type: Number, default: 0
     },
@@ -31,7 +31,7 @@ const likeSchema = new Schema({
     }]
 })
 
-const commentSchema = new Schema({
+let commentSchema = new Schema({
     user:{
         type: Schema.Types.ObjectId, ref:'user'
     },
@@ -46,7 +46,9 @@ const commentSchema = new Schema({
     }] 
 },{timestamps: true})
 
-module.exports.Post = postDb.model('post', postSchema);
-module.exports.Like = postDb.model('like', likeSchema);
-module.exports.Comment = postDb.model('comment', commentSchema);
+
+
+module.exports.Post = postDb.model('post', postSchema)
+module.exports.Like = postDb.model('like', likeSchema)
+module.exports.Comment = postDb.model('comment', commentSchema)
 

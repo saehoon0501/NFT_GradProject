@@ -1,6 +1,5 @@
 const {Post, Like, Comment} = require('../../models/post.model');
 const User = require('../../models/user.model');
-const mongoose = require("mongoose");
 const crypto = require(`crypto`);
 const multer = require("multer");
 const path = require('path');
@@ -9,7 +8,7 @@ const Grid = require("gridfs-stream");
 const QuillDeltaToHtmlConverter = require('quill-delta-to-html').QuillDeltaToHtmlConverter;
 
 module.exports={
-    getPost : (req, res, next)=>{        
+    getPost : (req, res, next)=>{
 
        const posts_result = Post.find().sort({createdAt:-1}).limit(10).skip(0).exec();
        
@@ -332,4 +331,34 @@ module.exports={
 
         return res.send('reply deleted')
     },
+    getSearch:async (req,res,next)=>{
+        const keyword = req.query.keyword
+
+        const result = await Post.aggregate([
+            {$search:{                    
+                "index": "contentIndex",
+                "compound": {
+                    "must": [{
+                        "text": {
+                            "query": keyword,
+                            "path": ["title", "text"],
+                            fuzzy:{maxEdits:2,prefixLength:2}
+                          }
+                        }]
+                    }
+                }
+        },
+            {$project:{            
+                    "_id": 1,
+                    "title": 1,
+                    "text":1,
+                    score: { $meta: "searchScore" }                
+                }
+        }
+    ])
+    
+    console.log('Search result', result)
+    return res.send(result)
+    }
 }
+

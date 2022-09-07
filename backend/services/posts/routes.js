@@ -6,6 +6,7 @@ const postRouter = express.Router();
 
 postRouter.route('/').get(verify, controller.getPost);
 postRouter.route('/comment/:post_id').get(verify, controller.getComment);
+postRouter.route('/search').get(verify, controller.getSearch);
 
 postRouter.route('/').post(verify, controller.createPost);
 postRouter.route('/comment/:post_id').post(verify, controller.addComment);
