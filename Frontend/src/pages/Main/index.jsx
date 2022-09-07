@@ -4,9 +4,9 @@ import { useQuery } from "react-query";
 import { useRecoilState } from "recoil";
 import "./style.css";
 
-import Feed from "../../components/thread/Feed";
-import { CategoryBar } from "../../components/thread/CategoryBar";
-import { Submit } from "../../components/thread/Submit";
+import Feed from "../../components/main/Feed";
+import { CategoryBar } from "../../components/main/CategoryBar";
+import { Submit } from "../../components/main/Submit";
 
 import { getUser } from "../../api/UserApi";
 import { getPost } from "../../api/FeedApi";
@@ -15,6 +15,8 @@ import new_icon2 from "../../assets/new2.png";
 import best from "../../assets/best.png";
 import best2 from "../../assets/best2.png";
 import { isLoginState } from "../../store";
+import { LoginUser } from "../../components/main/LoginUser";
+import { Vote } from "../../components/main/Vote";
 
 export const Main = () => {
   const [isBest, setIsBest] = useState(false);
@@ -52,9 +54,14 @@ export const Main = () => {
     );
   }
 
+  // 2. 투표
+  // 3. 내 댓글 페이지 (댓글만 나열되게)
+
   return (
     <div className="main_wrapper">
       <CategoryBar />
+      <LoginUser />
+      <Vote />
       <Submit user={userQuery.data} setPosts={setPosts} />
       <div className="main_icons_wrapper">
         <div
