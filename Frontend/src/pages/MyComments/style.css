@@ -1,0 +1,38 @@
+.myComments_wrapper {
+  padding-top: 50px;
+  text-align: center;
+}
+
+.myComments_comments_wrapper {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid lightgray;
+  padding: 50px;
+  margin: 50px;
+  gap: 50px;
+}
+
+.myComments_comment_wrapper {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid lightgray;
+  padding: 10px;
+}
+
+.myComments_comment_date_minimize {
+  display: none;
+}
+
+@media (max-width: 915px) {
+  .myComments_comment_wrapper h3 {
+    font-size: 14px;
+  }
+  .myComments_comment_date {
+    display: none;
+  }
+  .myComments_comment_date_minimize {
+    display: block;
+  }
+}
