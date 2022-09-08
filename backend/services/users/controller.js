@@ -5,15 +5,16 @@ const {Post,Like,Comment} = require('../../models/post.model');
 module.exports = {
     sndProfile : (req, res, next) => {
         const publicAddress = res.locals.decoded.publicAddress;
-
+        console.log('sndProfile 실행 결과', publicAddress)
+    
         User.findOne({publicAddr:`${publicAddress}`})
         .then((user)=>{
             if(!user){
                 return res.status(401).send({error: 'User not Found'});
             }
-            console.log('sndProfile 실행 결과', user);
+            
             return res.json(user);
-        })
+        }).catch((err)=>console.log('유저 정보 sndProfile: User.findOne Error',err))
     },
     updateProfile : (req, res, next) => {
         const publicAddress = res.locals.decoded.publicAddress;
