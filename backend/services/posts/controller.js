@@ -355,6 +355,8 @@ module.exports={
                     user:1,
                     "title": 1,
                     "text":1,
+                    likes:1,
+                    comments:1,
                     score: { $meta: "searchScore" }                
                 }
         }
