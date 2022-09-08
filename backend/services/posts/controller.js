@@ -334,7 +334,9 @@ module.exports={
     getSearch:async (req,res,next)=>{
         const keyword = req.query.keyword
 
-        const result = await Post.aggregate([
+        //keyword filter needed
+
+        let result = await Post.aggregate([
             {$search:{                    
                 "index": "contentIndex",
                 "compound": {
@@ -350,14 +352,20 @@ module.exports={
         },
             {$project:{            
                     "_id": 1,
+                    user:1,
                     "title": 1,
                     "text":1,
+                    likes:1,
+                    comments:1,
                     score: { $meta: "searchScore" }                
                 }
         }
-    ])
+    ]).limit(10)
     
+    await User.populate(result, {path:'user', select:{_id:1, profile:1}})
+
     console.log('Search result', result)
+    
     return res.send(result)
     }
 }
