@@ -10,6 +10,7 @@ import { useState } from "react";
 export const Header = (props) => {
   const [isAuth, setIsAuth] = useRecoilState(isLoginState);
   const [showAlarm, setShowAlarm] = useState(false);
+  const [keyword, setKeyWord] = useState("");
   const navigate = useNavigate();
   const { data: user } = useQuery("user", ({ signal }) => getUser(signal));
 
@@ -33,6 +34,16 @@ export const Header = (props) => {
     setShowAlarm(!showAlarm);
   };
 
+  const onClickSearch = () => {
+    console.log(keyword);
+    navigate(`/search/${keyword}`);
+  };
+
+  const onChangeSearch = (event) => {
+    const value = event.target.value;
+    setKeyWord(value);
+  };
+
   return (
     <>
       {!isAuth && (
@@ -44,8 +55,8 @@ export const Header = (props) => {
             onClick={showSns}
           />
           <div className="header_searchBar_wrapper">
-            <input type="text" />
-            <button>🔍</button>
+            <input value={keyword} type="text" onChange={onChangeSearch} />
+            <button onClick={onClickSearch}>🔍</button>
           </div>
           <div className="header_menus">
             <button onClick={onClickCreatePost}>➕</button>
