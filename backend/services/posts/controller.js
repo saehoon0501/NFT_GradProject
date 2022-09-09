@@ -350,7 +350,10 @@ module.exports={
                     }
                 }
         },
-            {$project:{            
+        {
+            $limit:10
+        },
+        {$project:{            
                     "_id": 1,
                     user:1,
                     "title": 1,
@@ -359,10 +362,20 @@ module.exports={
                     comments:1,
                     score: { $meta: "searchScore" }                
                 }
-        }
-    ]).limit(10)
-    
-    await User.populate(result, {path:'user', select:{_id:1, profile:1}})
+        },
+        {$lookup:{
+            from: User.collection.name,
+            localField: 'user',
+            foreignField: '_id',
+            as: 'user'
+        }},
+        {$lookup:{
+            from: Like.collection.name,
+            localField: 'likes',
+            foreignField: '_id',
+            as: 'likes'
+        }},        
+    ])  
 
     console.log('Search result', result)
     
