@@ -42,7 +42,6 @@ export const Main = () => {
 
   useEffect(() => {
     setIsAuth(false);
-    return () => {};
   }, []);
 
   if (userQuery.isLoading || postQuery.isLoading) {

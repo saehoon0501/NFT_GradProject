@@ -6,6 +6,8 @@ import { searchPost } from "../../api/FeedApi";
 import { getUser } from "../../api/UserApi";
 import Feed from "../../components/main/Feed";
 
+import "./style.css";
+
 export const Search = () => {
   const { keyword } = useParams();
   const [posts, setPosts] = useState("");
@@ -23,34 +25,22 @@ export const Search = () => {
     return <div>Loading...</div>;
   }
 
-  console.log(posts);
-
   return (
-    <div>
-      <h1>검색한 키워드 : {keyword}</h1>
+    <div className="search_wrapper">
+      <h1 className="search_title">검색한 키워드 : {keyword}</h1>
       <div>
         {posts?.map((post) => (
           <Feed
             key={post._id}
             post_id={post._id}
-            writer_profile={post.user.profile}
+            writer_profile={post.user[0].profile}
             user_id={userQuery.data._id}
             caption={post.text}
             title={post.title}
             comments={post.comments}
-            likes={post.likes}
+            likes={post.likes[0]}
+            likesCount={post.likes[0].liked_num}
           />
-          //   <Feed
-          //     key={post._id}
-          //     post_id={post._id}
-          //     writer_profile={post.user.profile}
-          //     user_id={post._id}
-          //     caption={post.text}
-          //     title={post.title}
-          //     comments={post.comments}
-          //     likes={post.likes}
-          //   />
-          //   <h1>{post.title}</h1>
         ))}
       </div>
     </div>
