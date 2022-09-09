@@ -22,8 +22,6 @@ const Feed = ({
     liked: false,
     liked_num: likes.liked_user.length,
   });
-  const [anchorEl, setAnchorEl] = useState(null);
-  const open = Boolean(anchorEl);
   const [isOwner, setIsOwner] = useState(false);
 
   const navigate = useNavigate();
@@ -37,8 +35,6 @@ const Feed = ({
     if (isOwner === false && writer_profile.post_ids.includes(post_id)) {
       setIsOwner(true);
     }
-
-    return () => {};
   }, []);
 
   const handleLike = async () => {
@@ -79,67 +75,6 @@ const Feed = ({
     });
   };
 
-  // const kebabMenu = (
-  //   <div>
-  //     <IconButton
-  //       aria-label="more"
-  //       id="long-button"
-  //       aria-controls={open ? "long-menu" : undefined}
-  //       aria-expanded={open ? "true" : undefined}
-  //       aria-haspopup="true"
-  //       sx={{ zIndex: "1" }}
-  //       onClick={(event) => {
-  //         setAnchorEl(event.currentTarget);
-  //         event.stopPropagation();
-  //       }}
-  //     >
-  //       <img src={kebab} alt="menu icon" />
-  //     </IconButton>
-  //     <Menu
-  //       id="long-menu"
-  //       MenuListProps={{
-  //         "aria-labelledby": "long-button",
-  //       }}
-  //       anchorEl={anchorEl}
-  //       open={open}
-  //       onClose={(event) => {
-  //         setAnchorEl(null);
-  //         event.stopPropagation();
-  //       }}
-  //       PaperProps={{
-  //         style: {
-  //           maxHeight: 45 * 4.5,
-  //           width: "8ch",
-  //         },
-  //       }}
-  //     >
-  //       <MenuItem
-  //         key={"수정"}
-  //         onClick={(event) => {
-  //           setAnchorEl(null);
-  //           event.stopPropagation();
-  //         }}
-  //         sx={{ "&.MuiMenuItem-root": { color: "black" } }}
-  //       >
-  //         스크랩
-  //       </MenuItem>
-  //       {isOwner ? (
-  //         <MenuItem
-  //           key={"삭제"}
-  //           onClick={(event) => {
-  //             setAnchorEl(null);
-  //             event.stopPropagation();
-  //             handleDelete();
-  //           }}
-  //           sx={{ "&.MuiMenuItem-root": { color: "red" } }}
-  //         >
-  //           삭제
-  //         </MenuItem>
-  //       ) : undefined}
-  //     </Menu>
-  //   </div>
-  // );
-
   return (
     <div className="feed_wrapper">
       <div className="feed_header">
@@ -155,7 +90,6 @@ const Feed = ({
           </div>
         </div>
         <span className="feed_date">n일 전</span>
-        {/* {kebabMenu} */}
       </div>
       <div>
         {/* Content */}
@@ -167,7 +101,6 @@ const Feed = ({
           {parse(caption)}
         </div>
       </div>
-      {/* INFO */}
       <div className="feed_menu">
         <div className="feed_menu_comments" onClick={handleClick}>
           <h4>댓글 {comments?.length}개</h4>

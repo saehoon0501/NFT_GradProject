@@ -9,7 +9,7 @@ import { CategoryBar } from "../../components/main/CategoryBar";
 import { Submit } from "../../components/main/Submit";
 
 import { getUser } from "../../api/UserApi";
-import { getPost } from "../../api/FeedApi";
+import { getPost, searchPost } from "../../api/FeedApi";
 import new_icon from "../../assets/new.png";
 import new_icon2 from "../../assets/new2.png";
 import best from "../../assets/best.png";
@@ -29,6 +29,7 @@ export const Main = () => {
       setPosts(data);
     },
   });
+
   const [posts, setPosts] = useState(postQuery.data);
 
   const navigate = useNavigate();
@@ -41,7 +42,6 @@ export const Main = () => {
 
   useEffect(() => {
     setIsAuth(false);
-    return () => {};
   }, []);
 
   if (userQuery.isLoading || postQuery.isLoading) {
@@ -54,7 +54,7 @@ export const Main = () => {
     );
   }
 
-  // 3. 내 댓글 페이지 (댓글만 나열되게)
+  console.log(posts);
 
   return (
     <div className="main_wrapper">
