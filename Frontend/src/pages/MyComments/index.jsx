@@ -1,5 +1,6 @@
 import { useQuery } from "react-query";
 import { getUserComments } from "../../api/UserApi";
+import { Loading } from "../../components/common/Loading";
 
 import "./style.css";
 
@@ -7,7 +8,7 @@ export const MyComments = () => {
   const { data, isLoading } = useQuery("comments", getUserComments);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <Loading />;
   }
 
   return (

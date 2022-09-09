@@ -17,6 +17,7 @@ import best2 from "../../assets/best2.png";
 import { isLoginState } from "../../store";
 import { LoginUser } from "../../components/main/LoginUser";
 import { Vote } from "../../components/main/Vote";
+import { Loading } from "../../components/common/Loading";
 
 export const Main = () => {
   const [isBest, setIsBest] = useState(false);
@@ -47,11 +48,7 @@ export const Main = () => {
   if (userQuery.isLoading || postQuery.isLoading) {
     console.log(userQuery.data);
     console.log(postQuery.data);
-    return (
-      <div>
-        <p>Loading....</p>
-      </div>
-    );
+    return <Loading />;
   }
 
   console.log(posts);

@@ -16,6 +16,7 @@ import {
   getComment,
 } from "../../api/FeedApi";
 import { Comment } from "../../components/feedView/Comment";
+import { Loading } from "../../components/common/Loading";
 
 export const FeedView = () => {
   const { state } = useLocation();
@@ -93,11 +94,7 @@ export const FeedView = () => {
   };
 
   if (isLoading) {
-    return (
-      <div>
-        <p>is Loading...</p>
-      </div>
-    );
+    return <Loading />;
   }
 
   return (
