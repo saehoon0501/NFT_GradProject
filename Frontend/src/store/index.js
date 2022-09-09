@@ -14,3 +14,8 @@ export const changeImageState = atom({
   key: "changeImageState",
   default: false,
 });
+
+export const isWritingPost = atom({
+  key: "isWritingPostState",
+  default: false,
+});

@@ -4,11 +4,12 @@ import { useQuery } from "react-query";
 
 import "./Header.css";
 import { getUser } from "../../api/UserApi";
-import { isLoginState } from "../../store";
+import { isLoginState, isWritingPost } from "../../store";
 import { useState } from "react";
 
 export const Header = (props) => {
   const [isAuth, setIsAuth] = useRecoilState(isLoginState);
+  const [isOpen, setIsOpen] = useRecoilState(isWritingPost);
   const [showAlarm, setShowAlarm] = useState(false);
   const [keyword, setKeyWord] = useState("");
   const navigate = useNavigate();
@@ -24,6 +25,7 @@ export const Header = (props) => {
 
   const onClickCreatePost = () => {
     window.scrollTo(0, 0);
+    setIsOpen(true);
   };
 
   const onClickMyComments = () => {
