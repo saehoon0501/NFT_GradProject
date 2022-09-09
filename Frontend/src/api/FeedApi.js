@@ -113,5 +113,6 @@ export const delReply = async (comment_id, commentIndex, replyIndex) => {
 
 export const searchPost = async (keyword) => {
   const response = await feedApi.get(`/search?keyword=${keyword}`);
-  return response.data;
+  const data = await response.data;
+  return data;
 };

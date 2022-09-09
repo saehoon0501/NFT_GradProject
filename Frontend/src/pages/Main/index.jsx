@@ -21,9 +21,6 @@ import { Vote } from "../../components/main/Vote";
 export const Main = () => {
   const [isBest, setIsBest] = useState(false);
   const [isAuth, setIsAuth] = useRecoilState(isLoginState);
-  const [keyword, setKeyword] = useState("");
-
-  console.log(searchPost("Hello"));
 
   const userQuery = useQuery("user", ({ signal }) => getUser(signal));
   const postQuery = useQuery("posts", ({ signal }) => getPost(signal), {
