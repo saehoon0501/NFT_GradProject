@@ -4,6 +4,7 @@ import { useQuery } from "react-query";
 import { useParams } from "react-router-dom";
 import { searchPost } from "../../api/FeedApi";
 import { getUser } from "../../api/UserApi";
+import { Loading } from "../../components/common/Loading";
 import Feed from "../../components/main/Feed";
 
 import "./style.css";
@@ -22,7 +23,7 @@ export const Search = () => {
   }, []);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <Loading />;
   }
 
   return (
