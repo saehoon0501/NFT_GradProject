@@ -177,11 +177,21 @@ textarea::-webkit-scrollbar {
   overflow: hidden;
 }
 
+.comment_list_blank {
+  width: 900px;
+  border: 1px solid lightgray;
+  text-align: center;
+  padding: 10px;
+}
+
 @media (max-width: 915px) {
   .feedview-content {
     width: 95vw;
   }
   .commenter {
+    width: 95vw;
+  }
+  .comment_list_blank {
     width: 95vw;
   }
 }
