@@ -88,16 +88,6 @@
   padding: 20px;
 }
 
-.clickable {
-  cursor: pointer;
-  margin-left: 0;
-}
-
-.clickable img {
-  max-width: 24px;
-  max-height: 24px;
-}
-
 .post_headerinfo {
   position: relative;
   margin-top: -10px;
@@ -187,59 +177,11 @@ textarea::-webkit-scrollbar {
   overflow: hidden;
 }
 
-.commenter {
-  background-color: white;
-  font-size: 15px;
+.comment_list_blank {
   width: 900px;
-  margin: 0px auto;
-  display: flex;
-  overflow: hidden;
-}
-.commenter img {
-  width: 50px;
-  height: 50px;
-  border-radius: 5px;
-  margin: 10px 5px;
-  overflow: hidden;
-}
-
-.commenter h5 {
-  position: relative;
-  margin-top: 8px;
-  margin-left: 3px;
-}
-
-._a9yh {
-  align-items: stretch;
-  border: 0;
-  border-bottom: 1px solid rgb(178, 178, 178);
-  box-sizing: border-box;
-  display: inline-block;
-  flex-direction: column;
-  flex-shrink: 0;
-  font: inherit;
-  font-size: 100%;
-  height: 0;
-  margin: 0 8px;
-  margin-top: 8px;
-  padding: 0;
-  position: relative;
-  vertical-align: middle;
-  width: 24px;
-}
-
-.comment_context {
-  max-width: 640px;
-  font-size: 15px;
-  padding: 3px;
-}
-
-.comment_context p {
-  word-wrap: break-word;
-}
-
-.comment_button img {
-  margin: 10px 0px 0 5px;
+  border: 1px solid lightgray;
+  text-align: center;
+  padding: 10px;
 }
 
 @media (max-width: 915px) {
@@ -247,6 +189,9 @@ textarea::-webkit-scrollbar {
     width: 95vw;
   }
   .commenter {
+    width: 95vw;
+  }
+  .comment_list_blank {
     width: 95vw;
   }
 }

@@ -11,10 +11,17 @@ import {
 import { ProfilePic } from "../../components/profile/ProfilePic";
 import { ProfileCaption } from "../../components/profile/ProfileCaption";
 import { ProfileChangeImage } from "../../components/profile/ProfileChangeImage";
+import { Loading } from "../../components/common/Loading";
 
 export const Profile = () => {
-  const { data: user } = useQuery("user", ({ signal }) => getUser(signal));
+  const { data: user, isLoading } = useQuery("user", ({ signal }) =>
+    getUser(signal)
+  );
   // getUserComments().then((result) => console.log(result));
+
+  if (isLoading) {
+    return <Loading />;
+  }
 
   return (
     <div className="profile-container">

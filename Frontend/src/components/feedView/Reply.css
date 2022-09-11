@@ -1,0 +1,14 @@
+.reply_wrapper {
+  background-color: white;
+  font-size: 15px;
+  width: 900px;
+  margin: 10px 0px;
+  display: flex;
+  overflow: hidden;
+  padding-left: 50px;
+}
+
+.reply_context {
+  font-size: 15px;
+  padding: 3px 0px;
+}

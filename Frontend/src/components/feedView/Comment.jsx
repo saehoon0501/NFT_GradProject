@@ -8,8 +8,9 @@ import {
 import commentImg from "../../assets/comment.png";
 import like_before from "../../assets/like-before.png";
 import like_after from "../../assets/like-after.png";
-import { Button } from "@mui/material";
 import { Reply } from "./Reply";
+
+import "./Comment.css";
 
 export const Comment = ({
   user_id,
@@ -18,7 +19,7 @@ export const Comment = ({
   writer,
   replies,
   caption,
-  liked_user,  
+  liked_user,
 }) => {
   const [like, setLike] = useState({
     liked: false,
@@ -90,112 +91,70 @@ export const Comment = ({
     });
   };
 
+  const onClickReply = () => {
+    setToReply({ reply: !toReply.reply, modify: false });
+    setValue("");
+  };
+
+  const onClickModify = () => {
+    setToReply({ reply: !toReply.reply, modify: true });
+    setValue(caption);
+  };
+
   return (
-    <div style={{ display: "block" }}>
-      <div className="commenter">
-        <img src={writer?.profile.profile_pic} alt="comment_profilePic" />
-        <div style={{ display: "block" }}>
-          <div style={{ display: "flex" }}>
-            <h5>{writer?.profile.username}</h5>
-            <h5> · </h5>
-            <h5>n 시간 전</h5>
-          </div>
-          <div className="comment_context">
-            <p>{context}</p>
-          </div>
-          <div style={{ display: "flex" }}>
-            <div
-              className="clickable comment_button"
-              onClick={() => {
-                setToReply({ reply: !toReply.reply, modify: false });
-                setValue("");
-              }}
-              style={{
-                display: "flex",
-                position: "relative",
-                margin: "-6px 0px 0 -5px",
-              }}
-            >
+    <div>
+      <div className="comment-page-wrapper">
+        <img
+          className="comment-page-profile-img"
+          src={writer?.profile.profile_pic}
+          alt="comment_profilePic"
+        />
+        <div>
+          <h5>{writer?.profile.username} · n 시간 전</h5>
+          <p className="comment_context">{context}</p>
+          <div className="comment_page_menus">
+            <div className="comment_page_button" onClick={onClickReply}>
               <img src={commentImg} />
-            </div>
-            <div
-              className="clickable"
-              onClick={() => {
-                setToReply({ reply: !toReply.reply, modify: false });
-                setValue("");
-              }}
-            >
               <h5>Reply</h5>
             </div>
-            <h5> </h5>
-            {like.liked ? (
-              <div
-                className="clickable icon_anime2 comment_button"
-                style={{ position: "relative", marginTop: "-6px" }}
-              >
+            <div className="comment_page_button">
+              {like.liked ? (
                 <img src={like_after} onClick={handleLike} />
-              </div>
-            ) : (
-              <div
-                className="clickable comment_button"
-                style={{ position: "relative", marginTop: "-6px" }}
-              >
+              ) : (
                 <img src={like_before} onClick={handleLike} />
+              )}
+              <h5>
+                {like.liked_user === undefined ? 0 : like.liked_user.length}개
+              </h5>
+            </div>
+            {isOwner && (
+              <div className="comment_page_button">
+                <h5 onClick={onClickModify}>수정</h5>
+                <h5 onClick={handleDelete}>삭제</h5>
               </div>
-            )}
-            <h5>
-              {like.liked_user == undefined ? 0 : like.liked_user.length}개
-            </h5>
-            {isOwner ? (
-              <div style={{ display: "flex" }}>
-                <div
-                  className="clickable"
-                  onClick={() => {
-                    setToReply({ reply: !toReply.reply, modify: true });
-                    setValue(caption);
-                  }}
-                >
-                  <h5>
-                    {"\u00a0"}수정{"\u00a0"}
-                  </h5>
-                </div>
-                <div className="clickable" onClick={handleDelete}>
-                  <h5>삭제</h5>
-                </div>
-              </div>
-            ) : (
-              <div></div>
             )}
           </div>
         </div>
       </div>
-      {toReply.reply ? (
-        <div className="comment">
+      {toReply.reply && (
+        <div className="modify_comment">
           {toReply.modify ? <h4>답글 수정</h4> : <h4>답글 달기</h4>}
           <textarea
+            className="modify_comment_textarea"
             ref={textareaRef}
             value={value}
             onChange={(e) => {
               setValue(e.target.value);
             }}
             placeholder="매너있는 댓글 작성 부탁드립니다."
-          ></textarea>
-          <div style={{ textAlign: "right" }}>
-            <Button
-              onClick={toReply.modify ? handleModify : handleReply}
-              sx={{
-                backgroundColor: "#26a7de",
-                margin: "5px 0px 0px 0px",
-                padding: "0 15px",
-                color: "white",
-              }}
-            >
-              완료
-            </Button>
-          </div>
+          />
+          <button
+            onClick={toReply.modify ? handleModify : handleReply}
+            className="modify_btn"
+          >
+            완료
+          </button>
         </div>
-      ) : (
-        <div></div>
       )}
       {replyList.length > 0 ? (
         <div
@@ -205,18 +164,19 @@ export const Comment = ({
             display: "flex",
           }}
         >
-          <div class="_a9yh"></div>
+          <div className="comment_dash"></div>
           <p>답글</p>
-          <div class="_a9yh"></div>
+          <div className="comment_dash"></div>
         </div>
       ) : (
         <div></div>
       )}
-      {/* {replyList.map((replyItem) => {
+      {replyList.map((replyItem, index) => {
         return (
-          <Reply            
+          <Reply
+            key={index}
             comment_id={comment_id}
-            comment_index={index}            
+            comment_index={index}
             user_id={user_id}
             writer={replyItem.user}
             caption={replyItem.caption}
@@ -224,7 +184,7 @@ export const Comment = ({
             setReplyList={setReplyList}
           />
         );
-      })} */}
+      })}
     </div>
   );
 };

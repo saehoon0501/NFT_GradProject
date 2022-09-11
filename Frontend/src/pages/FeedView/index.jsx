@@ -163,6 +163,11 @@ export const FeedView = () => {
           );
         })}
       </div>
+      {data.length === 0 && (
+        <div className="comment_list_blank">
+          <h3>현재 작성된 댓글이 없습니다. 가장 먼저 댓글을 작성해주세요.</h3>
+        </div>
+      )}
     </div>
   );
 };

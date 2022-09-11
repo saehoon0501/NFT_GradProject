@@ -5,6 +5,8 @@ import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import axios from "axios";
 import { addPost } from "../../api/FeedApi";
+import { useRecoilState } from "recoil";
+import { isWritingPost } from "../../store";
 
 const maxSize = 30 * 1000 * 1000;
 const token = window.localStorage.getItem("accessToken");
@@ -28,12 +30,7 @@ const uploadURL = (file) => {
 };
 
 export const Submit = ({ user, setPosts }) => {
-  const [open, setOpen] = useState([
-    {
-      name: "sumit_open",
-      isActive: false,
-    },
-  ]);
+  const [isOpen, setIsOpen] = useRecoilState(isWritingPost);
   const [title, setTitle] = useState("");
   const [selectedImage, setImage] = useState(null);
   const quill = useRef(null);
@@ -82,9 +79,7 @@ export const Submit = ({ user, setPosts }) => {
   const handleClick = (event) => {
     let index = event.target.getAttribute("data-index");
     if (index == null) index = 1;
-    const newState = [...open];
-    newState[index].isActive = !newState[index].isActive;
-    setOpen(newState);
+    setIsOpen(!isOpen);
   };
 
   const handleImage = () => {
@@ -115,15 +110,15 @@ export const Submit = ({ user, setPosts }) => {
           onBlur={(e) => {
             setTitle(e.currentTarget.textContent);
           }}
-          onClick={open[0].isActive ? undefined : handleClick}
+          onClick={isOpen ? undefined : handleClick}
           contentEditable="true"
-          data-ph={open[0].isActive ? "Title" : "게시물 작성"}
+          data-ph={isOpen ? "Title" : "게시물 작성"}
           data-index="0"
           className="submit_title"
         ></div>
       </div>
       <div>
-        {open[0].isActive ? (
+        {isOpen ? (
           <div style={{ marginTop: "5px" }}>
             <ReactQuill
               ref={quill}
@@ -136,7 +131,7 @@ export const Submit = ({ user, setPosts }) => {
         ) : (
           <div></div>
         )}
-        <div className={open[0].isActive ? "submit_switch2" : "submit_switch"}>
+        <div className={isOpen ? "submit_switch2" : "submit_switch"}>
           <Button
             onClick={handleClick}
             data-index="0"
