@@ -1,11 +1,14 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { useQuery } from "react-query";
 
 import "./Header.css";
+
 import { getUser } from "../../api/UserApi";
 import { isLoginState, isWritingPost } from "../../store";
-import { useState } from "react";
+
+import Logo from "../../assets/logo.png";
 
 export const Header = (props) => {
   const [isAuth, setIsAuth] = useRecoilState(isLoginState);
@@ -52,8 +55,8 @@ export const Header = (props) => {
         <div className="header_wrapper">
           <img
             className="header_homeBtn"
-            src=" https://www.instagram.com/static/images/web/mobile_nav_type_logo.png/735145cfe0a4.png"
-            alt="Instagram original logo"
+            src={Logo}
+            alt="NCC logo"
             onClick={showSns}
           />
           <div className="header_searchBar_wrapper">
