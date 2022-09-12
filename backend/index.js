@@ -3,7 +3,6 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const path = require('path');
 const services = require('./services');
-const {Server} = require('socket.io');
 const User = require('./models/user.model');
 const Web3 = require('web3')
 const config = require('./config')
@@ -21,9 +20,9 @@ app.use(express.static(path.join(__dirname+'public')));
 app.use('/api', services);
 
 const server = app.listen(4000); // port 4000인 server 실행
-const io = new Server(server, {
+const io = require('socket.io')(server,{
     cors:{
-        origin: "http://localhost:4000"
+        origin: "http://localhost:3000"
     }
 })
 
@@ -61,9 +60,9 @@ app.set('mainIo', io)
 // })
 
 //authentication을 위한 함수
-io.use((socket, next)=>{
+// io.use((socket, next)=>{
     
-})
+// })
 
 //online user들 저장 및 업데이트
 let onlineUsers = []
