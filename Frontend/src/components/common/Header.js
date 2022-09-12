@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { useQuery } from "react-query";
@@ -6,13 +6,18 @@ import { useQuery } from "react-query";
 import "./Header.css";
 
 import { getUser } from "../../api/UserApi";
-import { isLoginState, isWritingPost } from "../../store";
+import { isLoginState, isWritingPost, socketState } from "../../store";
 
 import Logo from "../../assets/logo.png";
+
+import { io } from "socket.io-client";
 
 export const Header = (props) => {
   const [isAuth, setIsAuth] = useRecoilState(isLoginState);
   const [isOpen, setIsOpen] = useRecoilState(isWritingPost);
+  // const [socketValue, setSocketValue] = useRecoilState(socketState);
+  const [socketValue, setSocketValue] = useState(null);
+
   const [showAlarm, setShowAlarm] = useState(false);
   const [keyword, setKeyWord] = useState("");
   const navigate = useNavigate();
@@ -48,6 +53,25 @@ export const Header = (props) => {
     const value = event.target.value;
     setKeyWord(value);
   };
+
+  useEffect(() => {
+    const socket = io("http://localhost:4000");
+    setSocketValue(socket);
+  }, []);
+
+  console.log(socketValue);
+
+  useEffect(() => {
+    console.log(socketValue);
+    if (socketValue) {
+      socketValue.on("getNotification", (arg) => {
+        console.log(arg);
+      });
+    }
+    console.log("Getting Socket Data");
+  }, [socketValue]);
+
+  // console.log(socketValue);
 
   return (
     <>

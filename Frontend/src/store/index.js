@@ -19,3 +19,8 @@ export const isWritingPost = atom({
   key: "isWritingPostState",
   default: false,
 });
+
+export const socketState = atom({
+  key: "socketState",
+  default: null,
+});
