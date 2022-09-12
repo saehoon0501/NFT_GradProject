@@ -18,7 +18,8 @@ const Feed = ({
   likes,
   comments,
   socketValue,
-  writer_id,
+  user_publicAddr,
+  writer_publicAddr,
 }) => {
   const [like, setLike] = useState({
     liked: false,
@@ -50,8 +51,8 @@ const Feed = ({
         })
         .catch((err) => console.log(err));
       socketValue.emit("sendNotification", {
-        sender: user_id,
-        receiver: writer_id,
+        sender: user_publicAddr,
+        receiver: writer_publicAddr,
         type: "like",
       });
     } else {

@@ -63,11 +63,11 @@ export const Header = (props) => {
 
   useEffect(() => {
     console.log(socketValue);
-    if (socketValue) {
-      socketValue.on("getNotification", (arg) => {
-        console.log(arg);
-      });
-    }
+
+    socketValue.on("getNotification", (arg) => {
+      console.log(arg);
+    });
+
     console.log("Getting Socket Data");
   }, [socketValue]);
 

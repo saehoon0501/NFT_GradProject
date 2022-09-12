@@ -117,7 +117,8 @@ export const Main = () => {
             comments={post.comments}
             likes={post.likes}
             socketValue={socketValue}
-            writer_id={post.user._id}
+            user_publicAddr={userQuery.data.publicAddr}
+            writer_publicAddr={post.user.publicAddr}
           />
         ))}
       </div>
