@@ -70,13 +70,15 @@ app.set("postIo", namespace)
 //online user들 저장 및 업데이트
 let onlineUsers = []
 
-const addNewUser = (publicAddr, socketId)=>{
-    !onlineUsers.some((user)=>user.publicAddr === publicAddr) &&
-    onlineUsers.push({publicAddr,socketId})
+const deleteUser = (socketId)=>{
+   onlineUsers = onlineUsers.filter((user)=> user.socketId !== socketId)
 }
 
-const deleteUser = (socketId)=>{
-    onlineUsers.filter((user)=> user.socketId !== socketId)
+const addNewUser = (publicAddr, socketId)=>{
+    if(onlineUsers.some((user)=>user.publicAddr === publicAddr)){
+        deleteUser(socketId)
+    }
+    onlineUsers.push({publicAddr,socketId})
 }
 
 const getUser = (publicAddr) =>{
@@ -84,6 +86,7 @@ const getUser = (publicAddr) =>{
 }
 
 io.on("connection",(socket)=>{
+    console.log(socket)
     socket.on("newUser", (publicAddr)=>{
         addNewUser(publicAddr,socket.id)
         io.emit("onlineUsers", {onlineUsers})
@@ -98,16 +101,16 @@ io.on("connection",(socket)=>{
         const sendUser = getUser(sender)
         console.log('socket emit Notification', sendUser)
         
-        if(receiveUser){
-            io.to(receiveUser.socketId).emit("getNotification", {sender,type})
-        }
-
-        if(sendUser){
-            io.to(sendUser.socketId).emit("getNotification", {sender,type})
-        }                
+        
+        // io.to(receiveUser.socketId).emit("getNotification", {sender,type})
+        // io.emit('getNotification', {sender,type})
+        console.log(sendUser.socketId)
+        io.to(sendUser.socketId).emit("getNotification", {sender,type})
+                        
     })
 
     socket.on("disconnect",()=>{
+        console.log('disconnect')
         deleteUser(socket.id)
     })
 })

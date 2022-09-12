@@ -14,6 +14,7 @@ export const Header = ({ socketValue }) => {
   const [isAuth, setIsAuth] = useRecoilState(isLoginState);
   const [isOpen, setIsOpen] = useRecoilState(isWritingPost);
 
+
   const [showAlarm, setShowAlarm] = useState(false);
   const [keyword, setKeyWord] = useState("");
   const navigate = useNavigate();
@@ -52,11 +53,11 @@ export const Header = ({ socketValue }) => {
 
   useEffect(() => {
     console.log(socketValue);
-    if (socketValue) {
-      socketValue.on("getNotification", (arg) => {
-        console.log(arg);
+
+      socketValue?.on("getNotification", (arg) => {
+        console.log(arg)
       });
-    }
+    
     console.log("Getting Socket Data");
   }, [socketValue]);
 
