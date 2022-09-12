@@ -28,7 +28,7 @@ const io = require('socket.io')(server,{
 
 const namespace = io.of('/comment')
 
-app.set("commentIo", namespace)
+app.set("namespace", namespace)
 
 // const web3 = new Web3(`ws://127.0.0.1:8545`)
 
