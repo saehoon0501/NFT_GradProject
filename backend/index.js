@@ -74,11 +74,9 @@ const deleteUser = (socketId)=>{
    onlineUsers = onlineUsers.filter((user)=> user.socketId !== socketId)
 }
 
-const addNewUser = (publicAddr, socketId)=>{
-    if(onlineUsers.some((user)=>user.publicAddr === publicAddr)){
-        deleteUser(socketId)
-    }
-    onlineUsers.push({publicAddr,socketId})
+const addNewUser = (profile_pic, username, publicAddr, socketId)=>{
+    !onlineUsers.some((user)=>user.publicAddr === publicAddr) &&
+    onlineUsers.push({profile_pic, username, publicAddr, socketId})
 }
 
 const getUser = (publicAddr) =>{
@@ -86,8 +84,8 @@ const getUser = (publicAddr) =>{
 }
 
 io.on("connection",(socket)=>{
-    socket.on("newUser", (publicAddr)=>{
-        addNewUser(publicAddr,socket.id)
+    socket.on("newUser", ({profile_pic, username, publicAddr})=>{
+        addNewUser(profile_pic, username, publicAddr, socket.id)
         io.emit("onlineUsers", {onlineUsers})
     })
 
