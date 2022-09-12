@@ -120,7 +120,7 @@ namespace.on('connection', (socket)=>{
 
     socket.on('join', (post_id)=>{
         socket.join(post_id)
-        namespace.to(post_id).emit('testsocket', `${comment_id} joined`)
+        namespace.to(post_id).emit('testsocket', `${post_id} joined`)
     })
 
     socket.on('disconnect', ()=>{
