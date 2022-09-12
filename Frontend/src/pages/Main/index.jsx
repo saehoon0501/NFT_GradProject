@@ -23,6 +23,7 @@ export const Main = ({ socketValue }) => {
   const [isBest, setIsBest] = useState(false);
   const [isAuth, setIsAuth] = useRecoilState(isLoginState);
   const [isUserDataSend, setIsUserDataSend] = useState(false);
+  const [loginUsers, setLoginUsers] = useState([]);
 
   const userQuery = useQuery("user", ({ signal }) => getUser(signal), {
     onSuccess: (data) => {
@@ -60,8 +61,9 @@ export const Main = ({ socketValue }) => {
   useEffect(() => {
     console.log(socketValue);
     if (socketValue) {
-      socketValue.on("onlineUsers", (arg) => {
-        console.log(arg);
+      socketValue.on("onlineUsers", ({ onlineUsers }) => {
+        setLoginUsers(onlineUsers);
+        console.log(onlineUsers);
       });
     }
     console.log("Getting Socket Data");
@@ -82,7 +84,7 @@ export const Main = ({ socketValue }) => {
   return (
     <div className="main_wrapper">
       <CategoryBar />
-      <LoginUser />
+      <LoginUser users={loginUsers} />
       <Vote />
       <Submit user={userQuery.data} setPosts={setPosts} />
       <div className="main_icons_wrapper">

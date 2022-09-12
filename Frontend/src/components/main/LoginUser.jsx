@@ -18,19 +18,19 @@ const dummyData = [
   },
 ];
 
-export const LoginUser = () => {
+export const LoginUser = ({ users }) => {
   return (
     <div className="loginUser_wrapper">
       <h3 className="loginUser_title">현재 로그인 유저</h3>
       <div className="loginUser_users">
-        {dummyData.map((user, index) => (
+        {users.map((user, index) => (
           <div key={index} className="loginUser_user">
             <img
               className="loginUser_user_img"
-              src={user.imgUrl}
-              alt={user.name}
+              src={user.profile_pic}
+              alt={user.username}
             />
-            <p className="loginUser_user_name">{user.name}</p>
+            <p className="loginUser_user_name">{user.username}</p>
           </div>
         ))}
       </div>
