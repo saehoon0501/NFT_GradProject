@@ -104,7 +104,8 @@ export const FeedView = () => {
 
   useEffect(() => {
     console.log(socketValue);
-    if (socketValue) {
+    if (socketValue && post_id) {
+      socketValue.emit("join", post_id);
       socketValue.on("testsocket", (arg) => {
         console.log(arg);
       });
