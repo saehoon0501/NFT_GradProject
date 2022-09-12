@@ -28,8 +28,6 @@ const io = require('socket.io')(server,{
 
 const namespace = io.of('/comment')
 
-app.set("namespace", namespace)
-
 // const web3 = new Web3(`ws://127.0.0.1:8545`)
 
 // const subscription = web3.eth.subscribe('logs',{
@@ -122,3 +120,5 @@ namespace.on('connection', (socket)=>{
         console.log('someone has left')
     })
 })
+
+module.exports.namespace =namespace

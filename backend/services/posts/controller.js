@@ -5,6 +5,7 @@ const multer = require("multer");
 const path = require('path');
 const {GridFsStorage} = require("multer-gridfs-storage");
 const Grid = require("gridfs-stream");
+const socket = require("../../index")
 const QuillDeltaToHtmlConverter = require('quill-delta-to-html').QuillDeltaToHtmlConverter;
 
 module.exports={
@@ -196,8 +197,8 @@ module.exports={
 
         await Promise.all([User.updateOne({publicAddr:publicAddress},{$addToSet:{'profile.comment_ids':comment._id}}),
         Post.updateOne({_id:post_id},{$addToSet:{comments:comment._id}}),comment.save()])
-        .then(()=>{
-            req.app.namespace.to(post_id).emit('getNotification', `commentAdded`)
+        .then(()=>{            
+            socket.namespace.to(post_id).emit('getNotification', `commentAdded`)
             return res.send('comment added')
         })         
     },
