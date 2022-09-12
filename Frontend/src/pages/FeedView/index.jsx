@@ -100,6 +100,8 @@ export const FeedView = () => {
   useEffect(() => {
     const socket = io("http://localhost:4000/comment");
     setSocketValue(socket);
+
+    return () => {socket.disconnect()}
   }, []);
 
   useEffect(() => {
