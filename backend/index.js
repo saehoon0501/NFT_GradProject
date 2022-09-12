@@ -97,7 +97,7 @@ io.on("connection",(socket)=>{
         const receiveUser = getUser(receiver)
         const sendUser = getUser(sender)
         console.log('socket emit Notification', sendUser)
-        io.emit('getNotification', {sender,type})
+        
         if(receiveUser){
             io.to(receiveUser.socketId).emit("getNotification", {sender,type})
         }

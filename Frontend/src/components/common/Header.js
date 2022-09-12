@@ -59,15 +59,14 @@ export const Header = (props) => {
     setSocketValue(socket);
   }, []);
 
-  console.log(socketValue);
 
   useEffect(() => {
     console.log(socketValue);
-
+    if(socketValue){
     socketValue.on("getNotification", (arg) => {
       console.log(arg);
     });
-
+  }
     console.log("Getting Socket Data");
   }, [socketValue]);
 
