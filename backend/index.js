@@ -28,8 +28,7 @@ const io = require('socket.io')(server,{
 
 const namespace = io.of('/comment')
 
-app.set('mainIo', io)
-app.set("postIo", namespace)
+app.set("commentIo", namespace)
 
 // const web3 = new Web3(`ws://127.0.0.1:8545`)
 
@@ -116,8 +115,7 @@ namespace.on('connection', (socket)=>{
     console.log('someone logged in')
 
     socket.on('join', (post_id)=>{
-        socket.join(post_id)
-        namespace.to(post_id).emit('testsocket', `${post_id} joined`)
+        socket.join(post_id)        
     })
 
     socket.on('disconnect', ()=>{

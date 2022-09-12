@@ -196,7 +196,10 @@ module.exports={
 
         await Promise.all([User.updateOne({publicAddr:publicAddress},{$addToSet:{'profile.comment_ids':comment._id}}),
         Post.updateOne({_id:post_id},{$addToSet:{comments:comment._id}}),comment.save()])
-        .then(()=>res.send('comment added'))        
+        .then(()=>{
+            req.app.commentIo.to(post_id).emit('getNotification', `commentAdded`)
+            return res.send('comment added')
+        })         
     },
 
     likeComment:(req,res,next)=>{
