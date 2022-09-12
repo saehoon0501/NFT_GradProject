@@ -24,8 +24,16 @@ import { io } from "socket.io-client";
 export const Main = () => {
   const [isBest, setIsBest] = useState(false);
   const [isAuth, setIsAuth] = useRecoilState(isLoginState);
+  const [socketValue, setSocketValue] = useState(null);
+  const [isUserDataSend, setIsUserDataSend] = useState(false);
 
-  const userQuery = useQuery("user", ({ signal }) => getUser(signal));
+  const userQuery = useQuery("user", ({ signal }) => getUser(signal), {
+    onSuccess: (data) => {
+      socketValue.emit("newUser", data.publicAddr);
+      setIsUserDataSend(true);
+      console.log("Send User Data");
+    },
+  });
   const postQuery = useQuery("posts", ({ signal }) => getPost(signal), {
     onSuccess: (data) => {
       console.log(posts);
@@ -36,9 +44,6 @@ export const Main = () => {
   const [posts, setPosts] = useState(postQuery.data);
 
   const navigate = useNavigate();
-  const socket = io("ws://localhost:4000", {
-    cors: { origin: "*" },
-  });
 
   if (userQuery.isError) navigate("/login");
 
@@ -48,8 +53,18 @@ export const Main = () => {
 
   useEffect(() => {
     setIsAuth(false);
-    socket.emit("newUser", userQuery.data.publicAddr);
+    setSocketValue(io("http://localhost:4000"));
   }, []);
+
+  useEffect(() => {
+    console.log(socketValue);
+    if (socketValue) {
+      socketValue.on("onlineUsers", (arg) => {
+        console.log(arg);
+      });
+    }
+    console.log("Getting Socket Data");
+  }, [socketValue]);
 
   if (userQuery.isLoading || postQuery.isLoading) {
     console.log(userQuery.data);
@@ -59,9 +74,6 @@ export const Main = () => {
 
   console.log(posts);
 
-  // socket.on("hello", (arg) => {
-  //   console.log(arg);
-  // });
   // // 전달받는 서버측 정보
 
   // // 연결하는 key 이름 / 전달하는 정보
