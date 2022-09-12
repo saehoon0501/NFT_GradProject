@@ -10,13 +10,9 @@ import { isLoginState, isWritingPost, socketState } from "../../store";
 
 import Logo from "../../assets/logo.png";
 
-import { io } from "socket.io-client";
-
-export const Header = (props) => {
+export const Header = ({ socketValue }) => {
   const [isAuth, setIsAuth] = useRecoilState(isLoginState);
   const [isOpen, setIsOpen] = useRecoilState(isWritingPost);
-  // const [socketValue, setSocketValue] = useRecoilState(socketState);
-  const [socketValue, setSocketValue] = useState(null);
 
   const [showAlarm, setShowAlarm] = useState(false);
   const [keyword, setKeyWord] = useState("");
@@ -55,22 +51,14 @@ export const Header = (props) => {
   };
 
   useEffect(() => {
-    const socket = io("http://localhost:4000");
-    setSocketValue(socket);
-  }, []);
-
-
-  useEffect(() => {
     console.log(socketValue);
-    if(socketValue){
-    socketValue.on("getNotification", (arg) => {
-      console.log(arg);
-    });
-  }
+    if (socketValue) {
+      socketValue.on("getNotification", (arg) => {
+        console.log(arg);
+      });
+    }
     console.log("Getting Socket Data");
   }, [socketValue]);
-
-  // console.log(socketValue);
 
   return (
     <>

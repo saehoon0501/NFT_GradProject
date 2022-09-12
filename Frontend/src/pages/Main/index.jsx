@@ -14,17 +14,14 @@ import new_icon from "../../assets/new.png";
 import new_icon2 from "../../assets/new2.png";
 import best from "../../assets/best.png";
 import best2 from "../../assets/best2.png";
-import { isLoginState, socketState } from "../../store";
+import { isLoginState } from "../../store";
 import { LoginUser } from "../../components/main/LoginUser";
 import { Vote } from "../../components/main/Vote";
 import { Loading } from "../../components/common/Loading";
 
-import { io } from "socket.io-client";
-
-export const Main = () => {
+export const Main = ({ socketValue }) => {
   const [isBest, setIsBest] = useState(false);
   const [isAuth, setIsAuth] = useRecoilState(isLoginState);
-  const [socketValue, setSocketValue] = useState(null);
   const [isUserDataSend, setIsUserDataSend] = useState(false);
 
   const userQuery = useQuery("user", ({ signal }) => getUser(signal), {
@@ -53,8 +50,6 @@ export const Main = () => {
 
   useEffect(() => {
     setIsAuth(false);
-    const socket = io("http://localhost:4000");
-    setSocketValue(socket);
   }, []);
 
   useEffect(() => {
