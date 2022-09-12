@@ -19,6 +19,8 @@ import { LoginUser } from "../../components/main/LoginUser";
 import { Vote } from "../../components/main/Vote";
 import { Loading } from "../../components/common/Loading";
 
+import { io } from "socket.io-client";
+
 export const Main = () => {
   const [isBest, setIsBest] = useState(false);
   const [isAuth, setIsAuth] = useRecoilState(isLoginState);
@@ -34,6 +36,7 @@ export const Main = () => {
   const [posts, setPosts] = useState(postQuery.data);
 
   const navigate = useNavigate();
+  const socket = io("ws://localhost:4000");
 
   if (userQuery.isError) navigate("/login");
 
@@ -43,6 +46,7 @@ export const Main = () => {
 
   useEffect(() => {
     setIsAuth(false);
+    socket.emit("newUser", userQuery.data.publicAddr);
   }, []);
 
   if (userQuery.isLoading || postQuery.isLoading) {
@@ -52,6 +56,13 @@ export const Main = () => {
   }
 
   console.log(posts);
+
+  // socket.on("hello", (arg) => {
+  //   console.log(arg);
+  // });
+  // // 전달받는 서버측 정보
+
+  // // 연결하는 key 이름 / 전달하는 정보
 
   return (
     <div className="main_wrapper">
