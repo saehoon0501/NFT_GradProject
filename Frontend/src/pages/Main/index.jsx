@@ -19,11 +19,21 @@ import { LoginUser } from "../../components/main/LoginUser";
 import { Vote } from "../../components/main/Vote";
 import { Loading } from "../../components/common/Loading";
 
+import { io } from "socket.io-client";
+
 export const Main = () => {
   const [isBest, setIsBest] = useState(false);
   const [isAuth, setIsAuth] = useRecoilState(isLoginState);
+  const [socketValue, setSocketValue] = useState(null);
+  const [isUserDataSend, setIsUserDataSend] = useState(false);
 
-  const userQuery = useQuery("user", ({ signal }) => getUser(signal));
+  const userQuery = useQuery("user", ({ signal }) => getUser(signal), {
+    onSuccess: (data) => {
+      socketValue.emit("newUser", data.publicAddr);
+      setIsUserDataSend(true);
+      console.log("Send User Data");
+    },
+  });
   const postQuery = useQuery("posts", ({ signal }) => getPost(signal), {
     onSuccess: (data) => {
       console.log(posts);
@@ -43,7 +53,18 @@ export const Main = () => {
 
   useEffect(() => {
     setIsAuth(false);
+    setSocketValue(io("http://localhost:4000"));
   }, []);
+
+  useEffect(() => {
+    console.log(socketValue);
+    if (socketValue) {
+      socketValue.on("onlineUsers", (arg) => {
+        console.log(arg);
+      });
+    }
+    console.log("Getting Socket Data");
+  }, [socketValue]);
 
   if (userQuery.isLoading || postQuery.isLoading) {
     console.log(userQuery.data);
@@ -52,6 +73,10 @@ export const Main = () => {
   }
 
   console.log(posts);
+
+  // // 전달받는 서버측 정보
+
+  // // 연결하는 key 이름 / 전달하는 정보
 
   return (
     <div className="main_wrapper">
