@@ -90,11 +90,20 @@ io.on("connection",(socket)=>{
     })
 
     socket.on("sendNotification",({sender, receiver, type})=>{
+        console.log('sender address', sender)
+        console.log('receiver address', receiver)
+        console.log('type', type)
+
         const receiveUser = getUser(receiver)
         const sendUser = getUser(sender)
         console.log('socket emit Notification', sendUser)
-        io.to(receiveUser.socketId).emit("getNotification", {sender,type})
-        io.to(sendUser.socketId).emit("getNotification", {sender,type})
+        if(receiveUser){
+            io.to(receiveUser.socketId).emit("getNotification", {sender,type})
+        }
+
+        if(sendUser){
+            io.to(sendUser.socketId).emit("getNotification", {sender,type})
+        }                
     })
 
     socket.on("disconnect",()=>{
