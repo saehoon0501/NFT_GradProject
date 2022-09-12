@@ -88,7 +88,10 @@ io.on("connection",(socket)=>{
 
     socket.on("sendNotification",({sender, receiver, type})=>{
         const receiveUser = getUser(receiver)
+        const sendUser = getUser(sender)
+
         io.to(receiveUser.socketId).emit("getNotification", {sender,type})
+        io.to(sender.socketId).emit("getNotification", {sender,type})
     })
 
     socket.on("disconnect",()=>{
