@@ -18,6 +18,8 @@ import {
 import { Comment } from "../../components/feedView/Comment";
 import { Loading } from "../../components/common/Loading";
 
+import { io } from "socket.io-client";
+
 export const FeedView = () => {
   const { state } = useLocation();
   const { post_id, writer_profile, user_id, caption, title } = state;
@@ -92,6 +94,23 @@ export const FeedView = () => {
     commentMutate.mutate(para);
     setValue("");
   };
+
+  const [socketValue, setSocketValue] = useState(null);
+
+  useEffect(() => {
+    const socket = io("http://localhost:4000/comment");
+    setSocketValue(socket);
+  }, []);
+
+  useEffect(() => {
+    console.log(socketValue);
+    if (socketValue) {
+      socketValue.on("testsocket", (arg) => {
+        console.log(arg);
+      });
+    }
+    console.log("Getting Socket Data");
+  }, [socketValue]);
 
   if (isLoading) {
     return <Loading />;
