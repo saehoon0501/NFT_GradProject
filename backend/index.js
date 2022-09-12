@@ -23,7 +23,7 @@ app.use('/api', services);
 const server = app.listen(4000); // port 4000인 server 실행
 const io = new Server(server, {
     cors:{
-        origin: "*"
+        origin: "http://localhost:4000"
     }
 })
 
