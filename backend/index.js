@@ -61,7 +61,7 @@ app.set('mainIo', io)
 
 //authentication을 위한 함수
 // io.use((socket, next)=>{
-    
+    // next()
 // })
 
 //online user들 저장 및 업데이트
@@ -91,7 +91,7 @@ io.on("connection",(socket)=>{
         const sendUser = getUser(sender)
 
         io.to(receiveUser.socketId).emit("getNotification", {sender,type})
-        io.to(sender.socketId).emit("getNotification", {sender,type})
+        io.to(sendUser.socketId).emit("getNotification", {sender,type})
     })
 
     socket.on("disconnect",()=>{
