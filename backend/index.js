@@ -79,7 +79,7 @@ const deleteUser = (socketId)=>{
     onlineUsers.filter((user)=> user.socketId !== socketId)
 }
 
-const getUser = (user) =>{
+const getUser = (publicAddr) =>{
     return onlineUsers.find((user)=> user.publicAddr === publicAddr)
 }
 
