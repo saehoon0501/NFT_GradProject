@@ -36,7 +36,9 @@ export const Main = () => {
   const [posts, setPosts] = useState(postQuery.data);
 
   const navigate = useNavigate();
-  const socket = io("ws://localhost:4000");
+  const socket = io("ws://localhost:4000", {
+    cors: { origin: "*" },
+  });
 
   if (userQuery.isError) navigate("/login");
 
