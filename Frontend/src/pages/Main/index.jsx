@@ -115,6 +115,8 @@ export const Main = () => {
             title={post.title}
             comments={post.comments}
             likes={post.likes}
+            socketValue={socketValue}
+            writer_id={post.user._id}
           />
         ))}
       </div>
