@@ -26,7 +26,10 @@ const io = require('socket.io')(server,{
     }
 })
 
+const namespace = io.of('/comment')
+
 app.set('mainIo', io)
+app.set("postIo", namespace)
 
 // const web3 = new Web3(`ws://127.0.0.1:8545`)
 
@@ -76,7 +79,7 @@ const deleteUser = (socketId)=>{
     onlineUsers.filter((user)=> user.socketId !== socketId)
 }
 
-const getUser = (username) =>{
+const getUser = (user) =>{
     return onlineUsers.find((user)=> user.publicAddr === publicAddr)
 }
 
@@ -89,7 +92,7 @@ io.on("connection",(socket)=>{
     socket.on("sendNotification",({sender, receiver, type})=>{
         const receiveUser = getUser(receiver)
         const sendUser = getUser(sender)
-
+        console.log('socket emit Notification', sendUser)
         io.to(receiveUser.socketId).emit("getNotification", {sender,type})
         io.to(sendUser.socketId).emit("getNotification", {sender,type})
     })
@@ -98,10 +101,6 @@ io.on("connection",(socket)=>{
         deleteUser(socket.id)
     })
 })
-
-const namespace = io.of('/comment')
-
-app.set("postIo", namespace)
 
 namespace.on('connection', (socket)=>{
     console.log('someone logged in')
