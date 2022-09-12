@@ -20,7 +20,11 @@ app.use(express.static(path.join(__dirname+'public')));
 app.use('/api', services);
 
 const server = app.listen(4000); // port 4000인 server 실행
-const io = require('socket.io')(server)
+const io = require('socket.io')(server,{
+    cors:{
+        origin: "http://localhost:4000"
+    }
+})
 
 // const web3 = new Web3(`ws://127.0.0.1:8545`)
 
@@ -58,14 +62,46 @@ io.use((socket, next)=>{
     
 })
 
+//online user들 저장 및 업데이트
+let onlineUsers = []
+
+const addNewUser = (publicAddr, socketId)=>{
+    !onlineUsers.some((user)=>user.publicAddr === publicAddr) &&
+    onlineUsers.push({publicAddr,socketId})
+}
+
+const deleteUser = (socketId)=>{
+    onlineUsers.filter((user)=> user.socketId !== socketId)
+}
+
+const getUser = (username) =>{
+    return onlineUsers.find((user)=> user.publicAddr === publicAddr)
+}
+
+io.on("connection",(socket)=>{
+    socket.on("newUser", (publicAddr)=>{
+        addNewUser(publicAddr,socket.id)
+        io.emit("onlineUsers", {onlineUsers})
+    })
+
+    socket.on("sendNotification",({sender, receiver, type})=>{
+        const receiveUser = getUser(receiver)
+        io.to(receiveUser.socketId).emit("getNotification", {sender,type})
+    })
+
+    socket.on("disconnect",()=>{
+        deleteUser(socket.id)
+    })
+})
+
 const namespace = io.of('/comment')
 
 namespace.on('connection', (socket)=>{
     console.log('someone logged in')
 
-    socket.on('join', (comment_id)=>{
-        socket.join(comment_id)
-        namespace.to(comment_id).emit('testsocket', comment_id)
+    socket.on('join', (post_id)=>{
+        socket.join(post_id)
+        namespace.to(post_id).emit('testsocket', `${comment_id} joined`)
     })
 
     socket.on('disconnect', ()=>{
