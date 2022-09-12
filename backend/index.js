@@ -86,7 +86,6 @@ const getUser = (publicAddr) =>{
 }
 
 io.on("connection",(socket)=>{
-    console.log(socket)
     socket.on("newUser", (publicAddr)=>{
         addNewUser(publicAddr,socket.id)
         io.emit("onlineUsers", {onlineUsers})
