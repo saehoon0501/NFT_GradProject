@@ -106,7 +106,7 @@ export const FeedView = () => {
     console.log(socketValue);
     if (socketValue && post_id) {
       socketValue.emit("join", post_id);
-      socketValue.on("testsocket", (arg) => {
+      socketValue.on("getNotification", (arg) => {
         console.log(arg);
       });
     }
