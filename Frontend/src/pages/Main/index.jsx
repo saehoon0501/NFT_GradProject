@@ -26,7 +26,12 @@ export const Main = ({ socketValue }) => {
 
   const userQuery = useQuery("user", ({ signal }) => getUser(signal), {
     onSuccess: (data) => {
-      socketValue.emit("newUser", data.publicAddr);
+      console.log(data);
+      socketValue.emit("newUser", {
+        publicAddr: data.publicAddr,
+        username: data.profile.username,
+        profile_pic: data.profile.profile_pic,
+      });
       setIsUserDataSend(true);
       console.log("Send User Data");
     },
