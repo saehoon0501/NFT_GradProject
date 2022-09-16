@@ -10,10 +10,42 @@ import { isLoginState, isWritingPost, socketState } from "../../store";
 
 import Logo from "../../assets/logo.png";
 
+const dummyAlarmData = [
+  {
+    imgUrl:
+      "https://img1.daumcdn.net/thumb/S180x180/?fname=https%3A%2F%2Ft1.daumcdn.net%2Fsports%2Fplayer%2F300%2F3%2F9552.jpg&scode=default_face_profile_big_p",
+    name: "베츠",
+    postName: "hello",
+  },
+  {
+    imgUrl:
+      "https://img1.daumcdn.net/thumb/S180x180/?fname=https%3A%2F%2Ft1.daumcdn.net%2Fsports%2Fplayer%2F300%2F3%2F9552.jpg&scode=default_face_profile_big_p",
+    name: "베츠",
+    postName: "hello",
+  },
+  {
+    imgUrl:
+      "https://img1.daumcdn.net/thumb/S180x180/?fname=https%3A%2F%2Ft1.daumcdn.net%2Fsports%2Fplayer%2F300%2F3%2F9552.jpg&scode=default_face_profile_big_p",
+    name: "베츠",
+    postName: "hello",
+  },
+  {
+    imgUrl:
+      "https://img1.daumcdn.net/thumb/S180x180/?fname=https%3A%2F%2Ft1.daumcdn.net%2Fsports%2Fplayer%2F300%2F3%2F9552.jpg&scode=default_face_profile_big_p",
+    name: "베츠",
+    postName: "hello",
+  },
+  {
+    imgUrl:
+      "https://img1.daumcdn.net/thumb/S180x180/?fname=https%3A%2F%2Ft1.daumcdn.net%2Fsports%2Fplayer%2F300%2F3%2F9552.jpg&scode=default_face_profile_big_p",
+    name: "베츠",
+    postName: "hello",
+  },
+];
+
 export const Header = ({ socketValue }) => {
   const [isAuth, setIsAuth] = useRecoilState(isLoginState);
   const [isOpen, setIsOpen] = useRecoilState(isWritingPost);
-
 
   const [showAlarm, setShowAlarm] = useState(false);
   const [keyword, setKeyWord] = useState("");
@@ -54,10 +86,10 @@ export const Header = ({ socketValue }) => {
   useEffect(() => {
     console.log(socketValue);
 
-      socketValue?.on("getNotification", (arg) => {
-        console.log(arg)
-      });
-    
+    socketValue?.on("getNotification", (arg) => {
+      console.log(arg);
+    });
+
     console.log("Getting Socket Data");
   }, [socketValue]);
 
@@ -91,6 +123,14 @@ export const Header = ({ socketValue }) => {
               <div className="alarm_menu_header">
                 <h3>알람 목록</h3>
                 <button onClick={onClickToggleAlarm}>X</button>
+              </div>
+              <div className="alarm_contents">
+                {dummyAlarmData.map((alarm) => (
+                  <div className="alarm_content">
+                    <img src={alarm.imgUrl} alt={`${alarm.name}`} />
+                    <p>{`${alarm.name}님이 ${alarm.postName}를 좋아합니다.`}</p>
+                  </div>
+                ))}
               </div>
             </div>
           )}

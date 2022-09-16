@@ -21,7 +21,7 @@ const dummyData = [
 export const LoginUser = ({ users }) => {
   return (
     <div className="loginUser_wrapper">
-      <h3 className="loginUser_title">현재 로그인 유저</h3>
+      <h3 className="loginUser_title">{`현재 로그인 유저 (${users.length}명)`}</h3>
       <div className="loginUser_users">
         {users.map((user, index) => (
           <div key={index} className="loginUser_user">
