@@ -17,6 +17,30 @@ const dummyAlarmData = [
     name: "베츠",
     postName: "hello",
   },
+  {
+    imgUrl:
+      "https://img1.daumcdn.net/thumb/S180x180/?fname=https%3A%2F%2Ft1.daumcdn.net%2Fsports%2Fplayer%2F300%2F3%2F9552.jpg&scode=default_face_profile_big_p",
+    name: "베츠",
+    postName: "hello",
+  },
+  {
+    imgUrl:
+      "https://img1.daumcdn.net/thumb/S180x180/?fname=https%3A%2F%2Ft1.daumcdn.net%2Fsports%2Fplayer%2F300%2F3%2F9552.jpg&scode=default_face_profile_big_p",
+    name: "베츠",
+    postName: "hello",
+  },
+  {
+    imgUrl:
+      "https://img1.daumcdn.net/thumb/S180x180/?fname=https%3A%2F%2Ft1.daumcdn.net%2Fsports%2Fplayer%2F300%2F3%2F9552.jpg&scode=default_face_profile_big_p",
+    name: "베츠",
+    postName: "hello",
+  },
+  {
+    imgUrl:
+      "https://img1.daumcdn.net/thumb/S180x180/?fname=https%3A%2F%2Ft1.daumcdn.net%2Fsports%2Fplayer%2F300%2F3%2F9552.jpg&scode=default_face_profile_big_p",
+    name: "베츠",
+    postName: "hello",
+  },
 ];
 
 export const Header = ({ socketValue }) => {
