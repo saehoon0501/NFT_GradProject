@@ -101,7 +101,9 @@ export const FeedView = () => {
     const socket = io("http://localhost:4000/comment");
     setSocketValue(socket);
 
-    return () => {socket.disconnect()}
+    return () => {
+      socket.disconnect();
+    };
   }, []);
 
   useEffect(() => {
