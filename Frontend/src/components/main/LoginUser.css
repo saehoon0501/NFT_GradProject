@@ -26,6 +26,7 @@
   height: 40px;
   border-radius: 10px;
   margin-right: 5px;
+  border: 1.5px solid blue;
 }
 
 .loginUser_user_name {
