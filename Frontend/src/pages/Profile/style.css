@@ -31,11 +31,7 @@
   align-items: center;
   text-align: left;
   margin: 0 auto;
-}
-
-.profile-post-img {
-  width: 270px;
-  margin: 0px 10px;
+  gap: 10px;
 }
 
 .clickable {

@@ -22,6 +22,7 @@ import { io } from "socket.io-client";
 
 export const FeedView = () => {
   const { state } = useLocation();
+  console.log(state);
   const { post_id, writer_profile, user_id, caption, title } = state;
   let { likes } = state;
 
