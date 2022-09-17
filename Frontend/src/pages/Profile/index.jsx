@@ -12,6 +12,7 @@ import { ProfilePic } from "../../components/profile/ProfilePic";
 import { ProfileCaption } from "../../components/profile/ProfileCaption";
 import { ProfileChangeImage } from "../../components/profile/ProfileChangeImage";
 import { Loading } from "../../components/common/Loading";
+import { ProfilePost } from "../../components/profile/ProfilePost";
 
 export const Profile = () => {
   const { data: user, isLoading } = useQuery("user", ({ signal }) =>
@@ -23,6 +24,8 @@ export const Profile = () => {
     return <Loading />;
   }
 
+  console.log(user);
+
   return (
     <div className="profile-container">
       <div className="profile-wrapper">
@@ -33,8 +36,8 @@ export const Profile = () => {
       <div className="profile-post-wrapper">
         <span className="profile-post-title">게시물</span>
         <div className="profile-post">
-          {[1, 2, 3].map(() => (
-            <img className="profile-post-img" src={img} />
+          {user?.profile.post_ids.map((postId) => (
+            <ProfilePost key={postId} postId={postId} />
           ))}
         </div>
       </div>
