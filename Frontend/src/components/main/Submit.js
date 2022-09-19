@@ -92,7 +92,7 @@ export const Submit = ({ user, setPosts }) => {
 
     addPost(post_title, post_text).then((res) => {
       console.log(res.data);
-      setPosts((prev) => [res.data, ...prev]);
+      setPosts((prev) => [...prev, res.data]);
     });
   };
 

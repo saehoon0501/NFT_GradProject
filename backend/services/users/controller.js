@@ -3,9 +3,14 @@ const {Post,Like,Comment} = require('../../models/post.model');
 
 
 module.exports = {
-    sndProfile : (req, res, next) => {
-        const publicAddress = res.locals.decoded.publicAddress;
-        console.log('sndProfile 실행 결과', publicAddress)
+    getProfile : (req, res, next) => {            
+        let publicAddress
+        
+        if(req.query.publicAddress==undefined){
+            publicAddress = res.locals.decoded.publicAddress
+        }else{
+            publicAddress = req.query.publicAddress    
+        }
     
         User.findOne({publicAddr:`${publicAddress}`})
         .then((user)=>{

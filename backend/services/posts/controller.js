@@ -1,30 +1,70 @@
 const {Post, Like, Comment} = require('../../models/post.model');
 const User = require('../../models/user.model');
-const crypto = require(`crypto`);
-const multer = require("multer");
-const path = require('path');
-const {GridFsStorage} = require("multer-gridfs-storage");
-const Grid = require("gridfs-stream");
 const socket = require("../../index")
 const QuillDeltaToHtmlConverter = require('quill-delta-to-html').QuillDeltaToHtmlConverter;
 
 module.exports={
-    getPost : (req, res, next)=>{
+    getPost : (req, res, next)=>{        
+        const filter = req.query.filter
+        let pageNum = parseInt(req.query.pageNum)
+        
+        if(req.query.pageNum==undefined){
+            pageNum=0
+        }        
 
-       const posts_result = Post.find().sort({createdAt:-1}).limit(10).skip(0).exec();
-       
-        posts_result.then(async (posts)=>{
-            await Promise.all(posts.map(async (post)=>{
-                const result = await Post.findOne({_id:`${post.id}`})
-                .populate('comments').populate('likes').populate('user', '', User).lean().exec();
-                return result
-            })).then((results) => {
-                console.log('getPost 실행', results);
-                res.send(results);                
-            })
-           
-        })
+        let posts_result
+
+        if(filter === undefined){
+            posts_result = Post.find().skip(pageNum).limit(10).exec()            
+
+            posts_result.then(async (posts)=>{
+                if(!posts) return res.send(400).send('post in page number not exist')
     
+                await Promise.all(posts.map(async (post)=>{
+                    const result = await Post.findOne({_id:`${post.id}`})
+                    .populate('comments').populate('likes').populate('user', '', User).lean().exec();
+                    return result
+                })).then((results) => {
+                    console.log('getPost 실행', results);
+                    return res.send(results);                
+                })
+               
+            })
+        }else if(filter === 'best'){
+            posts_result = Post.aggregate([
+            {$sort:{createdAt: -1}
+            },
+            {$skip:pageNum
+            },
+            {$limit:10
+            },
+            {$lookup:{
+                from: User.collection.name,
+                localField: 'user',
+                foreignField: '_id',
+                as: 'user'
+            }},
+            {$lookup:{
+                from: Comment.collection.name,
+                localField: 'comments',
+                foreignField: '_id',
+                as: 'comments'
+            }},
+            {$lookup:{
+                from: Like.collection.name,
+                localField: 'likes',
+                foreignField: '_id',
+                as: 'likes'
+            }}
+        ]).exec()
+
+        posts_result.then((results)=> {
+            console.log('getPost실행', results)
+            return res.send(results)
+        })
+        }else{
+            return res.status(400).send("fitler not exist")
+        }        
     },
 
     createPost : (req,res,next)=>{
@@ -46,12 +86,12 @@ module.exports={
 
             const like = new Like({});
            
-           const post = new Post({
-            user: user.id,
-            title: post_title,
-            text: content,
-            likes: like,            
-        });
+            const post = new Post({
+                user: user.id,
+                title: post_title,
+                text: content,
+                likes: like,            
+            });
             like.save()            
             post.save()
             return {user, post,like}
@@ -301,8 +341,6 @@ module.exports={
         user.profile.comment_ids.addToSet(newComment._id)
         
         Promise.all([newComment.save(),user.save(),comment.save()])
-                
-        console.log(comment.replies)
     
         return res.send('답글 추가됨')                    
     },
@@ -354,8 +392,7 @@ module.exports={
                     }
                 }
         },
-        {
-            $limit:10
+        {$limit:10
         },
         {$project:{            
                     "_id": 1,

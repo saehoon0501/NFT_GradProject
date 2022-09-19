@@ -28,6 +28,54 @@ const io = require('socket.io')(server,{
 
 const namespace = io.of('/comment')
 
+//online user들 저장 및 업데이트
+let onlineUsers = []
+
+const deleteUser = (socketId)=>{
+   onlineUsers = onlineUsers.filter((user)=> user.socketId !== socketId)
+}
+
+const addNewUser = (profile_pic, username, publicAddr, socketId)=>{
+    !onlineUsers.some((user)=>user.publicAddr === publicAddr) &&
+    onlineUsers.push({profile_pic, username, publicAddr, socketId})
+}
+
+const getUser = (publicAddr) =>{
+    return onlineUsers.find((user)=> user.publicAddr === publicAddr)
+}
+
+io.on("connection",(socket)=>{
+    socket.on("newUser", ({profile_pic, username, publicAddr})=>{
+        addNewUser(profile_pic, username, publicAddr, socket.id)
+        io.emit("onlineUsers", {onlineUsers})
+    })
+
+    socket.on("sendNotification",({sender, receiver, type})=>{
+        const receiveUser = getUser(receiver)
+        
+        if(receiveUser){
+            io.to(receiveUser.socketId).emit("getNotification", {sender,type})            
+        }                        
+    })
+
+    socket.on("disconnect",()=>{
+        console.log('disconnect')
+        deleteUser(socket.id)
+    })
+})
+
+namespace.on('connection', (socket)=>{
+    console.log('someone logged in')
+
+    socket.on('join', (post_id)=>{
+        socket.join(post_id)        
+    })
+
+    socket.on('disconnect', ()=>{
+        console.log('someone has left')
+    })
+})
+
 // const web3 = new Web3(`ws://127.0.0.1:8545`)
 
 // const subscription = web3.eth.subscribe('logs',{
@@ -63,62 +111,5 @@ const namespace = io.of('/comment')
 // io.use((socket, next)=>{
     // next()
 // })
-
-//online user들 저장 및 업데이트
-let onlineUsers = []
-
-const deleteUser = (socketId)=>{
-   onlineUsers = onlineUsers.filter((user)=> user.socketId !== socketId)
-}
-
-const addNewUser = (profile_pic, username, publicAddr, socketId)=>{
-    !onlineUsers.some((user)=>user.publicAddr === publicAddr) &&
-    onlineUsers.push({profile_pic, username, publicAddr, socketId})
-}
-
-const getUser = (publicAddr) =>{
-    return onlineUsers.find((user)=> user.publicAddr === publicAddr)
-}
-
-io.on("connection",(socket)=>{
-    socket.on("newUser", ({profile_pic, username, publicAddr})=>{
-        addNewUser(profile_pic, username, publicAddr, socket.id)
-        io.emit("onlineUsers", {onlineUsers})
-    })
-
-    socket.on("sendNotification",({sender, receiver, type})=>{
-        console.log('sender address', sender)
-        console.log('receiver address', receiver)
-        console.log('type', type)
-
-        const receiveUser = getUser(receiver)
-        const sendUser = getUser(sender)
-        console.log('socket emit Notification', sendUser)
-        
-        
-        // io.to(receiveUser.socketId).emit("getNotification", {sender,type})
-        // io.emit('getNotification', {sender,type})
-        console.log(sendUser.socketId)
-        io.to(sendUser.socketId).emit("getNotification", {sender,type})
-                        
-    })
-
-    socket.on("disconnect",()=>{
-        console.log('disconnect')
-        deleteUser(socket.id)
-    })
-})
-
-namespace.on('connection', (socket)=>{
-    console.log('someone logged in')
-
-    socket.on('join', (post_id)=>{
-        socket.join(post_id)        
-    })
-
-    socket.on('disconnect', ()=>{
-        console.log('someone has left')
-    })
-})
 
 module.exports.namespace =namespace
