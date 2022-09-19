@@ -15,7 +15,7 @@ module.exports={
         let posts_result
 
         if(filter === undefined){
-            posts_result = Post.find().skip(pageNum).limit(10).exec()            
+            posts_result = Post.find().sort({_id:-1}).skip(pageNum).limit(10).exec()            
 
             posts_result.then(async (posts)=>{
                 if(!posts) return res.send(400).send('post in page number not exist')
@@ -31,9 +31,7 @@ module.exports={
                
             })
         }else if(filter === 'best'){
-            posts_result = Post.aggregate([
-            {$sort:{createdAt: -1}
-            },
+            posts_result = Post.aggregate([            
             {$skip:pageNum
             },
             {$limit:10

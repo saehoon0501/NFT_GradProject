@@ -108,7 +108,7 @@ export const Main = ({ socketValue }) => {
         </div>
       </div>
       <div>
-        {posts?.slice(0).reverse().map((post) => (
+        {posts?.map((post) => (
           <Feed
             key={post._id}
             post_id={post._id}

@@ -5,7 +5,7 @@ const {Post,Like,Comment} = require('../../models/post.model');
 module.exports = {
     getProfile : (req, res, next) => {            
         let publicAddress
-        
+        console.log(req.query.publicAddress)
         if(req.query.publicAddress==undefined){
             publicAddress = res.locals.decoded.publicAddress
         }else{
@@ -49,7 +49,13 @@ module.exports = {
         }
     },
     getUserPost : (req, res, next) => {
-        const publicAddress = res.locals.decoded.publicAddress;
+        let publicAddress
+        console.log(req.query.publicAddress)
+        if(req.query.publicAddress==undefined){
+            publicAddress = res.locals.decoded.publicAddress
+        }else{
+            publicAddress = req.query.publicAddress    
+        }
 
         User.findOne({publicAddr:publicAddress}).populate('profile.post_ids','',Post).lean()
         .then((user)=>{
