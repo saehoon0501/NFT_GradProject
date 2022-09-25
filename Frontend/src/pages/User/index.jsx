@@ -8,18 +8,24 @@ import { ProfileChangeImage } from "../../components/profile/ProfileChangeImage"
 import { Loading } from "../../components/common/Loading";
 import { ProfilePost } from "../../components/profile/ProfilePost";
 import { useParams } from "react-router-dom";
+import { useEffect } from "react";
 
 export const User = () => {
   const { user_id } = useParams();
-  const { data, isLoading } = useQuery("clickedUser", certainUser(user_id));
+  // const { data, isLoading } = useQuery("clickedUser", certainUser(user_id));
+
+  useEffect(() => {
+    const data = certainUser(user_id);
+    console.log(data);
+  }, []);
 
   // getUserComments().then((result) => console.log(result));
 
-  if (isLoading) {
-    return <Loading />;
-  }
+  // if (isLoading) {
+  //   return <Loading />;
+  // }
 
-  console.log(data);
+  // console.log(data);
 
   return (
     <div className="profile-container">
