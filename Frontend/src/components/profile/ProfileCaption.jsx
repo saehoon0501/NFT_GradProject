@@ -5,26 +5,35 @@ import "./ProfileCaption.css";
 import { updateUser } from "../../api/UserApi";
 
 export const ProfileCaption = ({ userProfile }) => {
-  const [caption, setCaption] = useState(`${userProfile.caption}`);
+  const [intro, setIntro] = useState(`${userProfile.caption}`);
   const [profileName, setProfileName] = useState(`${userProfile.username}`);
   const [editProfile, setEditProfile] = useState(true);
 
   const nameRef = useRef(profileName);
-  const captionRef = useRef(caption);
+  const introRef = useRef(intro);
 
-  const update = async () => {
+  const onClickConfirm = async () => {
     nameRef.current = profileName;
-    captionRef.current = caption;
-    updateUser(caption, profileName).then((res) => {
+    introRef.current = intro;
+    updateUser(intro, profileName).then((res) => {
       console.log(res.data);
     });
     setEditProfile(true);
   };
 
-  const updateNot = () => {
+  const onClickCancel = () => {
     setProfileName(nameRef.current);
-    setCaption(captionRef.current);
+    setIntro(introRef.current);
     setEditProfile(true);
+  };
+
+  const onChangeProfileName = (event) => {
+    const changedName = event.target.value;
+    setProfileName(changedName);
+  };
+
+  const onClickEditProfile = () => {
+    setEditProfile(false);
   };
 
   return (
@@ -33,14 +42,12 @@ export const ProfileCaption = ({ userProfile }) => {
         <div>
           <div className="profile-about-wrapper">
             <h3>{nameRef.current}</h3>
-            <input
-              className="profile-edit-btn"
-              onClick={() => {
-                setEditProfile(false);
-              }}
-              type="button"
-              value="프로필 편집"
-            />
+            <button
+              className="profile-caption-btn"
+              onClick={onClickEditProfile}
+            >
+              프로필 편집
+            </button>
           </div>
           <div className="profile-text">
             <h3>게시물 {userProfile.post_ids.length}</h3>
@@ -48,57 +55,28 @@ export const ProfileCaption = ({ userProfile }) => {
           </div>
         </div>
       ) : (
-        <div style={{ display: "block", width: "100%" }}>
-          사용자 이름
+        <div>
+          <span>사용자 이름</span>
           <textarea
-            onChange={(event) => {
-              setProfileName(event.target.value);
-            }}
+            className="profile-caption-profile-name-textarea"
             value={profileName}
-            style={{
-              width: "100%",
-              wordWrap: "break-word",
-              fontSize: "1.1em",
-              fontWeight: "bolder",
-              resize: "none",
-              padding: "2%",
-            }}
+            onChange={onChangeProfileName}
           />
-          <div>
-            소개
-            <textarea
-              onChange={(event) => {
-                setCaption(event.target.value);
-              }}
-              value={caption}
-              style={{
-                width: "100%",
-                height: "150px",
-                resize: "none",
-                fontSize: "1em",
-              }}
-            />
-            <div
-              style={{
-                display: "flex",
-                margin: "auto",
-                justifyContent: "center",
-                margin: "5% auto",
-              }}
-            >
-              <input
-                className="profile-edit-btn"
-                onClick={update}
-                type="button"
-                value="확인"
-              />
-              <input
-                className="profile-edit-btn"
-                onClick={updateNot}
-                type="button"
-                value="취소"
-              />
-            </div>
+          <span>소개</span>
+          <textarea
+            className="profile-caption-intro-textarea"
+            onChange={(event) => {
+              setIntro(event.target.value);
+            }}
+            value={intro}
+          />
+          <div className="profile-caption-btns">
+            <button className="profile-caption-btn" onClick={onClickConfirm}>
+              확인
+            </button>
+            <button className="profile-caption-btn" onClick={onClickCancel}>
+              취소
+            </button>
           </div>
         </div>
       )}
