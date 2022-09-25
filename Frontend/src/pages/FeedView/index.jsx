@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import parse from "html-react-parser";
 import "react-quill/dist/quill.core.css";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "react-query";
 
 import "./style.css";
@@ -19,8 +19,16 @@ import { Comment } from "../../components/feedView/Comment";
 import { Loading } from "../../components/common/Loading";
 
 import { io } from "socket.io-client";
+import { certainUserPost } from "../../api/UserApi";
 
 export const FeedView = () => {
+  const { postId } = useParams();
+
+  useEffect(() => {
+    const data = certainUserPost(postId);
+    console.log(data);
+  }, []);
+
   const { state } = useLocation();
   console.log(state);
   const { post_id, writer_profile, user_id, caption, title } = state;

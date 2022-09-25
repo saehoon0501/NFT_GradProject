@@ -4,7 +4,7 @@ import "./ProfileCaption.css";
 
 import { updateUser } from "../../api/UserApi";
 
-export const ProfileCaption = ({ userProfile }) => {
+export const ProfileCaption = ({ userProfile, isOwner = true }) => {
   const [intro, setIntro] = useState(`${userProfile.caption}`);
   const [profileName, setProfileName] = useState(`${userProfile.username}`);
   const [editProfile, setEditProfile] = useState(true);
@@ -42,12 +42,14 @@ export const ProfileCaption = ({ userProfile }) => {
         <div>
           <div className="profile-about-wrapper">
             <h3>{nameRef.current}</h3>
-            <button
-              className="profile-caption-btn"
-              onClick={onClickEditProfile}
-            >
-              프로필 편집
-            </button>
+            {isOwner && (
+              <button
+                className="profile-caption-btn"
+                onClick={onClickEditProfile}
+              >
+                프로필 편집
+              </button>
+            )}
           </div>
           <div className="profile-text">
             <h3>게시물 {userProfile.post_ids.length}</h3>

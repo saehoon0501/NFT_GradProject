@@ -7,6 +7,10 @@
   filter: grayscale(100%);
 }
 
+.profile-info-not-owner {
+  margin: 0 18px;
+}
+
 .profile-info:hover .profile-edit-img {
   opacity: 1;
   font-size: 28px;
