@@ -8,11 +8,8 @@ module.exports = {
         console.log(req.query.publicAddress)
         if(req.query.publicAddress==undefined){
             publicAddress = res.locals.decoded.publicAddress
-        }else{
-            publicAddress = req.query.publicAddress    
-        }
-    
-        User.findOne({publicAddr:`${publicAddress}`})
+
+            User.findOne({publicAddr:`${publicAddress}`})
         .then((user)=>{
             if(!user){
                 return res.status(401).send({error: 'User not Found'});
@@ -20,6 +17,21 @@ module.exports = {
             
             return res.json(user);
         }).catch((err)=>console.log('유저 정보 sndProfile: User.findOne Error',err))
+
+        }else{
+            publicAddress = req.query.userId
+
+            User.findOne({_id:`${publicAddress}`})
+        .then((user)=>{
+            if(!user){
+                return res.status(401).send({error: 'User not Found'});
+            }
+            
+            return res.json(user);
+        }).catch((err)=>console.log('유저 정보 sndProfile: User.findOne Error',err))
+        }
+    
+        
     },
     updateProfile : (req, res, next) => {
         const publicAddress = res.locals.decoded.publicAddress;
