@@ -122,6 +122,7 @@ export const Main = ({ socketValue }) => {
             user_publicAddr={userQuery.data.publicAddr}
             writer_publicAddr={post.user.publicAddr}
             createdAt={post.createdAt}
+            postingId={post.user._id}
           />
         ))}
       </div>

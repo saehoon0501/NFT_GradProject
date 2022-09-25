@@ -21,6 +21,7 @@ const Feed = ({
   user_publicAddr,
   writer_publicAddr,
   createdAt,
+  postingId,
 }) => {
   const [like, setLike] = useState({
     liked: false,
@@ -111,6 +112,13 @@ const Feed = ({
     return `${currentTime.getSeconds() - createdTime.getSeconds()}초 전`;
   };
 
+  const onClickUserImage = () => {
+    if (user_id === postingId) {
+      return navigate("/profile");
+    }
+    navigate(`/profile/${postingId}`);
+  };
+
   return (
     <div className="feed_wrapper">
       <div className="feed_header">
@@ -119,6 +127,7 @@ const Feed = ({
             className="feed_user_img"
             src={writer_profile.profile_pic}
             alt="profile picture"
+            onClick={onClickUserImage}
           />
           <div className="feed_name_and_title">
             <h3>{writer_profile.username}</h3>

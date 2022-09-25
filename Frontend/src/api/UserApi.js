@@ -47,3 +47,11 @@ export const updateProfilePic = async (profile_pic) => {
   });
   return response;
 };
+
+export const certainUser = async (userId) => {
+  const response = await axios.get(
+    `http://localhost:4000/api/user?publicAddress=${userId}`
+  );
+  const data = await response.data;
+  return data;
+};

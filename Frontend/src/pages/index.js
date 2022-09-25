@@ -4,3 +4,4 @@ export * from "./Main";
 export * from "./MyComments";
 export * from "./Profile";
 export * from "./Search";
+export * from "./User";
