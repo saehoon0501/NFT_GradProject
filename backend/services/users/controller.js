@@ -6,7 +6,7 @@ module.exports = {
     getProfile : (req, res, next) => {            
         let publicAddress
         console.log(req.query.publicAddress)
-        if(req.query.publicAddress==undefined){
+        if(req.query.userId==undefined){
             publicAddress = res.locals.decoded.publicAddress
 
             User.findOne({publicAddr:`${publicAddress}`})
