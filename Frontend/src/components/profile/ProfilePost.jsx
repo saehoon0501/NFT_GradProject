@@ -4,11 +4,11 @@ import { useNavigate } from "react-router-dom";
 import { certainUserPost } from "../../api/UserApi";
 import "./ProfilePost.css";
 
-export const ProfilePost = ({ postId }) => {
+export const ProfilePost = ({ postId, title, commentCount }) => {
   const [post, setPost] = useState({
-    title: "Hello",
+    title,
     likeCount: 10,
-    commentCount: 5,
+    commentCount,
   });
   const [isHovered, setIsHovered] = useState(false);
   const navigate = useNavigate();
