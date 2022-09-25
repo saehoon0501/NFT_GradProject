@@ -53,3 +53,9 @@ export const certainUser = async (userId) => {
   const data = await response.data;
   return data;
 };
+
+export const certainUserPost = async (postId) => {
+  const response = await userApi.get(`/posts?publicAddress=${postId}`);
+  const data = await response.data;
+  return data;
+};

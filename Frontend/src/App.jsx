@@ -26,7 +26,7 @@ const App = () => {
         <Route exact path="/profile" element={<Profile />} />
         <Route exact path="/profile/:user_id" element={<User />} />
         <Route exact path="/search/:keyword" element={<Search />} />
-        <Route exact path="/post/:post_id" element={<FeedView />} />
+        <Route exact path="/post/:postId" element={<FeedView />} />
         <Route exact path="/comments" element={<MyComments />} />
       </Routes>
     </Router>

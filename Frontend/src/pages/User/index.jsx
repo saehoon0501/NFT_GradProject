@@ -12,7 +12,7 @@ import { useEffect } from "react";
 
 export const User = () => {
   const { user_id } = useParams();
-  const { data, isLoading } = useQuery("clickedUser", () =>
+  const { data: user, isLoading } = useQuery("clickedUser", () =>
     certainUser(user_id)
   );
 
@@ -20,14 +20,16 @@ export const User = () => {
     return <Loading />;
   }
 
-  console.log(data);
+  // console.log(data);
+
+  console.log(user);
 
   return (
     <div className="profile-container">
-      {/* <div className="profile-wrapper">
+      <div className="profile-wrapper">
         <ProfileChangeImage user={user} />
-        <ProfilePic userProfile={user?.profile} />
-        <ProfileCaption userProfile={user?.profile} />
+        <ProfilePic userProfile={user?.profile} isOwner={false} />
+        <ProfileCaption userProfile={user?.profile} isOwner={false} />
       </div>
       <div className="profile-post-wrapper">
         <span className="profile-post-title">게시물</span>
@@ -36,8 +38,7 @@ export const User = () => {
             <ProfilePost key={postId} postId={postId} />
           ))}
         </div>
-      </div> */}
-      <h1>Hello</h1>
+      </div>
     </div>
   );
 };

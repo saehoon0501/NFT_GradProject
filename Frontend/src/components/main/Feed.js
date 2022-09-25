@@ -80,9 +80,7 @@ const Feed = ({
   };
 
   const handleDelete = () => {
-    delPost(post_id).then((res) => {
-      console.log(res);
-    });
+    delPost(post_id);
   };
 
   const elapsedTimePeriod = (createdAt) => {
@@ -134,7 +132,12 @@ const Feed = ({
             <h2>{title}</h2>
           </div>
         </div>
-        <span className="feed_date">{elapsedTimePeriod(createdAt)}</span>
+        <div>
+          <span className="feed_date">{elapsedTimePeriod(createdAt)}</span>
+          <button className="feed_delete_btn" onClick={handleDelete}>
+            ✕
+          </button>
+        </div>
       </div>
       <div>
         {/* Content */}

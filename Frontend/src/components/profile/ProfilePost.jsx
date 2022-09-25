@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { certainUserPost } from "../../api/UserApi";
 import "./ProfilePost.css";
 
 export const ProfilePost = ({ postId }) => {
@@ -20,11 +21,10 @@ export const ProfilePost = ({ postId }) => {
     navigate(`/post/${postId}`);
   };
 
-  useEffect(() => {
-    // const data = getPost(postId);
-    // console.log(data);
-    // setPost(data);
-  }, []);
+  // useEffect(() => {
+  //   const data = certainUserPost(publicAddr);
+  //   console.log(data);
+  // }, []);
 
   return (
     <div

@@ -20,6 +20,10 @@
   display: flex;
 }
 
+.feed_delete_btn {
+  background-color: white;
+}
+
 .feed_user_img {
   width: 60px;
   height: 60px;
