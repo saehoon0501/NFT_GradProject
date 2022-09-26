@@ -24,3 +24,28 @@ export const socketState = atom({
   key: "socketState",
   default: null,
 });
+
+export const showPopUpState = atom({
+  key: "showPopUpState",
+  default: false,
+});
+
+export const currentPopUpState = atom({
+  key: "currentPopUpState",
+  default: "",
+});
+
+export const currentPostTitleState = atom({
+  key: "currentPostTitleState",
+  default: "",
+});
+
+export const currentPostTextState = atom({
+  key: "currentPostTextState",
+  default: "",
+});
+
+export const currentPostIdState = atom({
+  key: "currentPostIdState",
+  default: "",
+});

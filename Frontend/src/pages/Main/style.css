@@ -37,6 +37,43 @@
   gap: 5px;
 }
 
+.popup_wrapper {
+  position: absolute;
+  width: 400px;
+  height: 140px;
+  left: 5vw;
+  top: 10vh;
+  border: 1px solid black;
+  padding: 40px;
+  border-radius: 10px;
+  background-color: white;
+}
+
+.popup_title {
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 30px;
+}
+
+.popup_btns {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.popup_btn {
+  background-color: white;
+  padding: 5px 10px;
+  border: 1px solid black;
+  border-radius: 5px;
+}
+
+.popup_btn:hover {
+  background-color: black;
+  color: white;
+}
+
 @media (max-width: 915px) {
   .main_icons_wrapper {
     width: 90vw;

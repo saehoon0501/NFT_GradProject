@@ -9,21 +9,39 @@ import { CategoryBar } from "../../components/main/CategoryBar";
 import { Submit } from "../../components/main/Submit";
 
 import { getUser } from "../../api/UserApi";
-import { getPost, searchPost } from "../../api/FeedApi";
+import { addPost, delPost, getPost, searchPost } from "../../api/FeedApi";
 import new_icon from "../../assets/new.png";
 import new_icon2 from "../../assets/new2.png";
 import best from "../../assets/best.png";
 import best2 from "../../assets/best2.png";
-import { isLoginState } from "../../store";
+import {
+  currentPopUpState,
+  currentPostIdState,
+  currentPostTextState,
+  currentPostTitleState,
+  isLoginState,
+  isWritingPost,
+  showPopUpState,
+} from "../../store";
 import { LoginUser } from "../../components/main/LoginUser";
 import { Vote } from "../../components/main/Vote";
 import { Loading } from "../../components/common/Loading";
+import { CANCEL_FEED, DELETE, WRITE_FEED } from "../../utils";
 
 export const Main = ({ socketValue }) => {
   const [isBest, setIsBest] = useState(false);
   const [isAuth, setIsAuth] = useRecoilState(isLoginState);
   const [isUserDataSend, setIsUserDataSend] = useState(false);
   const [loginUsers, setLoginUsers] = useState([]);
+  const [showPopUp, setShowPopUp] = useRecoilState(showPopUpState);
+  const [currentPopUp, setCurrentPopUp] = useRecoilState(currentPopUpState);
+  const [isOpen, setIsOpen] = useRecoilState(isWritingPost);
+  const [currentPostTitle, setCurrentPostTitle] = useRecoilState(
+    currentPostTitleState
+  );
+  const [currentPostText, setCurrentPostText] =
+    useRecoilState(currentPostTextState);
+  const [currentPostId, setCurrentPostId] = useRecoilState(currentPostIdState);
 
   const userQuery = useQuery("user", ({ signal }) => getUser(signal), {
     onSuccess: (data) => {
@@ -70,16 +88,39 @@ export const Main = ({ socketValue }) => {
   }, [socketValue]);
 
   if (userQuery.isLoading || postQuery.isLoading) {
-    console.log(userQuery.data);
-    console.log(postQuery.data);
     return <Loading />;
   }
 
-  console.log(posts);
+  const toggleContent = () => {
+    switch (currentPopUp) {
+      case DELETE:
+        return "정말 삭제하시겠습니까? 다시 복구할 수 없습니다.";
+      case WRITE_FEED:
+        return "해당 내용의 피드를 작성하시겠습니까?";
+      case CANCEL_FEED:
+        return "피드 작성을 취소하시겠습니까? 다시 복구할 수 없습니다.";
+    }
+  };
 
-  // // 전달받는 서버측 정보
+  const onClickSubmit = () => {
+    setShowPopUp(false);
+    switch (currentPopUp) {
+      case DELETE:
+        delPost(currentPostId);
+        return;
+      case WRITE_FEED:
+        addPost(currentPostTitle, currentPostText);
+        setIsOpen(!isOpen);
+        return;
+      case CANCEL_FEED:
+        setIsOpen(!isOpen);
+        return;
+    }
+  };
 
-  // // 연결하는 key 이름 / 전달하는 정보
+  const onClickCancel = () => {
+    setShowPopUp(false);
+  };
 
   return (
     <div className="main_wrapper">
@@ -126,6 +167,19 @@ export const Main = ({ socketValue }) => {
           />
         ))}
       </div>
+      {showPopUp && (
+        <div className="popup_wrapper">
+          <h3 className="popup_title">{toggleContent()}</h3>
+          <div className="popup_btns">
+            <button className="popup_btn" onClick={onClickSubmit}>
+              확인
+            </button>
+            <button className="popup_btn" onClick={onClickCancel}>
+              취소
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

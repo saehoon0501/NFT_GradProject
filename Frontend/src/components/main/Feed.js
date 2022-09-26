@@ -8,6 +8,13 @@ import like_after from "../../assets/like-after.png";
 import comment from "../../assets/comment.png";
 import kebab from "../../assets/kebab.png";
 import { likePost, dislikePost, delPost } from "../../api/FeedApi";
+import { useRecoilState } from "recoil";
+import {
+  currentPopUpState,
+  currentPostIdState,
+  showPopUpState,
+} from "../../store";
+import { DELETE } from "../../utils";
 
 const Feed = ({
   post_id,
@@ -28,6 +35,9 @@ const Feed = ({
     liked_num: likes.liked_user.length,
   });
   const [isOwner, setIsOwner] = useState(false);
+  const [showPopUp, setShowPopUp] = useRecoilState(showPopUpState);
+  const [currentPopUp, setCurrentPopUp] = useRecoilState(currentPopUpState);
+  const [currentPostId, setCurrentPostId] = useRecoilState(currentPostIdState);
 
   const navigate = useNavigate();
 
@@ -80,7 +90,9 @@ const Feed = ({
   };
 
   const handleDelete = () => {
-    delPost(post_id);
+    setShowPopUp(true);
+    setCurrentPopUp(DELETE);
+    setCurrentPostId(post_id);
   };
 
   const elapsedTimePeriod = (createdAt) => {
