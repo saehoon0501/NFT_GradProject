@@ -171,11 +171,11 @@ export const Main = ({ socketValue }) => {
         <div className="popup_wrapper">
           <h3 className="popup_title">{toggleContent()}</h3>
           <div className="popup_btns">
-            <button className="popup_btn" onClick={onClickCancel}>
-              취소
-            </button>
             <button className="popup_btn" onClick={onClickSubmit}>
               확인
+            </button>
+            <button className="popup_btn" onClick={onClickCancel}>
+              취소
             </button>
           </div>
         </div>

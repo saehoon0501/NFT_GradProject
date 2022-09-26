@@ -80,6 +80,18 @@
   border-color: black;
 }
 
+.profile_popup_wrapper {
+  position: absolute;
+  width: 400px;
+  height: 140px;
+  left: 30vw;
+  top: 10vh;
+  border: 1px solid black;
+  padding: 40px;
+  border-radius: 10px;
+  background-color: white;
+}
+
 @media (max-width: 915px) {
   .profile-caption-wrapper {
     display: flex;
@@ -91,5 +103,17 @@
   .profile-about-wrapper {
     display: flex;
     width: 50vw;
+  }
+
+  .profile_popup_wrapper {
+    position: absolute;
+    width: 400px;
+    height: 140px;
+    left: 10vw;
+    top: 10vh;
+    border: 1px solid black;
+    padding: 40px;
+    border-radius: 10px;
+    background-color: white;
   }
 }

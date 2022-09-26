@@ -3,28 +3,26 @@ import { useRef, useState } from "react";
 import "./ProfileCaption.css";
 
 import { updateUser } from "../../api/UserApi";
+import { CANCEL_EDIT_PROFILE, PROCEED_EDIT_PROFILE } from "../../utils";
 
 export const ProfileCaption = ({ userProfile, isOwner = true }) => {
   const [intro, setIntro] = useState(`${userProfile.caption}`);
   const [profileName, setProfileName] = useState(`${userProfile.username}`);
   const [editProfile, setEditProfile] = useState(true);
+  const [showPopUp, setShowPopUp] = useState(false);
+  const [currentPopUp, setCurrentPopUp] = useState("");
 
   const nameRef = useRef(profileName);
   const introRef = useRef(intro);
 
   const onClickConfirm = async () => {
-    nameRef.current = profileName;
-    introRef.current = intro;
-    updateUser(intro, profileName).then((res) => {
-      console.log(res.data);
-    });
-    setEditProfile(true);
+    setShowPopUp(true);
+    setCurrentPopUp(PROCEED_EDIT_PROFILE);
   };
 
   const onClickCancel = () => {
-    setProfileName(nameRef.current);
-    setIntro(introRef.current);
-    setEditProfile(true);
+    setShowPopUp(true);
+    setCurrentPopUp(CANCEL_EDIT_PROFILE);
   };
 
   const onChangeProfileName = (event) => {
@@ -34,6 +32,38 @@ export const ProfileCaption = ({ userProfile, isOwner = true }) => {
 
   const onClickEditProfile = () => {
     setEditProfile(false);
+  };
+
+  const toggleContent = () => {
+    switch (currentPopUp) {
+      case PROCEED_EDIT_PROFILE:
+        return "현재 내용으로 프로필을 수정하시겠습니까?";
+      case CANCEL_EDIT_PROFILE:
+        return "변경한 내용이 저장되지 않습니다. 취소하시겠습니까?";
+    }
+  };
+
+  const onClickSubmitPopUp = () => {
+    setShowPopUp(false);
+    switch (currentPopUp) {
+      case PROCEED_EDIT_PROFILE:
+        nameRef.current = profileName;
+        introRef.current = intro;
+        updateUser(intro, profileName).then((res) => {
+          console.log(res.data);
+        });
+        setEditProfile(true);
+        return;
+      case CANCEL_EDIT_PROFILE:
+        setProfileName(nameRef.current);
+        setIntro(introRef.current);
+        setEditProfile(true);
+        return;
+    }
+  };
+
+  const onClickCancelPopUp = () => {
+    setShowPopUp(false);
   };
 
   return (
@@ -77,6 +107,19 @@ export const ProfileCaption = ({ userProfile, isOwner = true }) => {
               확인
             </button>
             <button className="profile-caption-btn" onClick={onClickCancel}>
+              취소
+            </button>
+          </div>
+        </div>
+      )}
+      {showPopUp && (
+        <div className="profile_popup_wrapper">
+          <h3 className="popup_title">{toggleContent()}</h3>
+          <div className="popup_btns">
+            <button className="popup_btn" onClick={onClickSubmitPopUp}>
+              확인
+            </button>
+            <button className="popup_btn" onClick={onClickCancelPopUp}>
               취소
             </button>
           </div>
