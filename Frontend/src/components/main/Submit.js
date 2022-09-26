@@ -6,7 +6,14 @@ import "react-quill/dist/quill.snow.css";
 import axios from "axios";
 import { addPost } from "../../api/FeedApi";
 import { useRecoilState } from "recoil";
-import { isWritingPost } from "../../store";
+import {
+  currentPopUpState,
+  currentPostTextState,
+  currentPostTitleState,
+  isWritingPost,
+  showPopUpState,
+} from "../../store";
+import { CANCEL_FEED, WRITE_FEED } from "../../utils";
 
 const maxSize = 30 * 1000 * 1000;
 const token = window.localStorage.getItem("accessToken");
@@ -33,6 +40,13 @@ export const Submit = ({ user, setPosts }) => {
   const [isOpen, setIsOpen] = useRecoilState(isWritingPost);
   const [title, setTitle] = useState("");
   const [selectedImage, setImage] = useState(null);
+  const [showPopUp, setShowPopUp] = useRecoilState(showPopUpState);
+  const [currentPopUp, setCurrentPopUp] = useRecoilState(currentPopUpState);
+  const [currentPostTitle, setCurrentPostTitle] = useRecoilState(
+    currentPostTitleState
+  );
+  const [currentPostText, setCurrentPostText] =
+    useRecoilState(currentPostTextState);
   const quill = useRef(null);
 
   const qull_modules = useMemo(() => {
@@ -76,24 +90,24 @@ export const Submit = ({ user, setPosts }) => {
     };
   }, []);
 
-  const handleClick = (event) => {
-    let index = event.target.getAttribute("data-index");
-    if (index == null) index = 1;
+  const onClickWriteFeed = () => {
     setIsOpen(!isOpen);
+  };
+
+  const handleClick = () => {
+    setShowPopUp(true);
+    setCurrentPopUp(CANCEL_FEED);
   };
 
   const handleImage = () => {
     setImage(null);
   };
 
-  const handleSubmit = async () => {
-    const post_title = title;
-    const post_text = quill.current.getEditor().getContents();
-
-    addPost(post_title, post_text).then((res) => {
-      console.log(res.data);
-      setPosts((prev) => [res.data, ...prev]);
-    });
+  const handleSubmit = () => {
+    setShowPopUp(true);
+    setCurrentPopUp(WRITE_FEED);
+    setCurrentPostTitle(title);
+    setCurrentPostText(quill.current.getEditor().getContents());
   };
 
   return (
@@ -110,7 +124,7 @@ export const Submit = ({ user, setPosts }) => {
           onBlur={(e) => {
             setTitle(e.currentTarget.textContent);
           }}
-          onClick={isOpen ? undefined : handleClick}
+          onClick={isOpen ? undefined : onClickWriteFeed}
           contentEditable="true"
           data-ph={isOpen ? "Title" : "게시물 작성"}
           data-index="0"
