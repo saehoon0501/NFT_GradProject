@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "react-query";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import "./style.css";
 
 import Feed from "../../components/main/Feed";
@@ -9,7 +9,7 @@ import { CategoryBar } from "../../components/main/CategoryBar";
 import { Submit } from "../../components/main/Submit";
 
 import { getUser } from "../../api/UserApi";
-import { addPost, delPost, getPost, searchPost } from "../../api/FeedApi";
+import { addPost, delPost, getPost } from "../../api/FeedApi";
 import new_icon from "../../assets/new.png";
 import new_icon2 from "../../assets/new2.png";
 import best from "../../assets/best.png";
@@ -30,43 +30,41 @@ import { CANCEL_FEED, DELETE, WRITE_FEED } from "../../utils";
 
 export const Main = ({ socketValue }) => {
   const [isBest, setIsBest] = useState(false);
-  const [isAuth, setIsAuth] = useRecoilState(isLoginState);
   const [isUserDataSend, setIsUserDataSend] = useState(false);
   const [loginUsers, setLoginUsers] = useState([]);
+
   const [showPopUp, setShowPopUp] = useRecoilState(showPopUpState);
-  const [currentPopUp, setCurrentPopUp] = useRecoilState(currentPopUpState);
   const [isOpen, setIsOpen] = useRecoilState(isWritingPost);
-  const [currentPostTitle, setCurrentPostTitle] = useRecoilState(
-    currentPostTitleState
-  );
-  const [currentPostText, setCurrentPostText] =
-    useRecoilState(currentPostTextState);
-  const [currentPostId, setCurrentPostId] = useRecoilState(currentPostIdState);
+
+  const currentPopUp = useRecoilValue(currentPopUpState);
+  const currentPostTitle = useRecoilValue(currentPostTitleState);
+  const currentPostText = useRecoilValue(currentPostTextState);
+  const currentPostId = useRecoilValue(currentPostIdState);
+  const setIsAuth = useSetRecoilState(isLoginState);
+
+  const navigate = useNavigate();
 
   const userQuery = useQuery("user", ({ signal }) => getUser(signal), {
     onSuccess: (data) => {
-      console.log(data);
       socketValue.emit("newUser", {
         publicAddr: data.publicAddr,
         username: data.profile.username,
         profile_pic: data.profile.profile_pic,
       });
       setIsUserDataSend(true);
-      console.log("Send User Data");
     },
   });
   const postQuery = useQuery("posts", ({ signal }) => getPost(signal), {
     onSuccess: (data) => {
-      console.log(posts);
       setPosts(data);
     },
   });
 
   const [posts, setPosts] = useState(postQuery.data);
 
-  const navigate = useNavigate();
-
-  if (userQuery.isError) navigate("/login");
+  if (userQuery.isError) {
+    navigate("/login");
+  }
 
   const handleFilter = () => {
     setIsBest(!isBest);
@@ -77,14 +75,11 @@ export const Main = ({ socketValue }) => {
   }, []);
 
   useEffect(() => {
-    console.log(socketValue);
     if (socketValue) {
       socketValue.on("onlineUsers", ({ onlineUsers }) => {
         setLoginUsers(onlineUsers);
-        console.log(onlineUsers);
       });
     }
-    console.log("Getting Socket Data");
   }, [socketValue]);
 
   if (userQuery.isLoading || postQuery.isLoading) {

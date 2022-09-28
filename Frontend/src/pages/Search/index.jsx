@@ -26,6 +26,8 @@ export const Search = () => {
     return <Loading />;
   }
 
+  console.log(posts);
+
   return (
     <div className="search_wrapper">
       <h1 className="search_title">검색한 키워드 : {keyword}</h1>

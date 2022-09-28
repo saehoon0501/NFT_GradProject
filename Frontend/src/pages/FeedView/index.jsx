@@ -22,12 +22,12 @@ import { io } from "socket.io-client";
 import { certainUserPost } from "../../api/UserApi";
 
 export const FeedView = () => {
-  const { postId } = useParams();
+  // const { postId } = useParams();
 
-  useEffect(() => {
-    const data = certainUserPost(postId);
-    console.log(data);
-  }, []);
+  // useEffect(() => {
+  //   const data = certainUserPost(postId);
+  //   console.log(data);
+  // }, []);
 
   const { state } = useLocation();
   console.log(state);
@@ -114,6 +114,8 @@ export const FeedView = () => {
       socket.disconnect();
     };
   }, []);
+
+  console.log(data);
 
   useEffect(() => {
     console.log(socketValue);

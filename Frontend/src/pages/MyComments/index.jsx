@@ -11,6 +11,8 @@ export const MyComments = () => {
     return <Loading />;
   }
 
+  console.log(data);
+
   return (
     <div className="myComments_wrapper">
       <h1>내가 작성한 댓글 목록</h1>
