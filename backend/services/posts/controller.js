@@ -468,21 +468,30 @@ module.exports={
         },
         {$limit:10
         },        
-        // {$lookup:{
-        //     from: User.collection.name,
-        //     localField: 'user',
-        //     foreignField: '_id',
-        //     as: 'user'
-        // }},
-        // {$lookup:{
-        //     from: Like.collection.name,
-        //     localField: 'likes',
-        //     foreignField: '_id',
-        //     as: 'likes'
-        // }},        
+        {$lookup:{
+            from: User.collection.name,
+            localField: 'user',
+            foreignField: '_id',
+            as: 'user'
+        }},
+        {$unwind:"$user"},
+        {$lookup:{
+            from: Like.collection.name,
+            localField: 'likes',
+            foreignField: '_id',
+            as: 'likes'
+        }},
+        {$unwind:"$likes"},        
         {$project:{            
             "_id": 1,
+            "user._id":1,
+            "user.profile.username":1,            
+            "user.profile.profile_pic":1,
             "createdAt":1,
+            "title":1,
+            "text":1,
+            "comments":1,
+            "likes":1,
             score: { $meta: "searchScore" }                
         }
     },
