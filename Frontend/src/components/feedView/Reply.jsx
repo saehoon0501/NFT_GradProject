@@ -45,9 +45,9 @@ export const Reply = ({
     //   setIsOwner(true);
     // }
 
-    // if (liked_user.includes(user_id)) {
-    //   setLike((prev) => ({ ...prev, liked: true }));
-    // }
+    if (liked_user.includes(user_id)) {
+      setLike((prev) => ({ ...prev, liked: true }));
+    }
   }, [value, toReply]);
 
   const handleLike = () => {
