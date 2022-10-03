@@ -9,7 +9,7 @@ module.exports = {
         if(req.query.userId==undefined){
             publicAddress = res.locals.decoded.publicAddress
 
-            User.findOne({publicAddr:`${publicAddress}`})
+            User.findOne({publicAddr:`${publicAddress}`},{ownerOfNFT:0, comment_ids:0, likes_ids:0, "profile.comment_ids":0,"profile.likes_ids":0})
         .then((user)=>{
             if(!user){
                 return res.status(401).send({error: 'User not Found'});
@@ -69,26 +69,51 @@ module.exports = {
             publicAddress = req.query.publicAddress    
         }
 
-        User.findOne({publicAddr:publicAddress}).populate('profile.post_ids','',Post).lean()
+        User.aggregate([
+            {$match:{publicAddr:publicAddress}},
+            {$lookup:{
+                from: Post.collection.name,
+                localField: 'profile.post_ids',
+                foreignField: '_id',
+                as: 'posts'
+            }},
+            {$project:{
+                ownerOfNFT:0,
+                profile:0,
+                'posts.updatedAt':0,
+                'posts.user':0                                         
+            }}
+        ])        
         .then((user)=>{
             if(!user) return res.status(400).send('user not found')
             console.log('user Post', user)
-            return res.send(user.profile.post_ids)
+            return res.send(user)
         })
         
     },
     getUserComment : (req, res, next) => {
         const publicAddress = res.locals.decoded.publicAddress;
-
-        User.findOne({publicAddr:publicAddress}).populate('profile.comment_ids','',Comment)
-        .then((user)=>{              
-            if(!user) return res.status(400).send('user not found')
+        
+        User.aggregate([
+            {$match:{publicAddr:publicAddress}},
+            {$lookup:{
+                from: Comment.collection.name,
+                localField: 'profile.comment_ids',
+                foreignField: '_id',
+                as: 'comments'
+            }},
+            {$project:{
+                'comments._id':1,
+                'comments.caption':1,
+                'comments.updatedAt':1,                                                        
+            }},            
+        ])        
+        // User.findOne({publicAddr:publicAddress}).populate('profile.comment_ids','',Comment)
+        .then((result)=>{              
+            if(!result) return res.status(400).send('user not found')
                         
-            console.log('getUserComment 실행 결과', user)
-            user.profile.comment_ids = user.profile.comment_ids.filter((comment)=> comment != null)
-            user.markModified('profile.comment_ids')
-            user.save().then((result)=>console.log(result))
-            return res.send(user.profile.comment_ids)
+            console.log('getUserComment 실행 결과', result)
+            return res.send(result[0])
         })
     }
 }

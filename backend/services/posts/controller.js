@@ -1,6 +1,7 @@
 const {Post, Like, Comment} = require('../../models/post.model');
 const User = require('../../models/user.model');
 const socket = require("../../index")
+const mongoose =  require(`mongoose`)
 const QuillDeltaToHtmlConverter = require('quill-delta-to-html').QuillDeltaToHtmlConverter;
 
 module.exports={
@@ -53,7 +54,23 @@ module.exports={
                 localField: 'likes',
                 foreignField: '_id',
                 as: 'likes'
-            }}
+            }},
+            {$project:{
+                _id:1,
+                'user._id':1,
+                'user.publicAddr':1,
+                'user.profile.profile_pic':1,
+                'user.profile.username':1,
+                'user.profile.caption':1,
+                'user.profile.points':1,
+                'title':1,
+                'text':1,
+                'likes':1,
+                'comments':1,
+                'createdAt':1
+            }},
+            {$unwind:'$user'},
+            {$unwind:'$likes'},                        
         ]).exec()
 
         posts_result.then((results)=> {
@@ -159,13 +176,15 @@ module.exports={
         const {likes} = req.body;
         const post_id = req.params
 
-        await User.findOne({publicAddr:publicAddress})
+        await User.findOne({publicAddr:publicAddress}).lean()
         .then( (user)=>{
 
             Like.findOne({_id:likes._id})
-                .then(like=>{
-            
-                like.liked_user.addToSet(user.id);
+            .then(like=>{
+            if(!like.liked_user.includes(user.id)){
+                like.liked_num += 1
+                like.liked_user.addToSet(user.id)
+            }
                 like.save((err,data)=>{
                 if(err) console.log(err);
                     console.log(data);
@@ -180,12 +199,14 @@ module.exports={
         const {likes} = req.body;
         const post_id = req.params.post_id
 
-        await User.findOne({id:publicAddress})
+        await User.findOne({id:publicAddress}).lean()
         .then( (user)=>{
             Like.findOne({_id:likes._id})
-                .then(like=>{            
-            
-            like.liked_user.pull(user.id);
+            .then(like=>{
+            if(like.liked_user.includes(user.id)){
+                like.liked_num -= 1
+                like.liked_user.pull(user.id)
+            }
             like.save((err,data)=>{
                 if(err) console.log(err);
                 console.log(data);
@@ -196,24 +217,73 @@ module.exports={
     },
 
     getComment: async(req,res,next)=>{
-        const post_id = req.params.post_id;
+        const post_id = mongoose.Types.ObjectId(req.params.post_id);
+
+        if(!mongoose.Types.ObjectId.isValid(post_id)) return res.status(400).send('wrong post id')
+
+        const result = await Post.aggregate([
+            {$match:{_id: post_id}},            
+            {$lookup:{
+                from: Comment.collection.name,
+                localField: 'comments',
+                foreignField: '_id',
+                as: 'comments'
+            }},
+            {$unwind:"$comments"},
+            {$project:{"comments":1}},
+            {$lookup:{
+                from: User.collection.name,
+                localField: 'comments.user',
+                foreignField: '_id',
+                as: 'comments.user'
+            }},
+            {$unwind:"$comments.user"},
+            {$project:{
+                "comments._id":1,
+                "comments.user._id":1,
+                "comments.user.profile.username":1,
+                "comments.user.profile.caption":1,
+                "comments.user.profile.profile_pic":1,                
+                "comments.caption":1,
+                "comments.liked_user":1,
+                "comments.replies":1,
+                "comments.updatedAt":1,
+            }},            
+            {$lookup:{
+                from: Comment.collection.name,
+                localField: 'comments.replies',
+                foreignField: '_id',
+                as: "comments.replies"
+            }},
+            {$unwind:{path:"$comments.replies", "preserveNullAndEmptyArrays": true}},                        
+            {$lookup:{
+                from: User.collection.name,
+                localField: 'comments.replies.user',
+                foreignField: '_id',
+                as: 'comments.replies.user'
+            }},
+            {$unwind:{path:"$comments.replies.user", "preserveNullAndEmptyArrays": true}},  
+            {$project:{                                
+                "comments.replies.user.publicAddr":0,
+                "comments.replies.user.ownerOfNFT":0,
+                "comments.replies.user.profile.post_ids":0,
+                "comments.replies.user.profile.comment_ids":0,
+                "comments.replies.user.profile.points":0,
+                "comments.replies.user.profile.liked_user":0,
+                "comments.replies.user.__v":0,
+                "comments.replies.__v":0,                
+                "comments.replies.replies":0,
+                "comments.replies.createdAt":0,                                
+            }},
+            {$group:{
+                _id:"$_id",
+                comments:{$push:"$comments"}
+            }}                
+        ])
+        console.log(result)        
         
-        const result = await Post.findById(`${post_id}`).lean().exec()
-        if(!result) return res.status(400).send('no post found')
-        Promise.all(result.comments.map(async (comment)=>{
-           const result = await Comment.findById(`${comment}`).populate('user','',User).populate({
-            path:'replies',
-            model:Comment,
-            populate:{
-                path:'user',
-                model:User
-            }
-           })
-           return result
-        })).then((result)=>{
-            console.log('getComment 실행', result)
-            return res.send(result);
-        })               
+        return res.send(result);
+                
     },
 
     addComment: async (req,res,next)=>{
@@ -326,7 +396,9 @@ module.exports={
 
         let user = await User.findOne({publicAddr:publicAddress})
         let comment = await Comment.findOne({_id:comment_id})
-            
+        
+        if(comment == null || user == null) return res.status(400).send('comment or user not found')
+        
         const newComment = new Comment({
                 user:user._id,
                 caption:context,
@@ -391,29 +463,25 @@ module.exports={
                 }
         },
         {$limit:10
-        },
+        },        
+        // {$lookup:{
+        //     from: User.collection.name,
+        //     localField: 'user',
+        //     foreignField: '_id',
+        //     as: 'user'
+        // }},
+        // {$lookup:{
+        //     from: Like.collection.name,
+        //     localField: 'likes',
+        //     foreignField: '_id',
+        //     as: 'likes'
+        // }},        
         {$project:{            
-                    "_id": 1,
-                    user:1,
-                    "title": 1,
-                    "text":1,
-                    likes:1,
-                    comments:1,
-                    score: { $meta: "searchScore" }                
-                }
-        },
-        {$lookup:{
-            from: User.collection.name,
-            localField: 'user',
-            foreignField: '_id',
-            as: 'user'
-        }},
-        {$lookup:{
-            from: Like.collection.name,
-            localField: 'likes',
-            foreignField: '_id',
-            as: 'likes'
-        }},        
+            "_id": 1,
+            "createdAt":1,
+            score: { $meta: "searchScore" }                
+        }
+    },
     ])  
 
     console.log('Search result', result)
