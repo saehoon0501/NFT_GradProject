@@ -24,7 +24,8 @@ const userSchema = new Schema({
         comment_ids: [{type: Schema.Types.ObjectId, ref:`comment`},],
         likes_ids: [{type: Schema.Types.ObjectId, ref:`like`}],
         profile_pic : {type:String}
-    }
+    },
+    role : {type: String, required: true}
 });
 
 module.exports = nftDb.model('user', userSchema);
