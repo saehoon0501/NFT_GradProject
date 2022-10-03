@@ -28,10 +28,32 @@ import { Vote } from "../../components/main/Vote";
 import { Loading } from "../../components/common/Loading";
 import { CANCEL_FEED, DELETE, WRITE_FEED } from "../../utils";
 
+const DUMMY_VOTES = [
+  {
+    title: "좋아하는 축구 선수",
+    voteOption: [
+      { name: "메시", count: 100 },
+      { name: "날강두", count: 7 },
+      { name: "홀란드", count: 32 },
+      { name: "음바페", count: 40 },
+    ],
+  },
+  {
+    title: "좋아하는 야구 선수",
+    voteOption: [
+      { name: "트라웃", count: 100 },
+      { name: "오타니", count: 7 },
+      { name: "소토", count: 32 },
+      { name: "저지", count: 40 },
+    ],
+  },
+];
+
 export const Main = ({ socketValue }) => {
   const [isBest, setIsBest] = useState(false);
   const [isUserDataSend, setIsUserDataSend] = useState(false);
   const [loginUsers, setLoginUsers] = useState([]);
+  const [currentVoteContent, setCurrentVoteContent] = useState({});
 
   const [showPopUp, setShowPopUp] = useRecoilState(showPopUpState);
   const [isOpen, setIsOpen] = useRecoilState(isWritingPost);
@@ -121,7 +143,11 @@ export const Main = ({ socketValue }) => {
     <div className="main_wrapper">
       <CategoryBar />
       <LoginUser users={loginUsers} />
-      <Vote />
+      <Vote
+        data={DUMMY_VOTES}
+        currentVoteContent={currentVoteContent}
+        setCurrentVoteContent={setCurrentVoteContent}
+      />
       <Submit user={userQuery.data} setPosts={setPosts} />
       <div className="main_icons_wrapper">
         <div
