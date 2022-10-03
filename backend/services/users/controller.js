@@ -9,7 +9,7 @@ module.exports = {
         if(req.query.userId==undefined){
             publicAddress = res.locals.decoded.publicAddress
 
-            User.findOne({publicAddr:`${publicAddress}`},{ownerOfNFT:0, comment_ids:0, likes_ids:0, "profile.comment_ids":0,"profile.likes_ids":0})
+            User.findOne({publicAddr:`${publicAddress}`},{comment_ids:0, likes_ids:0, "profile.comment_ids":0,"profile.likes_ids":0})
         .then((user)=>{
             if(!user){
                 return res.status(401).send({error: 'User not Found'});
