@@ -22,7 +22,7 @@ import { io } from "socket.io-client";
 import { certainUserPost } from "../../api/UserApi";
 
 export const FeedView = () => {
-  // const { postId } = useParams();
+  const { postId } = useParams();
 
   // useEffect(() => {
   //   const data = certainUserPost(postId);
@@ -31,7 +31,7 @@ export const FeedView = () => {
 
   const { state } = useLocation();
   console.log(state);
-  const { post_id, writer_profile, user_id, caption, title } = state;
+  const { writer_profile, user_id, caption, title } = state;
   let { likes } = state;
 
   const [value, setValue] = useState("");
@@ -43,8 +43,8 @@ export const FeedView = () => {
   const queryClient = useQueryClient();
 
   const { isLoading, data } = useQuery(
-    ["comments", post_id],
-    () => getComment(post_id),
+    ["comments", postId],
+    () => getComment(postId),
     {
       onSuccess: () => {
         console.log(data);
@@ -52,9 +52,9 @@ export const FeedView = () => {
     }
   );
 
-  const commentMutate = useMutation(["comments", post_id], addComment, {
+  const commentMutate = useMutation(["comments", postId], addComment, {
     onSuccess: () => {
-      queryClient.invalidateQueries(["comments", post_id]);
+      queryClient.invalidateQueries(["comments", postId]);
     },
   });
 
@@ -78,7 +78,7 @@ export const FeedView = () => {
 
   const handleLike = async () => {
     if (!like.liked) {
-      likePost(post_id, likes)
+      likePost(postId, likes)
         .then((res) => {
           likes = res.data;
           if (likes.liked_user.includes(user_id)) {
@@ -87,7 +87,7 @@ export const FeedView = () => {
         })
         .catch((err) => console.log(err));
     } else {
-      dislikePost(post_id, likes).then((res) => {
+      dislikePost(postId, likes).then((res) => {
         likes = res.data;
         setLike({ liked: false, liked_user: likes.liked_user });
       });
@@ -97,7 +97,7 @@ export const FeedView = () => {
   const handleComment = (event) => {
     console.log(value);
     const para = {
-      post_id,
+      postId,
       value,
     };
     commentMutate.mutate(para);
@@ -119,8 +119,8 @@ export const FeedView = () => {
 
   useEffect(() => {
     console.log(socketValue);
-    if (socketValue && post_id) {
-      socketValue.emit("join", post_id);
+    if (socketValue && postId) {
+      socketValue.emit("join", postId);
       socketValue.on("getNotification", (arg) => {
         console.log(arg);
       });
@@ -183,20 +183,18 @@ export const FeedView = () => {
       </div>
       <div className="commenter">댓글들</div>
       <div className="comment_list">
-        {data?.map((comment, index) => {
-          return (
-            <Comment
-              key={comment._id}
-              index={index}
-              comment_id={comment._id}
-              user_id={user_id}
-              writer={comment.user}
-              caption={comment.caption}
-              liked_user={comment.liked_user}
-              replies={comment.replies}
-            />
-          );
-        })}
+        {data.comments?.map((comment, index) => (
+          <Comment
+            key={comment._id}
+            index={index}
+            comment_id={comment._id}
+            user_id={user_id}
+            writer={comment.user}
+            caption={comment.caption}
+            liked_user={comment.liked_user}
+            replies={comment.replies}
+          />
+        ))}
       </div>
       {data.length === 0 && (
         <div className="comment_list_blank">
