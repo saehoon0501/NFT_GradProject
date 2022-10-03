@@ -53,9 +53,9 @@ export const Comment = ({
     //   setIsOwner(true);
     // }
 
-    // if (liked_user.includes(user_id) && like.liked === false) {
-    //   setLike((prev) => ({ ...prev, liked: true }));
-    // }
+    if (liked_user.includes(user_id) && like.liked === false) {
+      setLike((prev) => ({ ...prev, liked: true }));
+    }
   }, [value]);
 
   const handleLike = () => {
