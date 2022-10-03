@@ -22,12 +22,12 @@ import { io } from "socket.io-client";
 import { certainUserPost } from "../../api/UserApi";
 
 export const FeedView = () => {
-  // const { postId } = useParams();
+  const { postId } = useParams();
 
-  // useEffect(() => {
-  //   const data = certainUserPost(postId);
-  //   console.log(data);
-  // }, []);
+  useEffect(() => {
+    const data = certainUserPost(postId);
+    console.log(data);
+  }, []);
 
   const { state } = useLocation();
   console.log(state);
@@ -183,20 +183,18 @@ export const FeedView = () => {
       </div>
       <div className="commenter">댓글들</div>
       <div className="comment_list">
-        {data?.map((comment, index) => {
-          return (
-            <Comment
-              key={comment._id}
-              index={index}
-              comment_id={comment._id}
-              user_id={user_id}
-              writer={comment.user}
-              caption={comment.caption}
-              liked_user={comment.liked_user}
-              replies={comment.replies}
-            />
-          );
-        })}
+        {data.comments?.map((comment, index) => (
+          <Comment
+            key={comment._id}
+            index={index}
+            comment_id={comment._id}
+            user_id={user_id}
+            writer={comment.user}
+            caption={comment.caption}
+            liked_user={comment.liked_user}
+            replies={comment.replies}
+          />
+        ))}
       </div>
       {data.length === 0 && (
         <div className="comment_list_blank">

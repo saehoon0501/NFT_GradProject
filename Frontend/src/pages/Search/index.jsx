@@ -37,12 +37,12 @@ export const Search = () => {
             key={post._id}
             post_id={post._id}
             writer_profile={post.user[0].profile}
-            user_id={userQuery.data._id}
             caption={post.text}
             title={post.title}
             comments={post.comments}
             likes={post.likes[0]}
             likesCount={post.likes[0].liked_num}
+            user_id={userQuery.data._id}
           />
         ))}
       </div>

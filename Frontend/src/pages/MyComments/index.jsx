@@ -17,7 +17,7 @@ export const MyComments = () => {
     <div className="myComments_wrapper">
       <h1>내가 작성한 댓글 목록</h1>
       <div className="myComments_comments_wrapper">
-        {data.map((comment, index) => (
+        {data.comments?.map((comment, index) => (
           <div className="myComments_comment_wrapper" key={index}>
             <h3>작성한 댓글 : {comment.caption}</h3>
             <h3 className="myComments_comment_date">
