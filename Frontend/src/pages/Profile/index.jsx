@@ -26,8 +26,11 @@ export const Profile = () => {
 
   useEffect(() => {
     async function fetchData() {
-      const data = await certainUserPost(user.publicAddr);
-      setPostData(data);
+      if (user) {
+        const data = await certainUserPost(user.publicAddr);
+        console.log(data);
+        setPostData(data[0].posts);
+      }
     }
     fetchData();
   }, [user]);
@@ -64,14 +67,15 @@ export const Profile = () => {
       <div className="profile-post-wrapper">
         <span className="profile-post-title">게시물</span>
         <div className="profile-post">
-          {postData?.map((post, index) => (
-            <ProfilePost
-              key={index}
-              title={post.title}
-              postId={post._id}
-              commentCount={post.comments.length}
-            />
-          ))}
+          {postData &&
+            postData.map((post, index) => (
+              <ProfilePost
+                key={index}
+                title={post.title}
+                postId={post._id}
+                commentCount={post.comments.length}
+              />
+            ))}
         </div>
       </div>
     </div>
