@@ -41,16 +41,16 @@ const Feed = ({
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (likes.liked_user.includes(user_id)) {
-      setLike((prev) => ({ ...prev, liked: true }));
-    }
+  // useEffect(() => {
+  //   if (likes.liked_user.includes(user_id)) {
+  //     setLike((prev) => ({ ...prev, liked: true }));
+  //   }
 
-    console.log(caption, writer_profile.post_ids.includes(post_id));
-    if (isOwner === false && writer_profile.post_ids.includes(post_id)) {
-      setIsOwner(true);
-    }
-  }, []);
+  //   console.log(caption, writer_profile.post_ids.includes(post_id));
+  //   if (isOwner === false && writer_profile.post_ids.includes(post_id)) {
+  //     setIsOwner(true);
+  //   }
+  // }, []);
 
   const handleLike = async () => {
     if (!like.liked) {
