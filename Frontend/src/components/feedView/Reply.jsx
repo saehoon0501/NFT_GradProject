@@ -37,17 +37,17 @@ export const Reply = ({
       )}px`;
     }
 
-    if (
-      writer._id === user_id &&
-      isOwner === false &&
-      writer.profile.comment_ids.includes(comment_id)
-    ) {
-      setIsOwner(true);
-    }
+    // if (
+    //   writer._id === user_id &&
+    //   isOwner === false &&
+    //   writer.profile.comment_ids.includes(comment_id)
+    // ) {
+    //   setIsOwner(true);
+    // }
 
-    if (liked_user.includes(user_id)) {
-      setLike((prev) => ({ ...prev, liked: true }));
-    }
+    // if (liked_user.includes(user_id)) {
+    //   setLike((prev) => ({ ...prev, liked: true }));
+    // }
   }, [value, toReply]);
 
   const handleLike = () => {

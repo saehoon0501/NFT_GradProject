@@ -17,9 +17,9 @@ export const ProfilePost = ({ postId, title, commentCount }) => {
     setIsHovered(!isHovered);
   };
 
-  const onClickPost = () => {
-    navigate(`/post/${postId}`);
-  };
+  // const onClickPost = () => {
+  //   navigate(`/post/${postId}`);
+  // };
 
   // useEffect(() => {
   //   const data = certainUserPost(publicAddr);
@@ -28,7 +28,6 @@ export const ProfilePost = ({ postId, title, commentCount }) => {
 
   return (
     <div
-      onClick={onClickPost}
       onMouseEnter={toggleHover}
       onMouseLeave={toggleHover}
       className="profile_post_wrapper"

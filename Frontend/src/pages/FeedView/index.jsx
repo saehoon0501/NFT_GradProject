@@ -183,7 +183,7 @@ export const FeedView = () => {
       </div>
       <div className="commenter">댓글들</div>
       <div className="comment_list">
-        {data.comments?.map((comment, index) => (
+        {data?.map((comment, index) => (
           <Comment
             key={comment._id}
             index={index}

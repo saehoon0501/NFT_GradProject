@@ -45,17 +45,17 @@ export const Comment = ({
       )}px`;
     }
 
-    if (
-      writer._id === user_id &&
-      isOwner === false &&
-      writer.profile.comment_ids.includes(comment_id)
-    ) {
-      setIsOwner(true);
-    }
+    // if (
+    //   writer._id === user_id &&
+    //   isOwner === false &&
+    //   writer.profile.comment_ids.includes(comment_id)
+    // ) {
+    //   setIsOwner(true);
+    // }
 
-    if (liked_user.includes(user_id) && like.liked === false) {
-      setLike((prev) => ({ ...prev, liked: true }));
-    }
+    // if (liked_user.includes(user_id) && like.liked === false) {
+    //   setLike((prev) => ({ ...prev, liked: true }));
+    // }
   }, [value]);
 
   const handleLike = () => {
@@ -171,20 +171,21 @@ export const Comment = ({
       ) : (
         <div></div>
       )}
-      {replyList.map((replyItem, index) => {
-        return (
-          <Reply
-            key={index}
-            comment_id={comment_id}
-            comment_index={index}
-            user_id={user_id}
-            writer={replyItem.user}
-            caption={replyItem.caption}
-            liked_user={replyItem.liked_user}
-            setReplyList={setReplyList}
-          />
-        );
-      })}
+      {replyList[0].user &&
+        replyList.map((replyItem, index) => {
+          return (
+            <Reply
+              key={index}
+              comment_id={comment_id}
+              comment_index={index}
+              user_id={user_id}
+              writer={replyItem.user}
+              caption={replyItem.caption}
+              liked_user={replyItem.liked_user}
+              setReplyList={setReplyList}
+            />
+          );
+        })}
     </div>
   );
 };
