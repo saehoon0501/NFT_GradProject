@@ -274,11 +274,15 @@ module.exports={
                 "comments.replies.__v":0,                
                 "comments.replies.replies":0,
                 "comments.replies.createdAt":0,                                
-            }},
+            }},            
             {$group:{
-                _id:"$_id",
-                comments:{$push:"$comments"}
-            }}                
+                _id:"$comments._id",
+                "user":{$first:"$comments.user"},
+                "caption":{$first:"$comments.caption"},
+                "liked_user":{$first:"$comments.liked_user"},
+                "updatedAt":{$first:"$comments.updatedAt"},                
+                "replies":{$push:"$comments.replies"}
+            }},               
         ])
         console.log(result)        
         
