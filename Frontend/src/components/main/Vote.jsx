@@ -4,6 +4,7 @@ import "./Vote.css";
 export const Vote = ({ data, currentVoteContent, setCurrentVoteContent }) => {
   const [showPopUp, setShowPopUp] = useState(false);
   const [selectedOption, setSelectedOption] = useState("");
+  const [createVote, setCreateVote] = useState(false);
 
   const onClickVoteSubject = (voteData) => {
     setShowPopUp(true);
@@ -25,9 +26,22 @@ export const Vote = ({ data, currentVoteContent, setCurrentVoteContent }) => {
     setSelectedOption("");
   };
 
+  const onClickCreateVote = () => {
+    setCreateVote(true);
+  };
+
+  const onClickCloseCreateVotePopUp = () => {
+    setCreateVote(false);
+  };
+
   return (
     <div className="vote_wrapper">
-      <h3 className="vote_title">투표</h3>
+      <div className="vote_header">
+        <h3 className="vote_title">투표</h3>
+        <button onClick={onClickCreateVote} className="vote_createBtn">
+          ➕
+        </button>
+      </div>
       <div className="vote_list">
         {data.map((vote) => (
           <div
@@ -64,6 +78,17 @@ export const Vote = ({ data, currentVoteContent, setCurrentVoteContent }) => {
           <button onClick={onClickSubmit} className="vote_popup_submitBtn">
             투표하기
           </button>
+        </div>
+      )}
+      {createVote && (
+        <div className="vote_popup">
+          <button
+            onClick={onClickCloseCreateVotePopUp}
+            className="vote_popup_closeBtn"
+          >
+            ✕
+          </button>
+          <h1>Create Vote</h1>
         </div>
       )}
     </div>
