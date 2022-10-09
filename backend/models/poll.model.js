@@ -6,11 +6,11 @@ const pollDb = mongoose.createConnection(config.mongoPath)
 
 let pollSchema = new Schema({
     title: {type: String},
-    option:[{
+    options:[{
         name: {type:String},
         vote_count : {type:Number, default:0},        
     }],
-    voters:[{
+    votes:[{
         user_id:{type: Schema.Types.ObjectId, ref:`user`},
         usedNFT:{
             collection_id: {type: String},
@@ -19,5 +19,5 @@ let pollSchema = new Schema({
     }],
 },{timestamps: true})
 
-module.exports.Poll = pollDb.model('poll', pollSchema)
+module.exports = pollDb.model('poll', pollSchema)
 

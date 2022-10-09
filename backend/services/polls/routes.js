@@ -4,9 +4,9 @@ const verify = require('../../middleware/jwt');
 
 const pollRouter = express.Router();
 
-pollRouter.route('/:poll_id').get(verify, controller.getPoll);
+pollRouter.route('/').get(verify, controller.getPoll);
 pollRouter.route('/').post(verify, controller.createPoll);
-pollRouter.route('/comment/:comment_id').patch(verify, controller.modifyPoll);
-pollRouter.route('/:post_id').delete(verify, controller.deletePoll)
+pollRouter.route('/:poll_id').patch(verify, controller.votePoll);
+pollRouter.route('/:poll_id').delete(verify, controller.deletePoll)
 
 module.exports = pollRouter;
