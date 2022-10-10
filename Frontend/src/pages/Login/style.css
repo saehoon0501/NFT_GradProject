@@ -1,0 +1,32 @@
+.login-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.login-service-wrapper {
+  background-color: lightgray;
+  padding: 50px;
+  border-radius: 10px;
+  width: 600px;
+  height: 600px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.login-service-logo {
+  width: 300px;
+  height: 300px;
+  border: 1px solid white;
+  background-color: white;
+  padding: 10px;
+  border-radius: 50%;
+}
+
+.login-service-title {
+  font-size: 24px;
+  font-weight: 600;
+}

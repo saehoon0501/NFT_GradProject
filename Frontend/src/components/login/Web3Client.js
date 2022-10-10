@@ -123,7 +123,7 @@ export const NFTLogin = () => {
   return (
     <div>
       <button className="login__button" onClick={handleClick} link>
-        Login to SNS
+        Login
       </button>
     </div>
   );
