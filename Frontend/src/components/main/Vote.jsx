@@ -1,12 +1,23 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useQuery } from "react-query";
+import { createTypedVote, getVote, voteOption } from "../../api/VoteApi";
 import "./Vote.css";
 
-export const Vote = ({ data, currentVoteContent, setCurrentVoteContent }) => {
+export const Vote = ({
+  currentVoteContent,
+  setCurrentVoteContent,
+  userData,
+}) => {
   const [showPopUp, setShowPopUp] = useState(false);
   const [selectedOption, setSelectedOption] = useState("");
   const [createVote, setCreateVote] = useState(false);
   const [voteTitle, setVoteTitle] = useState("");
   const [voteOptions, setVoteOptions] = useState("");
+  const [currentVoteId, setCurrentVoteId] = useState("");
+
+  const { data, isLoading } = useQuery("votes", ({ signal }) =>
+    getVote(signal)
+  );
 
   const onClickVoteSubject = (voteData) => {
     setShowPopUp(true);
@@ -17,12 +28,19 @@ export const Vote = ({ data, currentVoteContent, setCurrentVoteContent }) => {
     setShowPopUp(false);
   };
 
-  const onClickOption = (optionName) => {
-    setSelectedOption(optionName);
+  const onClickOption = (optionIndex, voteId) => {
+    setSelectedOption(optionIndex);
+    setCurrentVoteId(voteId);
   };
 
   const onClickSubmit = () => {
-    console.log(`${selectedOption} 투표`);
+    voteOption(
+      currentVoteId,
+      selectedOption,
+      userData._id,
+      userData.ownerOfNFT
+    );
+
     setShowPopUp(false);
     setCurrentVoteContent("");
     setSelectedOption("");
@@ -47,8 +65,7 @@ export const Vote = ({ data, currentVoteContent, setCurrentVoteContent }) => {
   };
 
   const onClickCreateVoteSubmit = () => {
-    console.log("제목", voteTitle);
-    console.log("옵션", voteOptions.split(","));
+    createTypedVote(voteTitle, voteOptions.split(","));
     setCreateVote(false);
     setVoteTitle("");
     setVoteOptions("");
@@ -63,8 +80,9 @@ export const Vote = ({ data, currentVoteContent, setCurrentVoteContent }) => {
         </button>
       </div>
       <div className="vote_list">
-        {data.map((vote) => (
+        {data?.map((vote, index) => (
           <div
+            key={index}
             className="vote_subject"
             onClick={() => onClickVoteSubject(vote)}
           >
@@ -79,19 +97,19 @@ export const Vote = ({ data, currentVoteContent, setCurrentVoteContent }) => {
           </button>
           <h1 className="vote_popup_title">{currentVoteContent.title}</h1>
           <div className="vote_popup_options">
-            {currentVoteContent?.voteOption.map((vote) => (
-              <div className="vote_popup_option">
+            {currentVoteContent?.options.map((vote, index) => (
+              <div key={index} className="vote_popup_option">
                 <div className="vote_popup_name_and_select">
                   <p className="vote_popup_option_name">{vote.name}</p>
                   <button
                     className="vote_popup_selectBtn"
-                    onClick={() => onClickOption(vote.name)}
+                    onClick={() => onClickOption(index, vote._id)}
                   >
-                    {vote.name === selectedOption ? "O" : " "}
+                    {index === selectedOption ? "O" : " "}
                   </button>
                 </div>
                 <div className="vote_popup_option_bar" />
-                <p className="vote_popup_option_count">{vote.count}표</p>
+                <p className="vote_popup_option_count">{vote.vote_count}표</p>
               </div>
             ))}
           </div>
