@@ -1,5 +1,5 @@
 const User = require("../../models/user.model");
-const {Post,Like,Comment} = require('../../models/post.model');
+const {Post,Comment} = require('../../models/post.model');
 
 
 module.exports = {
@@ -8,27 +8,23 @@ module.exports = {
         console.log(req.query.publicAddress)
         if(req.query.userId==undefined){
             publicAddress = res.locals.decoded.publicAddress
-
             User.findOne({publicAddr:`${publicAddress}`},{comment_ids:0, likes_ids:0, "profile.comment_ids":0,"profile.likes_ids":0})
-        .then((user)=>{
-            if(!user){
-                return res.status(401).send({error: 'User not Found'});
-            }
-            
-            return res.json(user);
-        }).catch((err)=>console.log('유저 정보 sndProfile: User.findOne Error',err))
-
+            .then((user)=>{
+                if(!user){
+                    return res.status(401).send({error: 'User not Found'});
+                }
+                
+                return res.json(user);
+            }).catch((err)=>console.log('유저 정보 sndProfile: User.findOne Error',err))
         }else{
             publicAddress = req.query.userId
-
             User.findOne({_id:`${publicAddress}`})
-        .then((user)=>{
-            if(!user){
-                return res.status(401).send({error: 'User not Found'});
-            }
-            
-            return res.json(user);
-        }).catch((err)=>console.log('유저 정보 sndProfile: User.findOne Error',err))
+            .then((user)=>{
+                if(!user){
+                    return res.status(401).send({error: 'User not Found'});
+                }    
+                return res.json(user);
+            }).catch((err)=>console.log('유저 정보 sndProfile: User.findOne Error',err))
         }
     
         
@@ -47,7 +43,7 @@ module.exports = {
             }).then((result)=>{
                 console.log('updateProfile 실행 결과', result)
                 return res.send("user info updated")
-            });
+            }).catch((err)=>console.log("updateProfile: User.updateOne Error", err))
         }
 
         if(profile_pic){
@@ -57,7 +53,9 @@ module.exports = {
                 {"ownerOfNFT.NFT_URL":`${profile_pic}`}
             ]},{
                 $set:{"profile.profile_pic":`${profile_pic}`}
-            }).then(()=>{return res.send("user info updated")});
+            })
+            .then(()=>{return res.send("user info updated")})
+            .catch((err)=>console.log("updateProfile: User.findOneandUpdate Error", err))
         }
     },
     getUserPost : (req, res, next) => {
@@ -89,6 +87,10 @@ module.exports = {
             console.log('user Post', user)
             return res.send(user)
         })
+        .catch((err)=>{
+            console.log("getUerPost: User.aggregate error", err)
+            return res.status(400).send(err)
+        })
         
     },
     getUserComment : (req, res, next) => {
@@ -107,13 +109,16 @@ module.exports = {
                 'comments.caption':1,
                 'comments.updatedAt':1,                                                        
             }},            
-        ])        
-        // User.findOne({publicAddr:publicAddress}).populate('profile.comment_ids','',Comment)
+        ])                
         .then((result)=>{              
             if(!result) return res.status(400).send('user not found')
                         
             console.log('getUserComment 실행 결과', result)
             return res.send(result[0])
+        })
+        .catch((err)=>{
+            console.log("getUserComment: User.aggregate error", err)
+            return res.status(400).send(err)
         })
     }
 }

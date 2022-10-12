@@ -11,11 +11,19 @@ module.exports = {
                 if(!poll) return res.status(400).send("Poll not found")
                 return res.send(poll)
             })
+            .catch((err)=>{
+                console.log("getPoll: Poll.find error", err)                
+                return res.status(400).send(err)
+            })
         }else{
             Poll.findOneById(poll_id).lean()
             .then((poll)=>{
                 if(!poll) return res.status(400).send("Poll not found")
                 return res.send(poll)
+            })
+            .catch((err)=>{
+                console.log("getPoll: Poll.findOneById error", err)                
+                return res.status(400).send(err)
             })
         }        
     },
@@ -27,19 +35,19 @@ module.exports = {
 
         User.findOne({publicAddr:publicAddress}).lean()
         .then((result)=>{
-            if(!result.role || result.role!="admin") return res.status(400).send("Not Authorized User")
+            if(!result.role || result.role!="admin") return res.status(400).send("Non-Authorized User")
         })
 
-        let Objectoptions = []
+        let ObjectOptions = []
 
         options.map((option)=>{            
-            Objectoptions.push({name:option})
+            ObjectOptions.push({name:option})
         })
 
         //create new poll data
         const newPoll = new Poll({
             "title":title,
-            "options":Objectoptions,
+            "options":ObjectOptions,
             "votes":[]
         })
 
@@ -75,37 +83,51 @@ module.exports = {
 
         User.findOne({_id:user_id}).lean()
         .then((result)=>{
-            result.ownerOfNFT.map((collection)=>{
+            for(let collection of result.ownerOfNFT){
                 if(collection.collection_id == usedNFT.collection_id){
-                    collection.NFT_URL.map((nft)=>{                        
+                    for(let nft of collection.NFT_URL){
                         if(nft == usedNFT.NFT_URL){
                             console.log('nft',nft == usedNFT.NFT_URL)
                             owner = true                            
+                            break
                         }
-                    })
-                }                
-            })
-        })
-
-        if(owner) return res.status(400).send("Not an owner of NFT")
-        
-        Poll.findOne({id:poll_id})
-        .then((result)=>{            
-            if(result== null) return res.status(400).send("Poll not found")
-
-            result.votes.map((vote)=>{
-                if(vote.usedNFT.NFT_URL == usedNFT.NFT_URL){
-                    return res.status(400).send("NFT already used")
+                    }
+                    break
                 }
-            })
-            
-            result.votes.push({user_id,usedNFT})            
+            }
+            // result.ownerOfNFT.map((collection)=>{
+            //     if(collection.collection_id == usedNFT.collection_id){
+            //         collection.NFT_URL.map((nft)=>{                        
+            //             if(nft == usedNFT.NFT_URL){
+            //                 console.log('nft',nft == usedNFT.NFT_URL)
+            //                 owner = true                            
+            //             }
+            //         })
+            //     }                
+            // })
+            if(!owner) {
+                console.log("owner result2", owner)
+                return res.status(400).send("Not an owner of NFT")
+            }
 
-            if(!result.options[voted_item]) return res.status(400).send("Invalid Vote option")
+            Poll.findOne({_id:poll_id})
+            .then((result)=>{            
+                if(result== null) return res.status(400).send("Poll not found")
+
+                result.votes.map((vote)=>{
+                    if(vote.usedNFT.NFT_URL == usedNFT.NFT_URL){
+                        return res.status(400).send("NFT already used")
+                    }
+                })
             
-            result.options[voted_item].vote_count += 1
-            result.save()
-            .then(()=>res.send(result))
-        })
+                result.votes.push({user_id,usedNFT})            
+
+                if(!result.options[voted_item]) return res.status(400).send("Invalid Vote option")
+            
+                result.options[voted_item].vote_count += 1
+                result.save()
+                .then(()=>res.send(result))
+            })
+        })                    
     }
 }
