@@ -3,7 +3,7 @@ const Poll = require("../../models/poll.model")
 
 module.exports = {
     getPoll : (req, res, next) => {            
-        const poll_id = req.query.pollId
+        const poll_id = req.query.poll_id
         
         if(poll_id==undefined){
             Poll.find().lean()
@@ -16,7 +16,7 @@ module.exports = {
                 return res.status(400).send(err)
             })
         }else{
-            Poll.findOneById(poll_id).lean()
+            Poll.findById(poll_id).lean()
             .then((poll)=>{
                 if(!poll) return res.status(400).send("Poll not found")
                 return res.send(poll)
@@ -94,17 +94,7 @@ module.exports = {
                     }
                     break
                 }
-            }
-            // result.ownerOfNFT.map((collection)=>{
-            //     if(collection.collection_id == usedNFT.collection_id){
-            //         collection.NFT_URL.map((nft)=>{                        
-            //             if(nft == usedNFT.NFT_URL){
-            //                 console.log('nft',nft == usedNFT.NFT_URL)
-            //                 owner = true                            
-            //             }
-            //         })
-            //     }                
-            // })
+            }            
             if(!owner) {
                 console.log("owner result2", owner)
                 return res.status(400).send("Not an owner of NFT")
