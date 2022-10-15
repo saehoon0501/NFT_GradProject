@@ -1,10 +1,9 @@
 import { useMutation, useQueryClient } from "react-query";
 import { useRecoilState } from "recoil";
-
-import "./ProfileChangeImage.css";
-
 import { updateProfilePic } from "../../api/UserApi";
 import { changeImageState } from "../../store";
+
+import "./ProfileChangeImage.css";
 
 export const ProfileChangeImage = ({ user }) => {
   const [changeImage, setChangeImage] = useRecoilState(changeImageState);

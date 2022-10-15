@@ -42,14 +42,12 @@
 .vote_selectBtn {
   background-color: white;
   border: 1px solid lightgray;
-  padding: 4px;
   width: 30px;
   height: 30px;
   border-radius: 5px;
 }
 
 .vote_selectBtn:hover {
-  background-color: gray;
   color: white;
 }
 
@@ -77,4 +75,38 @@
 .vote_submitBtn:hover {
   background-color: lightgray;
   color: white;
+}
+
+.vote_nft_popup {
+  position: absolute;
+  top: -40px;
+  width: 600px;
+  height: 600px;
+  padding: 50px;
+  border: 1px solid lightgray;
+  background-color: white;
+  border-radius: 10px;
+}
+
+.vote_nft_imgs {
+  display: flex;
+  gap: 10px;
+  padding: 40px;
+}
+
+.vote_nft_img {
+  width: 150px;
+  height: 150px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.vote_count_img {
+  width: 28px;
+  height: 28px;
+  border-radius: 5px;
+}
+
+.vote_nft_img:hover {
+  opacity: 0.5;
 }
