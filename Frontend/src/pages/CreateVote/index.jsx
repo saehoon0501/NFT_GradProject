@@ -37,11 +37,8 @@ export const CreateVote = () => {
           type="text"
           value={voteTitle}
           onChange={onChangeInput}
+          placeholder="생성할 투표의 제목을 입력해주세요."
         />
-      </div>
-      <div className="create_vote_example">
-        <p>각 항목 사이에 쉼표를 포함하여 작성해주세요.</p>
-        <p>Ex) 메시,호날두,홀란드</p>
       </div>
       <div className="create_vote_content">
         <p className="create_vote_content_title">선택 항목</p>
@@ -49,6 +46,7 @@ export const CreateVote = () => {
           className="create_vote_content_textarea"
           value={voteOptions}
           onChange={onChangeTextarea}
+          placeholder={`각 항목 사이에 쉼표를 포함하여 작성해주세요. Ex) 메시,호날두,홀란드`}
         />
       </div>
       <button

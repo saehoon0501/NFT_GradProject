@@ -64,16 +64,16 @@
   text-align: start;
 }
 
-.vote_submitBtn {
-  background-color: white;
-  border: 1px solid lightgray;
+.vote_submit {
+  background-color: rgb(11, 128, 11);
+  color: white;
   width: 100px;
   padding: 10px;
   border-radius: 10px;
 }
 
-.vote_submitBtn:hover {
-  background-color: lightgray;
+.vote_submit:hover {
+  background-color: rgb(1, 55, 1);
   color: white;
 }
 
@@ -109,4 +109,21 @@
 
 .vote_nft_img:hover {
   opacity: 0.5;
+}
+
+.vote_delete {
+  background-color: tomato;
+  color: white;
+  width: 100px;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.vote_delete:hover {
+  background-color: red;
+}
+
+.vote_menus {
+  display: flex;
+  gap: 10px;
 }

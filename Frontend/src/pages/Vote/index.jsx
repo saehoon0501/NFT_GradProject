@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
-import { voteOption } from "../../api/VoteApi";
+import { deleteVote, voteOption } from "../../api/VoteApi";
 import { currentUserDataState, currentVoteContentState } from "../../store";
 
 import "./style.css";
@@ -35,7 +35,7 @@ export const Vote = () => {
       currentVoteId,
       selectedOption,
       userData._id,
-      userData.ownerOfNFT[0].NFT_URL[selectedNFT]
+      userData.ownerOfNFT
     );
     setCurrentVoteContent("");
     setSelectedOption("");
@@ -47,7 +47,10 @@ export const Vote = () => {
     setShowSelectNFTPopUp(false);
   };
 
-  console.log(selectedNFT);
+  const onClickDelete = () => {
+    deleteVote(currentVoteContent._id);
+    navigate("/");
+  };
 
   return (
     <div className="vote_page_wrapper">
@@ -77,9 +80,14 @@ export const Vote = () => {
           </div>
         ))}
       </div>
-      <button onClick={onClickSubmit} className="vote_submitBtn">
-        투표하기
-      </button>
+      <div className="vote_menus">
+        <button onClick={onClickSubmit} className="vote_submit">
+          투표하기
+        </button>
+        <button onClick={onClickDelete} className="vote_delete">
+          삭제하기
+        </button>
+      </div>
       {showSelectNFTPopUp && (
         <div className="vote_nft_popup">
           <h1>투표에 사용할 NFT를 선택해주세요.</h1>
