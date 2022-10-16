@@ -29,14 +29,12 @@ export const Vote = () => {
       currentVoteId,
       selectedOption,
       userData._id,
-      userData.ownerOfNFT
+      userData.ownerOfNFT[0].NFT_URL[selectedNFT]
     );
-    voteOption(
-      currentVoteId,
-      selectedOption,
-      userData._id,
-      userData.ownerOfNFT
-    );
+    voteOption(currentVoteId, selectedOption, userData._id, {
+      collection_id: userData.ownerOfNFT[0].collection_id,
+      NFT_URL: userData.ownerOfNFT[0].NFT_URL[selectedNFT],
+    });
     setCurrentVoteContent("");
     setSelectedOption("");
     navigate("/");
