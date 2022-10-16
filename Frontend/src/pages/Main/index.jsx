@@ -35,6 +35,7 @@ export const Main = ({ socketValue }) => {
   const [isBest, setIsBest] = useState(false);
   const [isUserDataSend, setIsUserDataSend] = useState(false);
   const [loginUsers, setLoginUsers] = useState([]);
+  const [title, setTitle] = useState("");
   const [currentVoteContent, setCurrentVoteContent] = useRecoilState(
     currentVoteContentState
   );
@@ -60,13 +61,11 @@ export const Main = ({ socketValue }) => {
       setIsUserDataSend(true);
     },
   });
-  const postQuery = useQuery("posts", ({ signal }) => getPost(signal), {
-    onSuccess: (data) => {
-      setPosts(data);
-    },
-  });
-
-  const [posts, setPosts] = useState(postQuery.data);
+  const {
+    data: posts,
+    refetch: refetchPosts,
+    isLoading: isPostLoading,
+  } = useQuery("posts", ({ signal }) => getPost(signal));
 
   if (userQuery.isError) {
     navigate("/login");
@@ -88,7 +87,7 @@ export const Main = ({ socketValue }) => {
     }
   }, [socketValue]);
 
-  if (userQuery.isLoading || postQuery.isLoading) {
+  if (userQuery.isLoading || isPostLoading) {
     return <Loading />;
   }
 
@@ -103,14 +102,17 @@ export const Main = ({ socketValue }) => {
     }
   };
 
-  const onClickSubmit = () => {
+  const onClickSubmit = async () => {
     setShowPopUp(false);
     switch (currentPopUp) {
       case DELETE:
-        delPost(currentPostId);
+        await delPost(currentPostId);
+        refetchPosts();
         return;
       case WRITE_FEED:
-        addPost(currentPostTitle, currentPostText);
+        await addPost(currentPostTitle, currentPostText);
+        setTitle("");
+        refetchPosts();
         setIsOpen(!isOpen);
         return;
       case CANCEL_FEED:
@@ -133,7 +135,7 @@ export const Main = ({ socketValue }) => {
         setCurrentVoteContent={setCurrentVoteContent}
         userData={userQuery.data}
       />
-      <Submit user={userQuery.data} setPosts={setPosts} />
+      <Submit user={userQuery.data} title={title} setTitle={setTitle} />
       <div className="main_icons_wrapper">
         <div
           className={
