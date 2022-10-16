@@ -19,12 +19,14 @@ import {
   currentPostIdState,
   currentPostTextState,
   currentPostTitleState,
+  currentUserDataState,
+  currentVoteContentState,
   isLoginState,
   isWritingPost,
   showPopUpState,
 } from "../../store";
 import { LoginUser } from "../../components/main/LoginUser";
-import { Vote } from "../../components/main/Vote";
+import { VoteList } from "../../components/main/VoteList";
 import { Loading } from "../../components/common/Loading";
 import { CANCEL_FEED, DELETE, WRITE_FEED } from "../../utils";
 import { getVote } from "../../api/VoteApi";
@@ -33,7 +35,9 @@ export const Main = ({ socketValue }) => {
   const [isBest, setIsBest] = useState(false);
   const [isUserDataSend, setIsUserDataSend] = useState(false);
   const [loginUsers, setLoginUsers] = useState([]);
-  const [currentVoteContent, setCurrentVoteContent] = useState({});
+  const [currentVoteContent, setCurrentVoteContent] = useRecoilState(
+    currentVoteContentState
+  );
 
   const [showPopUp, setShowPopUp] = useRecoilState(showPopUpState);
   const [isOpen, setIsOpen] = useRecoilState(isWritingPost);
@@ -125,8 +129,7 @@ export const Main = ({ socketValue }) => {
     <div className="main_wrapper">
       <CategoryBar />
       <LoginUser users={loginUsers} />
-      <Vote
-        currentVoteContent={currentVoteContent}
+      <VoteList
         setCurrentVoteContent={setCurrentVoteContent}
         userData={userQuery.data}
       />

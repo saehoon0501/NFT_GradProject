@@ -7,6 +7,8 @@ import { init } from "./components/login/Web3Client";
 import { FeedView, Login, Profile, Main, MyComments, User } from "./pages";
 import { Search } from "./pages/Search";
 import { io } from "socket.io-client";
+import { Vote } from "./pages/Vote";
+import { CreateVote } from "./pages/CreateVote";
 
 const App = () => {
   const [socketValue, setSocketValue] = useState(null);
@@ -28,6 +30,8 @@ const App = () => {
         <Route exact path="/search/:keyword" element={<Search />} />
         <Route exact path="/post/:postId" element={<FeedView />} />
         <Route exact path="/comments" element={<MyComments />} />
+        <Route exact path="/vote/create" element={<CreateVote />} />
+        <Route exact path="/vote/:id" element={<Vote />} />
       </Routes>
     </Router>
   );

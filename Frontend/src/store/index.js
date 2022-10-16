@@ -49,3 +49,13 @@ export const currentPostIdState = atom({
   key: "currentPostIdState",
   default: "",
 });
+
+export const currentVoteContentState = atom({
+  key: "currentVoteContentState",
+  default: {},
+});
+
+export const currentUserDataState = atom({
+  key: "currentUserDataState",
+  default: {},
+});
