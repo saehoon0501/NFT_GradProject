@@ -20,6 +20,7 @@ export const Comment = ({
   replies,
   caption,
   liked_user,
+  refetchComments,
 }) => {
   const [like, setLike] = useState({
     liked: false,
@@ -29,10 +30,8 @@ export const Comment = ({
     reply: false,
     modify: false,
   });
-  const [replyList, setReplyList] = useState(replies);
-  const [value, setValue] = useState();
+  const [value, setValue] = useState("");
   const [isOwner, setIsOwner] = useState(false);
-  const [context, setContext] = useState(caption);
 
   const textareaRef = useRef(null);
 
@@ -45,13 +44,9 @@ export const Comment = ({
       )}px`;
     }
 
-    // if (
-    //   writer._id === user_id &&
-    //   isOwner === false &&
-    //   writer.profile.comment_ids.includes(comment_id)
-    // ) {
-    //   setIsOwner(true);
-    // }
+    if (writer._id === user_id) {
+      setIsOwner(true);
+    }
 
     if (liked_user.includes(user_id) && like.liked === false) {
       setLike((prev) => ({ ...prev, liked: true }));
@@ -69,19 +64,17 @@ export const Comment = ({
     }
   };
 
-  const handleReply = (event) => {
-    addReply(comment_id, value, index).then((res) => {
-      console.log(res.data);
-      setReplyList(res.data);
-    });
+  const handleReply = async () => {
+    await addReply(comment_id, value, index);
+    setToReply({ reply: !toReply.reply, modify: toReply.modify });
+    refetchComments();
     setValue("");
   };
 
-  const handleModify = (event) => {
-    modifyReply(comment_id, value, index).then((res) => {
-      console.log(res.data);
-      setContext(res.data.caption);
-    });
+  const handleModify = async () => {
+    await modifyReply(comment_id, value, index);
+    setToReply({ reply: !toReply.reply, modify: toReply.modify });
+    refetchComments();
     setValue("");
   };
 
@@ -89,6 +82,7 @@ export const Comment = ({
     delComment(comment_id, index).then((res) => {
       console.log(res.data);
     });
+    refetchComments();
   };
 
   const onClickReply = () => {
@@ -111,7 +105,7 @@ export const Comment = ({
         />
         <div>
           <h5>{writer?.profile.username} · n 시간 전</h5>
-          <p className="comment_context">{context}</p>
+          <p className="comment_context">{caption}</p>
           <div className="comment_page_menus">
             <div className="comment_page_button" onClick={onClickReply}>
               <img src={commentImg} />
@@ -156,7 +150,7 @@ export const Comment = ({
           </button>
         </div>
       )}
-      {replyList.length > 0 ? (
+      {replies.length > 0 ? (
         <div
           style={{
             padding: "0 0 0 50px",
@@ -171,18 +165,21 @@ export const Comment = ({
       ) : (
         <div></div>
       )}
-      {replyList[0].user &&
-        replyList.map((replyItem, index) => {
+      {replies[0].user &&
+        replies.map((replyItem, replyIndex) => {
           return (
             <Reply
-              key={index}
+              key={replyIndex}
               comment_id={comment_id}
-              comment_index={index}
+              comment_index={replyIndex}
               user_id={user_id}
               writer={replyItem.user}
               caption={replyItem.caption}
               liked_user={replyItem.liked_user}
-              setReplyList={setReplyList}
+              refetchComments={refetchComments}
+              commentIndex={index}
+              index={replyIndex}
+              reply_id={replyItem._id}
             />
           );
         })}

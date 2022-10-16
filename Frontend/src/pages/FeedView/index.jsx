@@ -19,18 +19,11 @@ import { Comment } from "../../components/feedView/Comment";
 import { Loading } from "../../components/common/Loading";
 
 import { io } from "socket.io-client";
-import { certainUserPost } from "../../api/UserApi";
 
 export const FeedView = () => {
   const { postId } = useParams();
 
-  // useEffect(() => {
-  //   const data = certainUserPost(postId);
-  //   console.log(data);
-  // }, []);
-
   const { state } = useLocation();
-  console.log(state);
   const { writer_profile, user_id, caption, title } = state;
   let { likes } = state;
 
@@ -40,9 +33,7 @@ export const FeedView = () => {
     liked_user: likes.liked_user,
   });
 
-  const queryClient = useQueryClient();
-
-  const { isLoading, data } = useQuery(
+  const { isLoading, data, refetch } = useQuery(
     ["comments", postId],
     () => getComment(postId),
     {
@@ -51,12 +42,6 @@ export const FeedView = () => {
       },
     }
   );
-
-  const commentMutate = useMutation(["comments", postId], addComment, {
-    onSuccess: () => {
-      queryClient.invalidateQueries(["comments", postId]);
-    },
-  });
 
   const textareaRef = useRef(null);
 
@@ -94,13 +79,9 @@ export const FeedView = () => {
     }
   };
 
-  const handleComment = (event) => {
-    console.log(value);
-    const para = {
-      postId,
-      value,
-    };
-    commentMutate.mutate(para);
+  const onClickWriteComment = async () => {
+    await addComment({ post_id: postId, value });
+    refetch();
     setValue("");
   };
 
@@ -114,8 +95,6 @@ export const FeedView = () => {
       socket.disconnect();
     };
   }, []);
-
-  console.log(data);
 
   useEffect(() => {
     console.log(socketValue);
@@ -175,7 +154,10 @@ export const FeedView = () => {
             placeholder="매너있는 댓글 작성 부탁드립니다."
           />
           <div style={{ textAlign: "right" }}>
-            <button className="feedview-comment-btn" onClick={handleComment}>
+            <button
+              className="feedview-comment-btn"
+              onClick={onClickWriteComment}
+            >
               완료
             </button>
           </div>
@@ -193,6 +175,7 @@ export const FeedView = () => {
             caption={comment.caption}
             liked_user={comment.liked_user}
             replies={comment.replies}
+            refetchComments={refetch}
           />
         ))}
       </div>

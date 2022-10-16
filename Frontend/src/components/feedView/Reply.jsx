@@ -1,9 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import { addReply, delReply, likeReply } from "../../api/FeedApi";
+import { addReply, delReply, likeReply, modifyReply } from "../../api/FeedApi";
 import commentImg from "../../assets/comment.png";
 import like_before from "../../assets/like-before.png";
 import like_after from "../../assets/like-after.png";
-import { Button } from "@mui/material";
 
 import "./Reply.css";
 
@@ -13,7 +12,10 @@ export const Reply = ({
   writer,
   caption,
   liked_user,
-  setReplyList,
+  refetchComments,
+  commentIndex,
+  index,
+  reply_id,
 }) => {
   const [like, setLike] = useState({
     liked: false,
@@ -37,13 +39,9 @@ export const Reply = ({
       )}px`;
     }
 
-    // if (
-    //   writer._id === user_id &&
-    //   isOwner === false &&
-    //   writer.profile.comment_ids.includes(comment_id)
-    // ) {
-    //   setIsOwner(true);
-    // }
+    if (writer._id === user_id) {
+      setIsOwner(true);
+    }
 
     if (liked_user.includes(user_id)) {
       setLike((prev) => ({ ...prev, liked: true }));
@@ -52,7 +50,7 @@ export const Reply = ({
 
   const handleLike = () => {
     if (!like.liked) {
-      likeReply(comment_id).then((res) => {
+      likeReply(comment_id, commentIndex, index).then((res) => {
         console.log(res.data.length);
         if (res.data.includes(user_id)) {
           setLike({ liked: true, liked_user: res.data });
@@ -61,21 +59,25 @@ export const Reply = ({
     }
   };
 
-  const handleReply = (event) => {
-    event.preventDefault();
-    console.log(value);
-    addReply(comment_id, value).then((res) => {
-      console.log(res.data);
-      setReplyList(res.data);
-    });
+  const handleReply = async () => {
+    await addReply(comment_id, value);
+    setToReply({ reply: !toReply.reply, modify: toReply.modify });
+    refetchComments();
+    setValue("");
+  };
+
+  const handleModify = async () => {
+    await modifyReply(reply_id, value, index);
+    setToReply({ reply: !toReply.reply, modify: toReply.modify });
+    refetchComments();
     setValue("");
   };
 
   const handleDelete = () => {
-    delReply(comment_id).then((res) => {
+    delReply(reply_id, commentIndex, index).then((res) => {
       console.log(res.data);
-      setReplyList(res.data);
     });
+    refetchComments();
   };
 
   const onClickReply = () => {
@@ -135,7 +137,10 @@ export const Reply = ({
             }}
             placeholder="매너있는 댓글 작성 부탁드립니다."
           />
-          <button onClick={handleReply} className="modify_btn">
+          <button
+            onClick={toReply.modify ? handleModify : handleReply}
+            className="modify_btn"
+          >
             완료
           </button>
         </div>

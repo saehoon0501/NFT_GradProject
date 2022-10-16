@@ -1,7 +1,7 @@
 import { useQuery } from "react-query";
 
 import "./style.css";
-import { certainUser, certainUserPost, getUser } from "../../api/UserApi";
+import { certainUser, certainUserPost } from "../../api/UserApi";
 import { ProfilePic } from "../../components/profile/ProfilePic";
 import { ProfileCaption } from "../../components/profile/ProfileCaption";
 import { ProfileChangeImage } from "../../components/profile/ProfileChangeImage";
@@ -31,10 +31,6 @@ export const User = () => {
     return <Loading />;
   }
 
-  // console.log(data);
-
-  console.log(user);
-
   return (
     <div className="profile-container">
       <div className="profile-wrapper">
@@ -45,14 +41,15 @@ export const User = () => {
       <div className="profile-post-wrapper">
         <span className="profile-post-title">게시물</span>
         <div className="profile-post">
-          {postData?.map((post, index) => (
-            <ProfilePost
-              key={index}
-              title={post.title}
-              postId={post._id}
-              commentCount={post.comments.length}
-            />
-          ))}
+          {postData &&
+            postData[0]?.posts?.map((post, index) => (
+              <ProfilePost
+                key={index}
+                title={post.title}
+                postId={post._id}
+                commentCount={post.comments.length}
+              />
+            ))}
         </div>
       </div>
     </div>
