@@ -56,17 +56,18 @@ const Feed = ({
     if (!like.liked) {
       likePost(post_id, likes)
         .then((res) => {
+          console.log(res.data);
           likes = res.data;
           if (likes.liked_user.includes(user_id)) {
             setLike({ liked: true, liked_num: likes.liked_user.length });
           }
+          socketValue.emit("sendNotification", {
+            sender: user_publicAddr,
+            receiver: writer_publicAddr,
+            type: "like",
+          });
         })
         .catch((err) => console.log(err));
-      socketValue.emit("sendNotification", {
-        sender: user_publicAddr,
-        receiver: writer_publicAddr,
-        type: "like",
-      });
     } else {
       dislikePost(post_id, likes).then((res) => {
         likes = res.data;

@@ -36,9 +36,8 @@ const uploadURL = (file) => {
   });
 };
 
-export const Submit = ({ user, setPosts }) => {
+export const Submit = ({ user, title, setTitle }) => {
   const [isOpen, setIsOpen] = useRecoilState(isWritingPost);
-  const [title, setTitle] = useState("");
   const [selectedImage, setImage] = useState(null);
   const [showPopUp, setShowPopUp] = useRecoilState(showPopUpState);
   const [currentPopUp, setCurrentPopUp] = useRecoilState(currentPopUpState);
@@ -110,6 +109,10 @@ export const Submit = ({ user, setPosts }) => {
     setCurrentPostText(quill.current.getEditor().getContents());
   };
 
+  const onChangeTitle = (e) => {
+    setTitle(e.target.value);
+  };
+
   return (
     <div className="submit_wrapper">
       <div className="submit_header">
@@ -120,16 +123,14 @@ export const Submit = ({ user, setPosts }) => {
             style={{ width: "45px", height: "45px", borderRadius: "10px" }}
           />
         </div>
-        <div
-          onBlur={(e) => {
-            setTitle(e.currentTarget.textContent);
-          }}
+        <input
+          type="text"
+          value={title}
+          onChange={onChangeTitle}
+          placeholder={isOpen ? "Title" : "게시물 작성"}
           onClick={isOpen ? undefined : onClickWriteFeed}
-          contentEditable="true"
-          data-ph={isOpen ? "Title" : "게시물 작성"}
-          data-index="0"
           className="submit_title"
-        ></div>
+        />
       </div>
       <div>
         {isOpen ? (
