@@ -11,6 +11,7 @@ import like_after from "../../assets/like-after.png";
 import { Reply } from "./Reply";
 
 import "./Comment.css";
+import { elapsedTimePeriod } from "../../utils";
 
 export const Comment = ({
   user_id,
@@ -21,6 +22,7 @@ export const Comment = ({
   caption,
   liked_user,
   refetchComments,
+  updatedAt,
 }) => {
   const [like, setLike] = useState({
     liked: false,
@@ -95,6 +97,8 @@ export const Comment = ({
     setValue(caption);
   };
 
+  console.log(replies);
+
   return (
     <div>
       <div className="comment-page-wrapper">
@@ -104,7 +108,9 @@ export const Comment = ({
           alt="comment_profilePic"
         />
         <div>
-          <h5>{writer?.profile.username} · n 시간 전</h5>
+          <h5>
+            {writer?.profile.username} · {elapsedTimePeriod(updatedAt)}
+          </h5>
           <p className="comment_context">{caption}</p>
           <div className="comment_page_menus">
             <div className="comment_page_button" onClick={onClickReply}>
@@ -180,6 +186,7 @@ export const Comment = ({
               commentIndex={index}
               index={replyIndex}
               reply_id={replyItem._id}
+              updatedAt={replyItem.updatedAt}
             />
           );
         })}
