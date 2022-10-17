@@ -19,12 +19,13 @@ import { Comment } from "../../components/feedView/Comment";
 import { Loading } from "../../components/common/Loading";
 
 import { io } from "socket.io-client";
+import { elapsedTimePeriod } from "../../utils";
 
 export const FeedView = () => {
   const { postId } = useParams();
 
   const { state } = useLocation();
-  const { writer_profile, user_id, caption, title } = state;
+  const { writer_profile, user_id, caption, title, createdAt } = state;
   let { likes } = state;
 
   const [value, setValue] = useState("");
@@ -111,6 +112,8 @@ export const FeedView = () => {
     return <Loading />;
   }
 
+  console.log(data);
+
   return (
     <div className="feedview-wrapper">
       <div className="feedview-content">
@@ -124,7 +127,9 @@ export const FeedView = () => {
             <p>{writer_profile.username}</p>
             <span>{title}</span>
           </div>
-          <span className="feedview-header-date">n일 전</span>
+          <span className="feedview-header-date">
+            {elapsedTimePeriod(createdAt)}
+          </span>
         </div>
         {/* Content */}
         <div className="ql-editor">{parse(caption)}</div>
@@ -176,6 +181,7 @@ export const FeedView = () => {
             liked_user={comment.liked_user}
             replies={comment.replies}
             refetchComments={refetch}
+            updatedAt={comment.updatedAt}
           />
         ))}
       </div>

@@ -5,6 +5,7 @@ import like_before from "../../assets/like-before.png";
 import like_after from "../../assets/like-after.png";
 
 import "./Reply.css";
+import { elapsedTimePeriod } from "../../utils";
 
 export const Reply = ({
   user_id,
@@ -16,6 +17,7 @@ export const Reply = ({
   commentIndex,
   index,
   reply_id,
+  updatedAt,
 }) => {
   const [like, setLike] = useState({
     liked: false,
@@ -99,7 +101,9 @@ export const Reply = ({
           alt="comment_profilePic"
         />
         <div>
-          <h5>{writer?.profile.username} · n 시간 전</h5>
+          <h5>
+            {writer?.profile.username} · {elapsedTimePeriod(updatedAt)}
+          </h5>
           <p className="comment_context">{`@${writer.profile.username} ${caption}`}</p>
           <div className="comment_page_menus">
             <div className="comment_page_button" onClick={onClickReply}>
