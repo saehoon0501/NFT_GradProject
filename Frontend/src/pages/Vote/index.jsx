@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { deleteVote, voteOption } from "../../api/VoteApi";
 import { currentUserDataState, currentVoteContentState } from "../../store";
@@ -7,6 +7,8 @@ import { currentUserDataState, currentVoteContentState } from "../../store";
 import "./style.css";
 
 export const Vote = () => {
+  const { id } = useParams();
+
   const [currentVoteContent, setCurrentVoteContent] = useRecoilState(
     currentVoteContentState
   );
@@ -18,6 +20,8 @@ export const Vote = () => {
 
   const navigate = useNavigate();
 
+  console.log(id);
+
   const onClickOption = (optionIndex, voteId) => {
     setSelectedOption(optionIndex);
     setCurrentVoteId(voteId);
@@ -26,12 +30,12 @@ export const Vote = () => {
 
   const onClickSubmit = () => {
     console.log(
-      currentVoteId,
+      id,
       selectedOption,
       userData._id,
       userData.ownerOfNFT[0].NFT_URL[selectedNFT]
     );
-    voteOption(currentVoteId, selectedOption, userData._id, {
+    voteOption(id, selectedOption, userData._id, {
       collection_id: userData.ownerOfNFT[0].collection_id,
       NFT_URL: userData.ownerOfNFT[0].NFT_URL[selectedNFT],
     });
