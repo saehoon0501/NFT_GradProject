@@ -142,7 +142,7 @@ export const FeedView = () => {
           <div className="feedview-menu">
             <h4>좋아요 {like.liked_user.length}개</h4>
             {like.liked ? (
-              <img src={like_after} onClick={handleLike} />
+              <img src={like_after} onClick={handleLike}/>
             ) : (
               <img src={like_before} onClick={handleLike} />
             )}

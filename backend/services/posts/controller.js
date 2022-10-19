@@ -15,23 +15,53 @@ module.exports={
 
         let posts_result
 
-        if(filter === undefined){
-            posts_result = Post.find().sort({_id:-1}).skip(pageNum).limit(10).exec()            
-
-            posts_result.then(async (posts)=>{
-                if(!posts) return res.send(400).send('post in page number not exist')
+        if(filter == "best"){
+            posts_result = Post.aggregate([            
+                {$skip:pageNum
+                },
+                {$limit:10
+                },
+                {$lookup:{
+                    from: User.collection.name,
+                    localField: 'user',
+                    foreignField: '_id',
+                    as: 'user'
+                }},
+                {$lookup:{
+                    from: Comment.collection.name,
+                    localField: 'comments',
+                    foreignField: '_id',
+                    as: 'comments'
+                }},
+                {$lookup:{
+                    from: Like.collection.name,
+                    localField: 'likes',
+                    foreignField: '_id',
+                    as: 'likes'
+                }},
+                {$project:{
+                    _id:1,
+                    'user._id':1,
+                    'user.publicAddr':1,
+                    'user.profile.profile_pic':1,
+                    'user.profile.username':1,
+                    'user.profile.caption':1,
+                    'user.profile.points':1,
+                    'title':1,
+                    'text':1,
+                    'likes':1,
+                    'comments._id':1,
+                    'createdAt':1
+                }},
+                {$unwind:'$user'},
+                {$unwind:'$likes'},                        
+            ]).exec()
     
-                await Promise.all(posts.map(async (post)=>{
-                    const result = await Post.findOne({_id:`${post.id}`})
-                    .populate('comments').populate('likes').populate('user', '', User).lean().exec();
-                    return result
-                })).then((results) => {
-                    console.log('getPost 실행', results);
-                    return res.send(results);                
-                })
-               
+            posts_result.then((results)=> {
+                console.log('getPost실행', results)
+                return res.send(results)
             })
-        }else if(filter === 'best'){
+        }else{
             posts_result = Post.aggregate([            
             {$skip:pageNum
             },
@@ -77,9 +107,7 @@ module.exports={
             console.log('getPost실행', results)
             return res.send(results)
         })
-        }else{
-            return res.status(400).send("fitler not exist")
-        }        
+    }                
     },
 
     createPost : (req,res,next)=>{
@@ -217,18 +245,18 @@ module.exports={
     },
 
     getComment: async(req,res,next)=>{
-        const post_id = mongoose.Types.ObjectId(req.params.post_id);
+        const post_id = req.params.post_id
 
         if(!mongoose.Types.ObjectId.isValid(post_id)) return res.status(400).send('wrong post id')
 
         const result = await Post.aggregate([
-            {$match:{_id: post_id}},            
+            {$match:{_id: mongoose.Types.ObjectId(post_id)}},            
             {$lookup:{
                 from: Comment.collection.name,
                 localField: 'comments',
                 foreignField: '_id',
                 as: 'comments'
-            }},
+            }},            
             {$unwind:"$comments"},
             {$project:{"comments":1}},
             {$lookup:{
@@ -274,7 +302,7 @@ module.exports={
                 "comments.replies.__v":0,                
                 "comments.replies.replies":0,
                 "comments.replies.createdAt":0,                                
-            }},            
+            }},                        
             {$group:{
                 _id:"$comments._id",
                 "user":{$first:"$comments.user"},
@@ -282,8 +310,9 @@ module.exports={
                 "liked_user":{$first:"$comments.liked_user"},
                 "updatedAt":{$first:"$comments.updatedAt"},                
                 "replies":{$push:"$comments.replies"}
-            }},               
-        ])
+            }},            
+             
+        ]).sort({"updatedAt":1})
         console.log(result)        
         
         return res.send(result);
@@ -362,8 +391,9 @@ module.exports={
         const {post_id} = req.body
         const comment_id = req.params.comment_id
         
+        try{
         let result = await Promise.all([User.findOne({publicAddr:publicAddress}),
-            Comment.findOne({_id:comment_id}), Post.findOne({_id:post_id})])
+            Comment.findOne({_id:comment_id}), Post.findOne({_id:post_id})])        
         
         let user = result[0]
         let comment = result[1]
@@ -381,16 +411,16 @@ module.exports={
         }
         user.profile.comment_ids.pull(comment_id)               
 
-        user.save()
-        post.save()        
+        Promise.all([user.save(),post.save()])                 
         .then(async ()=>{            
             return res.send('message deleted')
         })
         }else{
             return res.status(400).send('not a owner of comment')
-        }                        
+        }} catch (err){
+        console.log("delComment Promise all error",err)
+    }                        
     },
-
     addReply : async (req, res, next)=>{
         const publicAddress = res.locals.decoded.publicAddress;
         const {context} = req.body;
@@ -424,28 +454,33 @@ module.exports={
         const {reply_id} = req.body;
         const comment_id = req.params.comment_id;
 
-        const user = await User.findOne({publicAddr:publicAddress}).lean()
-        let reply = await Comment.findById(reply_id)
-        let comment = await Comment.findById(comment_id).lean()
-        
-        if(!user | !reply | !comment) return res.status(400).send('not found error')
+        try{
+            const user = await User.findOne({publicAddr:publicAddress}).lean()
+            let reply = await Comment.findById(reply_id)
+            let comment = await Comment.findById(comment_id).lean()
+            
+            if(!user | !reply | !comment) return res.status(400).send('not found error')
 
-        console.log(comment.replies)
-        console.log(reply._id)
+            console.log(comment.replies)
+            console.log(reply._id)
 
-        let isInArray = comment.replies.some((replyItem)=>{
-            return replyItem.equals(reply.id)
-        })
-        console.log(isInArray)
-        if(user._id.toString() == reply.user.toString() && isInArray){
-           reply.user = null
-           reply.caption = '삭제된 메세지입니다.'
-           reply.liked_user = null
-           console.log(reply)
-           await reply.save()
+            let isInArray = comment.replies.some((replyItem)=>{
+                return replyItem.equals(reply.id)
+            })
+            console.log(isInArray)
+            if(user._id.toString() == reply.user.toString() && isInArray){
+            reply.user = null
+            reply.caption = '삭제된 메세지입니다.'
+            reply.liked_user = null
+            console.log(reply)
+            await reply.save()
+            }
+
+            return res.send('reply deleted')
+        }catch (error){
+            console.log("delReply error", error)
+            return res.status(400).send(err)
         }
-
-        return res.send('reply deleted')
     },
     getSearch:async (req,res,next)=>{
         const keyword = req.query.keyword

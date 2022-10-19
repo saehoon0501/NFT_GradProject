@@ -149,7 +149,7 @@ const Feed = ({
         <div className="feed_menu_like">
           <h4>좋아요 {like.liked_num}개</h4>
           {like.liked ? (
-            <div className="feed_like_icon">
+            <div className="feed_like_icon icon_anime2">
               <img src={like_after} onClick={handleLike} />
             </div>
           ) : (
