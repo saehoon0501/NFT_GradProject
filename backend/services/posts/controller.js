@@ -5,7 +5,8 @@ const mongoose =  require(`mongoose`)
 const QuillDeltaToHtmlConverter = require('quill-delta-to-html').QuillDeltaToHtmlConverter;
 
 module.exports={
-    getPost : (req, res, next)=>{        
+    getPost : (req, res, next)=>{      
+                
         const filter = req.query.filter
         let pageNum = parseInt(req.query.pageNum)
         
@@ -16,9 +17,24 @@ module.exports={
         let posts_result
 
         if(filter == "best"){
-            posts_result = Post.aggregate([            
-                {$skip:pageNum
+            let lastWeek = new Date();
+            lastWeek.setDate(lastWeek.getDate()-14);
+            console.log(lastWeek)
+
+            posts_result = Post.aggregate([
+                {$match:{"createdAt":{$gt: lastWeek},}                   
+                },                                
+                {$lookup:{
+                    from: Like.collection.name,
+                    localField: 'likes',
+                    foreignField: '_id',
+                    as: 'likes'
+                }},
+                {$unwind:'$likes'},           
+                {$sort:{"likes.liked_num":-1}                    
                 },
+                {$skip:(pageNum*10)
+                },                
                 {$limit:10
                 },
                 {$lookup:{
@@ -32,13 +48,7 @@ module.exports={
                     localField: 'comments',
                     foreignField: '_id',
                     as: 'comments'
-                }},
-                {$lookup:{
-                    from: Like.collection.name,
-                    localField: 'likes',
-                    foreignField: '_id',
-                    as: 'likes'
-                }},
+                }},                
                 {$project:{
                     _id:1,
                     'user._id':1,
@@ -54,16 +64,18 @@ module.exports={
                     'createdAt':1
                 }},
                 {$unwind:'$user'},
-                {$unwind:'$likes'},                        
-            ]).exec()
+                             
+            ]).exec()            
     
-            posts_result.then((results)=> {
-                console.log('getPost실행', results)
+            posts_result.then((results)=> {                
+                console.log('getPost실행', results)                
                 return res.send(results)
-            })
+            }).catch((error)=>res.status(400).send(error))                            
         }else{
-            posts_result = Post.aggregate([            
-            {$skip:pageNum
+            posts_result = Post.aggregate([           
+            {$sort:{"_id":-1}
+            },
+            {$skip:(pageNum*10)
             },
             {$limit:10
             },
@@ -104,23 +116,25 @@ module.exports={
         ]).exec()
 
         posts_result.then((results)=> {
-            console.log('getPost실행', results)
+            console.log('getPost실행')
             return res.send(results)
-        })
+        }).catch((error)=>res.status(400).send(error))
     }                
     },
 
     createPost : (req,res,next)=>{
         const publicAddress = res.locals.decoded.publicAddress;                
-        const {post_title, post_text} = req.body;
+        let {post_title, post_text} = req.body;
 
         const converter = new QuillDeltaToHtmlConverter(post_text.ops,{});
         const content = converter.convert();
-
-        if(post_title == undefined){
-            return res.status(400),send('need title')
+        
+        if(post_title == undefined || !/([^\s])/.test(post_title)){            
+            return res.status(400).send('Need title')
         }
-                
+        post_title = post_title.replace(/^\s+/g,"")
+        post_title = post_title.replace(/\s+$/g, "")
+        
         User.findOne({publicAddr:publicAddress})
         .then((user)=>{
             if(!user){
@@ -137,17 +151,16 @@ module.exports={
             });
             like.save()            
             post.save()
-            return {user, post,like}
-        }).then( async ({user, post, like})=>{
-            await User.updateOne({
-                _id: user.id
-            },
-            {
-                $push:{"profile.post_ids": post._id}
-            })
-            console.log('userinfo', user.profile.post_ids, 'postinfo', post)
+            .then( async ()=>{
+                await User.updateOne({
+                    _id: user.id
+                },
+                {
+                    $push:{"profile.post_ids": post._id}
+                })
 
-            const data = {
+                console.log("Post created")
+                const data = {
                     _id : post.id,
                     user: user,                    
                     title: post.title,
@@ -155,27 +168,33 @@ module.exports={
                     likes: like,           
                     comments: [],         
                     createdAt:post.createdAt,                    
-                };
+                }
 
-                return res.send(data);                
-            
-        });
+            return res.send(data)
+            })        
+        })
     },
 
     delPost: async (req, res, next)=>{
         const publicAddress = res.locals.decoded.publicAddress;
         const post_id = req.params.post_id
-        
-        let user = await User.findOne({publicAddr:publicAddress})
-        
+        let user
+
+        try{
+         user = await User.findOne({publicAddr:publicAddress})
+        }catch(error){
+            return res.status(400).send(error)
+        }
+
         if(user.profile.post_ids.includes(post_id)){
-            Post.findOne({_id:post_id}).lean()
+            Post.findById(post_id).lean()
             .then((post)=>{
+                if(post==null) return res.status(400).send("Post not found")
+
                 Promise.all([Post.deleteOne({_id:post_id}),Like.deleteOne({_id:post.likes}),
                 post.comments.map((comment_id)=>{
                     Comment.findById(comment_id).lean()
-                    .then((comment)=>{
-                        console.log('delPost의 comment들 댓글 길이', comment.replies.length)
+                    .then((comment)=>{                        
                         if(comment.replies.length>0){                            
                             comment.replies.map(async (reply_id)=>{
                                 console.log('reply_id',reply_id)                                
@@ -183,72 +202,69 @@ module.exports={
                             })                            
                         }
                         Comment.deleteOne({_id:comment_id}).then((result)=>console.log('delPost comment deleted', result))   
-                    })
-                                                              
-                })]).then((result)=>{                    
+                    })                                                              
+                })]).then((result)=>{
                     console.log('delPost Promise all 결과', result)
                     user.profile.post_ids.pull(post_id)
                     user.save()
                     .then( async ()=>{                                                
                         return res.send('post deleted')
                     })
-                })                                                        
+                }).catch((error)=>res.status(400).send(error))                                                        
             })                                                                        
         }else{
-            return res.send('user is not the writer')
+            return res.send('Not a writer of post')
         }            
     },
-
     addLike : async (req,res,next)=>{
         const publicAddress = res.locals.decoded.publicAddress;
-        const {likes} = req.body;
-        const post_id = req.params
+        const {likes} = req.body;        
 
         await User.findOne({publicAddr:publicAddress}).lean()
         .then( (user)=>{
-
-            Like.findOne({_id:likes._id})
+            Like.findById(likes._id)
             .then(like=>{
-            if(!like.liked_user.includes(user.id)){
+            if(!like.liked_user.includes(user._id)){
                 like.liked_num += 1
-                like.liked_user.addToSet(user.id)
+                like.liked_user.addToSet(user._id)
             }
                 like.save((err,data)=>{
-                if(err) console.log(err);
-                    console.log(data);
-                return res.send(like);
-            })    
-        }); 
-        });
+                if(err) console.log(err)
+                    console.log(data)
+                return res.send(like)
+                })    
+            })
+            .catch((error)=>res.status(400).send(error))  
+        })
     },
 
     delLike : async (req,res,next)=>{
         const publicAddress = res.locals.decoded.publicAddress;
-        const {likes} = req.body;
-        const post_id = req.params.post_id
+        const {likes} = req.body;        
 
         await User.findOne({id:publicAddress}).lean()
         .then( (user)=>{
-            Like.findOne({_id:likes._id})
+            Like.findById(likes._id)
             .then(like=>{
-            if(like.liked_user.includes(user.id)){
+            if(like.liked_user.includes(user._id)){
                 like.liked_num -= 1
-                like.liked_user.pull(user.id)
+                like.liked_user.pull(user._id)
             }
             like.save((err,data)=>{
                 if(err) console.log(err);
                 console.log(data);
                 return res.send(like);
-            })    
-        }); 
-        });
+                })    
+            })
+            .catch((error)=>res.status(400).send(error)) 
+        })
     },
 
     getComment: async(req,res,next)=>{
         const post_id = req.params.post_id
 
         if(!mongoose.Types.ObjectId.isValid(post_id)) return res.status(400).send('wrong post id')
-
+        try{
         const result = await Post.aggregate([
             {$match:{_id: mongoose.Types.ObjectId(post_id)}},            
             {$lookup:{
@@ -276,6 +292,7 @@ module.exports={
                 "comments.liked_user":1,
                 "comments.replies":1,
                 "comments.updatedAt":1,
+                "comments.__v":1,
             }},            
             {$lookup:{
                 from: Comment.collection.name,
@@ -298,8 +315,7 @@ module.exports={
                 "comments.replies.user.profile.comment_ids":0,
                 "comments.replies.user.profile.points":0,
                 "comments.replies.user.profile.liked_user":0,
-                "comments.replies.user.__v":0,
-                "comments.replies.__v":0,                
+                "comments.replies.user.__v":0,                                
                 "comments.replies.replies":0,
                 "comments.replies.createdAt":0,                                
             }},                        
@@ -309,22 +325,30 @@ module.exports={
                 "caption":{$first:"$comments.caption"},
                 "liked_user":{$first:"$comments.liked_user"},
                 "updatedAt":{$first:"$comments.updatedAt"},                
-                "replies":{$push:"$comments.replies"}
+                "replies":{$push:"$comments.replies"},
+                "__v":{$first:"$comments.__v"}
             }},            
              
         ]).sort({"updatedAt":1})
         console.log(result)        
         
         return res.send(result);
-                
+        }catch(error){
+            return res.status(400).send(error)
+        }
     },
 
     addComment: async (req,res,next)=>{
         const publicAddress = res.locals.decoded.publicAddress;
-        const {context} = req.body;
+        let {context} = req.body;
         const post_id = req.params.post_id;
 
-        if(!context) return res.status(400).send('invalid context');
+        if(!context == undefined || !/([^\s])/.test(context)){            
+            return res.status(400).send('Need any character')
+        }    
+
+        context = context.replace(/^\s+/g,"")
+        context = context.replace(/\s+$/g, "")             
 
         let user = await User.findOne({publicAddr:publicAddress}).lean()
 
@@ -365,8 +389,15 @@ module.exports={
 
     modifyComment:(req,res,next)=>{
         const publicAddress = res.locals.decoded.publicAddress
-        const {context} = req.body
+        let {context} = req.body
         const comment_id = req.params.comment_id
+
+        if(!context == undefined || !/([^\s])/.test(context)){            
+            return res.status(400).send('Need any character')
+        }    
+
+        context = context.replace(/^\s+/g,"")
+        context = context.replace(/\s+$/g, "")   
 
         User.findOne({publicAddr:publicAddress})
         .then((user)=>{
@@ -374,7 +405,8 @@ module.exports={
             
             Comment.findOne({_id:comment_id})
              .then(async (comment)=>{
-                if(user.id==comment.user.toString()){                
+                if(user.id==comment.user.toString()){
+                    if(comment.caption=='삭제된 내용입니다.') return res.status(400).send("Deleted comment")                
                     comment.caption=context                         
                     comment.save().then(async ()=>{                        
                     return res.send('comment modified')
@@ -382,7 +414,7 @@ module.exports={
             }else{
                 return res.status(400).send('not a owner of comment')
             }                        
-        }).catch(err=>{return res.send(err)})
+        }).catch(err=>res.send(err))
         })
     },
 
@@ -394,7 +426,7 @@ module.exports={
         try{
         let result = await Promise.all([User.findOne({publicAddr:publicAddress}),
             Comment.findOne({_id:comment_id}), Post.findOne({_id:post_id})])        
-        
+        console.log(result)
         let user = result[0]
         let comment = result[1]
         let post = result[2]
@@ -405,8 +437,7 @@ module.exports={
                 console.log('delComment', post)
                 post.comments.pull(comment_id)                                                
             }else{                
-            comment.caption='삭제된 내용입니다.'
-            comment.user = null                               
+            comment.caption='삭제된 내용입니다.'                                           
             comment.save()            
         }
         user.profile.comment_ids.pull(comment_id)               
@@ -419,14 +450,20 @@ module.exports={
             return res.status(400).send('not a owner of comment')
         }} catch (err){
         console.log("delComment Promise all error",err)
+        return res.status(400).send(err)
     }                        
     },
     addReply : async (req, res, next)=>{
         const publicAddress = res.locals.decoded.publicAddress;
-        const {context} = req.body;
+        let {context} = req.body;
         const comment_id = req.params.comment_id;
 
-        if(!context) return res.status(400).send('invalid context')
+        if(!context == undefined || !/([^\s])/.test(context)){            
+            return res.status(400).send('Need any character')
+        }    
+
+        context = context.replace(/^\s+/g,"")
+        context = context.replace(/\s+$/g, "") 
 
         let user = await User.findOne({publicAddr:publicAddress})
         let comment = await Comment.findOne({_id:comment_id})
@@ -436,7 +473,7 @@ module.exports={
         const newComment = new Comment({
                 user:user._id,
                 caption:context,
-                replies:null
+                replies:null            
         })
         
         console.log('작성된 답글', newComment)        
@@ -445,8 +482,7 @@ module.exports={
         user.profile.comment_ids.addToSet(newComment._id)
         
         Promise.all([newComment.save(),user.save(),comment.save()])
-    
-        return res.send('답글 추가됨')                    
+        .then(()=>res.send('답글 추가됨'))            
     },
 
     delReply: async (req,res,next)=>{
@@ -461,21 +497,14 @@ module.exports={
             
             if(!user | !reply | !comment) return res.status(400).send('not found error')
 
-            console.log(comment.replies)
-            console.log(reply._id)
-
             let isInArray = comment.replies.some((replyItem)=>{
                 return replyItem.equals(reply.id)
             })
-            console.log(isInArray)
-            if(user._id.toString() == reply.user.toString() && isInArray){
-            reply.user = null
-            reply.caption = '삭제된 메세지입니다.'
-            reply.liked_user = null
-            console.log(reply)
-            await reply.save()
+            
+            if(user._id.toString() == reply.user.toString() && isInArray){            
+                reply.caption = '삭제된 내용입니다.'                        
+                await reply.save()
             }
-
             return res.send('reply deleted')
         }catch (error){
             console.log("delReply error", error)
@@ -484,8 +513,9 @@ module.exports={
     },
     getSearch:async (req,res,next)=>{
         const keyword = req.query.keyword
-
-        //keyword filter needed
+        
+        try{
+        if(keyword==null || keyword.length<2) return res.status(400).send("Keyword should be at least have 2 characters")
 
         let result = await Post.aggregate([
             {$search:{                    
@@ -534,7 +564,11 @@ module.exports={
 
     console.log('Search result', result)
     
-    return res.send(result)
+        return res.send(result)
+    }catch(error){
+        console.log("Search Error",error)
+        return res.status(400).send(error)
+    }
     }
 }
 

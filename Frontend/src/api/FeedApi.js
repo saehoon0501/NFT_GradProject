@@ -31,14 +31,14 @@ export const addPost = async (post_title, post_text) => {
 };
 
 export const likePost = async (post_id, likes) => {
-  const response = await feedApi.post(`/like/${post_id}`, {
+  const response = await feedApi.post(`/like`, {
     likes,
   });
   return response;
 };
 
 export const dislikePost = async (post_id, likes) => {
-  const response = await feedApi.patch(`/unlike/${post_id}`, {
+  const response = await feedApi.patch(`/unlike`, {
     likes,
   });
   return response;

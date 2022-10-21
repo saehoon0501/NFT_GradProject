@@ -5,7 +5,7 @@ const {Post,Comment} = require('../../models/post.model');
 module.exports = {
     getProfile : (req, res, next) => {            
         let publicAddress
-        console.log(req.query.publicAddress)
+
         if(req.query.userId==undefined){
             publicAddress = res.locals.decoded.publicAddress
             User.findOne({publicAddr:`${publicAddress}`},{comment_ids:0, likes_ids:0, "profile.comment_ids":0,"profile.likes_ids":0})
@@ -15,19 +15,23 @@ module.exports = {
                 }
                 
                 return res.json(user);
-            }).catch((err)=>console.log('유저 정보 sndProfile: User.findOne Error',err))
+            }).catch((err)=>{
+                console.log('유저 정보 sndProfile: User.findOne Error',err)
+                return res.status(400).send(err)
+            })
         }else{
             publicAddress = req.query.userId
-            User.findOne({_id:`${publicAddress}`})
+            User.findById({_id:`${publicAddress}`})
             .then((user)=>{
                 if(!user){
                     return res.status(401).send({error: 'User not Found'});
                 }    
                 return res.json(user);
-            }).catch((err)=>console.log('유저 정보 sndProfile: User.findOne Error',err))
-        }
-    
-        
+            }).catch((err)=>{
+                console.log('유저 정보 sndProfile: User.findById Error',err)
+                return res.status(400).send(err)
+            })
+        }        
     },
     updateProfile : (req, res, next) => {
         const publicAddress = res.locals.decoded.publicAddress;
@@ -43,11 +47,14 @@ module.exports = {
             }).then((result)=>{
                 console.log('updateProfile 실행 결과', result)
                 return res.send("user info updated")
-            }).catch((err)=>console.log("updateProfile: User.updateOne Error", err))
+            }).catch((err)=>{
+                console.log("updateProfile: User.updateOne Error", err)
+                return res.status(400).send(err)
+            })
         }
 
         if(profile_pic){
-            User.findOneAndUpdate({
+            User.updateOne({
                 $and :[
                 {publicAddr:`${publicAddress}`},
                 {"ownerOfNFT.NFT_URL":`${profile_pic}`}
@@ -55,12 +62,15 @@ module.exports = {
                 $set:{"profile.profile_pic":`${profile_pic}`}
             })
             .then(()=>{return res.send("user info updated")})
-            .catch((err)=>console.log("updateProfile: User.findOneandUpdate Error", err))
+            .catch((err)=>{
+                console.log("updateProfile: User.findOneandUpdate Error", err)
+                return res.status(400).send(err)
+            })
         }
     },
     getUserPost : (req, res, next) => {
         let publicAddress
-        console.log(req.query.publicAddress)
+        
         if(req.query.publicAddress==undefined){
             publicAddress = res.locals.decoded.publicAddress
         }else{
@@ -111,9 +121,7 @@ module.exports = {
             }},            
         ])                
         .then((result)=>{              
-            if(!result) return res.status(400).send('user not found')
-                        
-            console.log('getUserComment 실행 결과', result)
+            if(!result) return res.status(400).send('user not found')                                    
             return res.send(result[0])
         })
         .catch((err)=>{
