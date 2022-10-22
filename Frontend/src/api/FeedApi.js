@@ -68,10 +68,10 @@ export const likeComment = async (comment_id, index) => {
   return response;
 };
 
-export const delComment = async (comment_id, commentIndex) => {
+export const delComment = async (comment_id, post_id) => {
   const response = await feedApi.delete(`/comment/${comment_id}`, {
     data: {
-      commentIndex,
+      post_id,
     },
   });
   return response;

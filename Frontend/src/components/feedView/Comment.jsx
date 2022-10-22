@@ -23,6 +23,7 @@ export const Comment = ({
   liked_user,
   refetchComments,
   updatedAt,
+  postId,
 }) => {
   const [like, setLike] = useState({
     liked: false,
@@ -81,7 +82,7 @@ export const Comment = ({
   };
 
   const handleDelete = () => {
-    delComment(comment_id, index).then((res) => {
+    delComment(comment_id, postId).then((res) => {
       console.log(res.data);
     });
     refetchComments();
