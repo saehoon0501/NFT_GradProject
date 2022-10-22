@@ -5,12 +5,18 @@
   height: 100vh;
 }
 
+.login-left {
+  width: 500px;
+  height: 500px;
+  border: 1px solid black;
+}
+
 .login-service-wrapper {
   background-color: lightgray;
   padding: 50px;
   border-radius: 10px;
-  width: 600px;
-  height: 600px;
+  width: 400px;
+  height: 400px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -18,8 +24,8 @@
 }
 
 .login-service-logo {
-  width: 300px;
-  height: 300px;
+  width: 200px;
+  height: 200px;
   border: 1px solid white;
   background-color: white;
   padding: 10px;
@@ -27,6 +33,16 @@
 }
 
 .login-service-title {
-  font-size: 24px;
+  font-size: 16px;
   font-weight: 600;
+}
+
+@media (max-width: 915px) {
+  .login-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
 }
