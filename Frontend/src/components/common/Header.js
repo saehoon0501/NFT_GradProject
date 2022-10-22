@@ -73,6 +73,12 @@ export const Header = ({ socketValue }) => {
     setShowAlarm(!showAlarm);
   };
 
+  const handleEnter = () => {
+    if (window.event.keyCode == 13) {
+      onClickSearch();
+    }
+  };
+
   const onClickSearch = () => {
     if (keyword.length < 2) {
       alert("검색어는 2글자 이상이어야 합니다.");
@@ -107,7 +113,12 @@ export const Header = ({ socketValue }) => {
             onClick={showSns}
           />
           <div className="header_searchBar_wrapper">
-            <input value={keyword} type="text" onChange={onChangeSearch} />
+            <input
+              value={keyword}
+              type="text"
+              onChange={onChangeSearch}
+              onKeyUp={handleEnter}
+            />
             <button onClick={onClickSearch}>🔍</button>
           </div>
           <div className="header_menus">
