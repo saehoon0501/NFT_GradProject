@@ -1,3 +1,9 @@
+.comment-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
 .comment-page-wrapper {
   background-color: white;
   font-size: 15px;
@@ -34,17 +40,30 @@
 
 .modify_comment {
   display: flex;
+  width: 900px;
   flex-direction: column;
   border: 1px solid lightgray;
   padding: 10px;
+  border-radius: 5px;
 }
 
 .modify_comment_textarea {
-  margin: 5px 0px;
+  width: 100%;
+  margin-top: 5px;
+  border-color: #ccc #ddd #ddd #ccc;
+  border-radius: 3px;
+  box-shadow: inset 1px 1px 4px rgb(0 0 0 /6%);
+  padding: 5px;
+  font-size: 15px;
+}
+
+.modify_comment_textarea::placeholder {
+  font-size: 15px;
 }
 
 .modify_btn {
   background-color: #26a7de;
+  margin-top: 5px;
   padding: 5px 15px;
   width: 60px;
   color: white;
@@ -69,4 +88,13 @@
   position: relative;
   vertical-align: middle;
   width: 24px;
+}
+
+@media (max-width: 915px) {
+  .comment-wrapperr {
+    width: 95vw;
+  }
+  .modify_comment {
+    width: 95vw;
+  }
 }
