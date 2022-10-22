@@ -171,6 +171,7 @@ export const Main = ({ socketValue }) => {
             writer_publicAddr={post.user.publicAddr}
             createdAt={post.createdAt}
             postingId={post.user._id}
+            likedUsers={post.likes.liked_user}
           />
         ))}
       </div>

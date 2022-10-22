@@ -29,28 +29,28 @@ const Feed = ({
   writer_publicAddr,
   createdAt,
   postingId,
+  likedUsers,
 }) => {
   const [like, setLike] = useState({
     liked: false,
     liked_num: likes.liked_user.length,
   });
-  const [isOwner, setIsOwner] = useState(false);
   const [showPopUp, setShowPopUp] = useRecoilState(showPopUpState);
   const [currentPopUp, setCurrentPopUp] = useRecoilState(currentPopUpState);
   const [currentPostId, setCurrentPostId] = useRecoilState(currentPostIdState);
 
   const navigate = useNavigate();
 
-  // useEffect(() => {
-  //   if (likes.liked_user.includes(user_id)) {
-  //     setLike((prev) => ({ ...prev, liked: true }));
-  //   }
+  useEffect(() => {
+    if (likedUsers.includes(user_id)) {
+      setLike((prev) => ({ ...prev, liked: true }));
+    }
 
-  //   console.log(caption, writer_profile.post_ids.includes(post_id));
-  //   if (isOwner === false && writer_profile.post_ids.includes(post_id)) {
-  //     setIsOwner(true);
-  //   }
-  // }, []);
+    // console.log(caption, writer_profile.post_ids.includes(post_id));
+    // if (isOwner === false && writer_profile.post_ids.includes(post_id)) {
+    //   setIsOwner(true);
+    // }
+  }, []);
 
   const handleLike = async () => {
     if (!like.liked) {
