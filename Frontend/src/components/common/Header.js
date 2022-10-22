@@ -74,7 +74,10 @@ export const Header = ({ socketValue }) => {
   };
 
   const onClickSearch = () => {
-    console.log(keyword);
+    if (keyword.length < 2) {
+      alert("검색어는 2글자 이상이어야 합니다.");
+      return;
+    }
     navigate(`/search/${keyword}`);
   };
 
