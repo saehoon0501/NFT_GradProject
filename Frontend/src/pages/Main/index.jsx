@@ -124,6 +124,7 @@ export const Main = ({ socketValue }) => {
   };
 
   console.log(userQuery.data);
+  console.log(posts);
 
   return (
     <div className="main_wrapper">
@@ -170,6 +171,7 @@ export const Main = ({ socketValue }) => {
             writer_publicAddr={post.user.publicAddr}
             createdAt={post.createdAt}
             postingId={post.user._id}
+            likedUsers={post.likes.liked_user}
           />
         ))}
       </div>

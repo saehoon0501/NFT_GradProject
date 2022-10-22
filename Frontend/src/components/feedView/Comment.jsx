@@ -101,7 +101,7 @@ export const Comment = ({
   console.log(replies);
 
   return (
-    <div>
+    <div className="comment-wrapper">
       <div className="comment-page-wrapper">
         <img
           className="comment-page-profile-img"
