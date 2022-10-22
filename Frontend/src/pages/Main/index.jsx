@@ -124,6 +124,7 @@ export const Main = ({ socketValue }) => {
   };
 
   console.log(userQuery.data);
+  console.log(posts);
 
   return (
     <div className="main_wrapper">

@@ -121,9 +121,11 @@ const Feed = ({
         </div>
         <div>
           <span className="feed_date">{elapsedTimePeriod(createdAt)}</span>
-          <button className="feed_delete_btn" onClick={handleDelete}>
-            ✕
-          </button>
+          {user_id === postingId && (
+            <button className="feed_delete_btn" onClick={handleDelete}>
+              ✕
+            </button>
+          )}
         </div>
       </div>
       <div>
