@@ -23,6 +23,7 @@ export const Login = () => {
 
   return (
     <div className="login-wrapper">
+      <div className="login-left"></div>
       {/* {!minted ? (
         <button className="primary__button" onClick={onClickMintToken}>
           Mint Token
