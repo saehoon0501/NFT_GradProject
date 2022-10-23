@@ -28,6 +28,7 @@ import { LoginUser } from "../../components/main/LoginUser";
 import { VoteList } from "../../components/main/VoteList";
 import { Loading } from "../../components/common/Loading";
 import { CANCEL_FEED, DELETE, WRITE_FEED } from "../../utils";
+import { PopUp } from "../../components/common/PopUp";
 
 export const Main = ({ socketValue }) => {
   const [isBest, setIsBest] = useState(false);
@@ -119,6 +120,24 @@ export const Main = ({ socketValue }) => {
     }
   };
 
+  const handleMainSubmit = async () => {
+    switch (currentPopUp) {
+      case DELETE:
+        await delPost(currentPostId);
+        refetchPosts();
+        return;
+      case WRITE_FEED:
+        await addPost(currentPostTitle, currentPostText);
+        setTitle("");
+        refetchPosts();
+        setIsOpen(!isOpen);
+        return;
+      case CANCEL_FEED:
+        setIsOpen(!isOpen);
+        return;
+    }
+  };
+
   const onClickCancel = () => {
     setShowPopUp(false);
   };
@@ -176,17 +195,11 @@ export const Main = ({ socketValue }) => {
         ))}
       </div>
       {showPopUp && (
-        <div className="popup_wrapper">
-          <h3 className="popup_title">{toggleContent()}</h3>
-          <div className="popup_btns">
-            <button className="popup_btn" onClick={onClickSubmit}>
-              확인
-            </button>
-            <button className="popup_btn" onClick={onClickCancel}>
-              취소
-            </button>
-          </div>
-        </div>
+        <PopUp
+          title={toggleContent()}
+          onClickSubmit={onClickSubmit}
+          onClickCancel={onClickCancel}
+        />
       )}
     </div>
   );

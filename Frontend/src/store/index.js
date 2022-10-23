@@ -35,6 +35,11 @@ export const currentPopUpState = atom({
   default: "",
 });
 
+export const currentPopUpResultState = atom({
+  key: "currentPopUpResultState",
+  default: false,
+});
+
 export const currentPostTitleState = atom({
   key: "currentPostTitleState",
   default: "",

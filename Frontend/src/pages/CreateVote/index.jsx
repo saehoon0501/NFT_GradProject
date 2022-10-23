@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createTypedVote } from "../../api/VoteApi";
+import { PopUp } from "../../components/common/PopUp";
 
 import "./style.css";
 
 export const CreateVote = () => {
   const [voteTitle, setVoteTitle] = useState("");
   const [voteOptions, setVoteOptions] = useState("");
+  const [showPopUp, setShowPopUp] = useState(false);
 
   const navigate = useNavigate();
 
@@ -21,10 +23,19 @@ export const CreateVote = () => {
   };
 
   const onClickCreateVoteSubmit = () => {
+    setShowPopUp(true);
+  };
+
+  const onClickSubmit = () => {
+    setShowPopUp(false);
     createTypedVote(voteTitle, voteOptions.split(","));
     setVoteTitle("");
     setVoteOptions("");
     navigate("/");
+  };
+
+  const onClickCancel = () => {
+    setShowPopUp(false);
   };
 
   return (
@@ -55,6 +66,13 @@ export const CreateVote = () => {
       >
         제작하기
       </button>
+      {showPopUp && (
+        <PopUp
+          title={"투표를 생성하시겠습니까?"}
+          onClickSubmit={onClickSubmit}
+          onClickCancel={onClickCancel}
+        />
+      )}
     </div>
   );
 };
