@@ -407,7 +407,8 @@ module.exports={
              .then(async (comment)=>{
                 if(user.id==comment.user.toString()){
                     if(comment.caption=='삭제된 내용입니다.') return res.status(400).send("Deleted comment")                
-                    comment.caption=context                         
+                    comment.caption=context
+                    comment.__v++
                     comment.save().then(async ()=>{                        
                     return res.send('comment modified')
                 })
@@ -479,6 +480,7 @@ module.exports={
         console.log('작성된 답글', newComment)        
         comment.replies.push(newComment._id)                        
         comment.markModified('replies')
+        comment.__v--
         user.profile.comment_ids.addToSet(newComment._id)
         
         Promise.all([newComment.save(),user.save(),comment.save()])
