@@ -93,6 +93,8 @@ export const Reply = ({
     setValue(caption);
   };
 
+  console.log(writer);
+
   return (
     <div>
       <div className="reply_wrapper">
@@ -104,9 +106,9 @@ export const Reply = ({
         <div>
           <h5>
             {writer?.profile.username} · {elapsedTimePeriod(updatedAt)}{" "}
-            {isModified > 0 && "수정됨"}
+            {isModified > 0 && "*수정됨"}
           </h5>
-          <p className="comment_context">{`@${writer.profile.username} ${caption}`}</p>
+          <p className="comment_context">{caption}</p>
           <div className="comment_page_menus">
             <div className="comment_page_button" onClick={onClickReply}>
               <img src={commentImg} />
