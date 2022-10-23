@@ -114,17 +114,20 @@ export const ProfileCaption = ({ userProfile, isOwner = true }) => {
         </div>
       )}
       {showPopUp && (
-        <div className="profile_popup_wrapper">
-          <h3 className="popup_title">{toggleContent()}</h3>
-          <div className="popup_btns">
-            <button className="popup_btn" onClick={onClickSubmitPopUp}>
-              확인
-            </button>
-            <button className="popup_btn" onClick={onClickCancelPopUp}>
-              취소
-            </button>
+        <>
+          <div className="profile-dimmed" />
+          <div className="profile_popup_wrapper">
+            <h3 className="popup_title">{toggleContent()}</h3>
+            <div className="popup_btns">
+              <button className="popup_btn" onClick={onClickSubmitPopUp}>
+                확인
+              </button>
+              <button className="popup_btn" onClick={onClickCancelPopUp}>
+                취소
+              </button>
+            </div>
           </div>
-        </div>
+        </>
       )}
     </div>
   );

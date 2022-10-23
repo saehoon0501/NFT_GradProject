@@ -149,11 +149,14 @@ export const Vote = () => {
         </div>
       )}
       {showPopUp && (
-        <PopUp
-          title={toggleContent()}
-          onClickSubmit={onClickSubmitPopUp}
-          onClickCancel={onClickCancelPopUp}
-        />
+        <>
+          <div className="dimmed" />
+          <PopUp
+            title={toggleContent()}
+            onClickSubmit={onClickSubmitPopUp}
+            onClickCancel={onClickCancelPopUp}
+          />
+        </>
       )}
     </div>
   );
