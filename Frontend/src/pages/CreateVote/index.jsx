@@ -1,14 +1,19 @@
 import { useState } from "react";
+import { useQuery } from "react-query";
 import { useNavigate } from "react-router-dom";
-import { createTypedVote } from "../../api/VoteApi";
+import { createTypedVote, getVote } from "../../api/VoteApi";
+import { PopUp } from "../../components/common/PopUp";
 
 import "./style.css";
 
 export const CreateVote = () => {
   const [voteTitle, setVoteTitle] = useState("");
   const [voteOptions, setVoteOptions] = useState("");
+  const [showPopUp, setShowPopUp] = useState(false);
 
   const navigate = useNavigate();
+
+  const { refetch } = useQuery("votes", ({ signal }) => getVote(signal));
 
   const onChangeInput = (event) => {
     const { value } = event.target;
@@ -21,10 +26,20 @@ export const CreateVote = () => {
   };
 
   const onClickCreateVoteSubmit = () => {
-    createTypedVote(voteTitle, voteOptions.split(","));
+    setShowPopUp(true);
+  };
+
+  const onClickSubmit = async () => {
+    setShowPopUp(false);
+    await createTypedVote(voteTitle, voteOptions.split(","));
+    await refetch();
     setVoteTitle("");
     setVoteOptions("");
     navigate("/");
+  };
+
+  const onClickCancel = () => {
+    setShowPopUp(false);
   };
 
   return (
@@ -55,6 +70,13 @@ export const CreateVote = () => {
       >
         제작하기
       </button>
+      {showPopUp && (
+        <PopUp
+          title={"투표를 생성하시겠습니까?"}
+          onClickSubmit={onClickSubmit}
+          onClickCancel={onClickCancel}
+        />
+      )}
     </div>
   );
 };

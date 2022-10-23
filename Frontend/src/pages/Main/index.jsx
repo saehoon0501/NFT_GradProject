@@ -28,6 +28,8 @@ import { LoginUser } from "../../components/main/LoginUser";
 import { VoteList } from "../../components/main/VoteList";
 import { Loading } from "../../components/common/Loading";
 import { CANCEL_FEED, DELETE, WRITE_FEED } from "../../utils";
+import { PopUp } from "../../components/common/PopUp";
+import { getVote } from "../../api/VoteApi";
 
 export const Main = ({ socketValue }) => {
   const [isBest, setIsBest] = useState(false);
@@ -64,6 +66,8 @@ export const Main = ({ socketValue }) => {
     refetch: refetchPosts,
     isLoading: isPostLoading,
   } = useQuery("posts", ({ signal }) => getPost(signal));
+
+  const { data: voteData } = useQuery("votes", getVote);
 
   if (userQuery.isError) {
     navigate("/login");
@@ -133,6 +137,7 @@ export const Main = ({ socketValue }) => {
       <VoteList
         setCurrentVoteContent={setCurrentVoteContent}
         userData={userQuery.data}
+        data={voteData}
       />
       <Submit user={userQuery.data} title={title} setTitle={setTitle} />
       <div className="main_icons_wrapper">
@@ -176,17 +181,11 @@ export const Main = ({ socketValue }) => {
         ))}
       </div>
       {showPopUp && (
-        <div className="popup_wrapper">
-          <h3 className="popup_title">{toggleContent()}</h3>
-          <div className="popup_btns">
-            <button className="popup_btn" onClick={onClickSubmit}>
-              확인
-            </button>
-            <button className="popup_btn" onClick={onClickCancel}>
-              취소
-            </button>
-          </div>
-        </div>
+        <PopUp
+          title={toggleContent()}
+          onClickSubmit={onClickSubmit}
+          onClickCancel={onClickCancel}
+        />
       )}
     </div>
   );

@@ -1,8 +1,11 @@
 import { useState } from "react";
+import { useQuery } from "react-query";
 import { useNavigate, useParams } from "react-router-dom";
 import { useRecoilState } from "recoil";
-import { deleteVote, voteOption } from "../../api/VoteApi";
+import { deleteVote, getVote, voteOption } from "../../api/VoteApi";
+import { PopUp } from "../../components/common/PopUp";
 import { currentUserDataState, currentVoteContentState } from "../../store";
+import { DELETE_VOTE, SUBMIT_VOTE } from "../../utils";
 
 import "./style.css";
 
@@ -17,10 +20,14 @@ export const Vote = () => {
   const [showSelectNFTPopUp, setShowSelectNFTPopUp] = useState(false);
   const [userData, setUserData] = useRecoilState(currentUserDataState);
   const [selectedNFT, setSelectedNFT] = useState(-1);
+  const [showPopUp, setShowPopUp] = useState(false);
+  const [currentPopUp, setCurrentPopUp] = useState("");
 
   const navigate = useNavigate();
 
   console.log(id);
+
+  const { refetch } = useQuery("votes", getVote);
 
   const onClickOption = (optionIndex, voteId) => {
     setSelectedOption(optionIndex);
@@ -29,19 +36,21 @@ export const Vote = () => {
   };
 
   const onClickSubmit = () => {
-    console.log(
-      id,
-      selectedOption,
-      userData._id,
-      userData.ownerOfNFT[0].NFT_URL[selectedNFT]
-    );
-    voteOption(id, selectedOption, userData._id, {
-      collection_id: userData.ownerOfNFT[0].collection_id,
-      NFT_URL: userData.ownerOfNFT[0].NFT_URL[selectedNFT],
-    });
-    setCurrentVoteContent("");
-    setSelectedOption("");
-    navigate("/");
+    // console.log(
+    //   id,
+    //   selectedOption,
+    //   userData._id,
+    //   userData.ownerOfNFT[0].NFT_URL[selectedNFT]
+    // );
+    // voteOption(id, selectedOption, userData._id, {
+    //   collection_id: userData.ownerOfNFT[0].collection_id,
+    //   NFT_URL: userData.ownerOfNFT[0].NFT_URL[selectedNFT],
+    // });
+    // setCurrentVoteContent("");
+    // setSelectedOption("");
+    // navigate("/");
+    setShowPopUp(true);
+    setCurrentPopUp(SUBMIT_VOTE);
   };
 
   const onClickNFT = (index) => {
@@ -50,8 +59,41 @@ export const Vote = () => {
   };
 
   const onClickDelete = () => {
-    deleteVote(currentVoteContent._id);
-    navigate("/");
+    setShowPopUp(true);
+    setCurrentPopUp(DELETE_VOTE);
+  };
+
+  const toggleContent = () => {
+    switch (currentPopUp) {
+      case SUBMIT_VOTE:
+        return "투표를 진행하시겠습니까?";
+      case DELETE_VOTE:
+        return "피드 투표를 삭제하시겠습니까? 다시 복구할 수 없습니다.";
+    }
+  };
+
+  const onClickSubmitPopUp = async () => {
+    setShowPopUp(false);
+    switch (currentPopUp) {
+      case SUBMIT_VOTE:
+        voteOption(id, selectedOption, userData._id, {
+          collection_id: userData.ownerOfNFT[0].collection_id,
+          NFT_URL: userData.ownerOfNFT[0].NFT_URL[selectedNFT],
+        });
+        setCurrentVoteContent("");
+        setSelectedOption("");
+        navigate("/");
+        return;
+      case DELETE_VOTE:
+        deleteVote(currentVoteContent._id);
+        await refetch();
+        navigate("/");
+        return;
+    }
+  };
+
+  const onClickCancelPopUp = () => {
+    setShowPopUp(false);
   };
 
   return (
@@ -105,6 +147,13 @@ export const Vote = () => {
             ))}
           </div>
         </div>
+      )}
+      {showPopUp && (
+        <PopUp
+          title={toggleContent()}
+          onClickSubmit={onClickSubmitPopUp}
+          onClickCancel={onClickCancelPopUp}
+        />
       )}
     </div>
   );

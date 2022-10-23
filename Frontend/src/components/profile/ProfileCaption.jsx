@@ -4,6 +4,7 @@ import "./ProfileCaption.css";
 
 import { updateUser } from "../../api/UserApi";
 import { CANCEL_EDIT_PROFILE, PROCEED_EDIT_PROFILE } from "../../utils";
+import { PopUp } from "../common/PopUp";
 
 export const ProfileCaption = ({ userProfile, isOwner = true }) => {
   const [intro, setIntro] = useState(`${userProfile.caption}`);
