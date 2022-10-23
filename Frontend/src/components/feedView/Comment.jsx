@@ -188,6 +188,7 @@ export const Comment = ({
               index={replyIndex}
               reply_id={replyItem._id}
               updatedAt={replyItem.updatedAt}
+              isModified={replyItem.__v}
             />
           );
         })}
