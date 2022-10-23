@@ -71,11 +71,14 @@ export const CreateVote = () => {
         제작하기
       </button>
       {showPopUp && (
-        <PopUp
-          title={"투표를 생성하시겠습니까?"}
-          onClickSubmit={onClickSubmit}
-          onClickCancel={onClickCancel}
-        />
+        <>
+          <div className="dimmed" />
+          <PopUp
+            title={"투표를 생성하시겠습니까?"}
+            onClickSubmit={onClickSubmit}
+            onClickCancel={onClickCancel}
+          />
+        </>
       )}
     </div>
   );

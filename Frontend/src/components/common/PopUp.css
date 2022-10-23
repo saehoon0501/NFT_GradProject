@@ -8,6 +8,7 @@
   padding: 40px;
   border-radius: 10px;
   background-color: white;
+  z-index: 1000;
 }
 
 .popup_title {

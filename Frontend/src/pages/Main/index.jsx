@@ -213,11 +213,14 @@ export const Main = ({ socketValue }) => {
         )}
       </div>
       {showPopUp && (
-        <PopUp
-          title={toggleContent()}
-          onClickSubmit={onClickSubmit}
-          onClickCancel={onClickCancel}
-        />
+        <>
+          <div className="dimmed" />
+          <PopUp
+            title={toggleContent()}
+            onClickSubmit={onClickSubmit}
+            onClickCancel={onClickCancel}
+          />
+        </>
       )}
     </div>
   );

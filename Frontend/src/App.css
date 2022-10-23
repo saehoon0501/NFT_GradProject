@@ -102,3 +102,13 @@ button {
 .headerAva {
   margin-left: 5%;
 }
+
+.dimmed {
+  width: 100vw;
+  height: 120vh;
+  background-color: lightgray;
+  opacity: 0.5;
+  position: absolute;
+  z-index: 999;
+  top: -200px;
+}
