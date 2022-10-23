@@ -1,6 +1,7 @@
 import { useState } from "react";
+import { useQuery } from "react-query";
 import { useNavigate } from "react-router-dom";
-import { createTypedVote } from "../../api/VoteApi";
+import { createTypedVote, getVote } from "../../api/VoteApi";
 import { PopUp } from "../../components/common/PopUp";
 
 import "./style.css";
@@ -11,6 +12,8 @@ export const CreateVote = () => {
   const [showPopUp, setShowPopUp] = useState(false);
 
   const navigate = useNavigate();
+
+  const { refetch } = useQuery("votes", ({ signal }) => getVote(signal));
 
   const onChangeInput = (event) => {
     const { value } = event.target;
@@ -26,9 +29,10 @@ export const CreateVote = () => {
     setShowPopUp(true);
   };
 
-  const onClickSubmit = () => {
+  const onClickSubmit = async () => {
     setShowPopUp(false);
-    createTypedVote(voteTitle, voteOptions.split(","));
+    await createTypedVote(voteTitle, voteOptions.split(","));
+    await refetch();
     setVoteTitle("");
     setVoteOptions("");
     navigate("/");

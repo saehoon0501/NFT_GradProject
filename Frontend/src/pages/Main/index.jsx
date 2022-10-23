@@ -29,6 +29,7 @@ import { VoteList } from "../../components/main/VoteList";
 import { Loading } from "../../components/common/Loading";
 import { CANCEL_FEED, DELETE, WRITE_FEED } from "../../utils";
 import { PopUp } from "../../components/common/PopUp";
+import { getVote } from "../../api/VoteApi";
 
 export const Main = ({ socketValue }) => {
   const [isBest, setIsBest] = useState(false);
@@ -65,6 +66,8 @@ export const Main = ({ socketValue }) => {
     refetch: refetchPosts,
     isLoading: isPostLoading,
   } = useQuery("posts", ({ signal }) => getPost(signal));
+
+  const { data: voteData } = useQuery("votes", getVote);
 
   if (userQuery.isError) {
     navigate("/login");
@@ -120,24 +123,6 @@ export const Main = ({ socketValue }) => {
     }
   };
 
-  const handleMainSubmit = async () => {
-    switch (currentPopUp) {
-      case DELETE:
-        await delPost(currentPostId);
-        refetchPosts();
-        return;
-      case WRITE_FEED:
-        await addPost(currentPostTitle, currentPostText);
-        setTitle("");
-        refetchPosts();
-        setIsOpen(!isOpen);
-        return;
-      case CANCEL_FEED:
-        setIsOpen(!isOpen);
-        return;
-    }
-  };
-
   const onClickCancel = () => {
     setShowPopUp(false);
   };
@@ -152,6 +137,7 @@ export const Main = ({ socketValue }) => {
       <VoteList
         setCurrentVoteContent={setCurrentVoteContent}
         userData={userQuery.data}
+        data={voteData}
       />
       <Submit user={userQuery.data} title={title} setTitle={setTitle} />
       <div className="main_icons_wrapper">

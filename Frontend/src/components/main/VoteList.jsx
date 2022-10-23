@@ -7,15 +7,11 @@ import { currentUserDataState } from "../../store";
 
 import "./VoteList.css";
 
-export const VoteList = ({ setCurrentVoteContent, userData }) => {
+export const VoteList = ({ setCurrentVoteContent, userData, data }) => {
   const [currentUserData, setCurrentUserData] =
     useRecoilState(currentUserDataState);
 
   const navigate = useNavigate();
-
-  const { data, isLoading } = useQuery("votes", ({ signal }) =>
-    getVote(signal)
-  );
 
   const onClickVoteSubject = (voteData) => {
     setCurrentVoteContent(voteData);

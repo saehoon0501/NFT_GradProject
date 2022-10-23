@@ -15,10 +15,8 @@ voteApi.interceptors.request.use((config) => {
   return config;
 });
 
-export const getVote = async (signal) => {
-  const response = await voteApi.get("", {
-    signal,
-  });
+export const getVote = async () => {
+  const response = await voteApi.get("");
   return response.data;
 };
 

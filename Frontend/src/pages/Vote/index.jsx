@@ -1,7 +1,8 @@
 import { useState } from "react";
+import { useQuery } from "react-query";
 import { useNavigate, useParams } from "react-router-dom";
 import { useRecoilState } from "recoil";
-import { deleteVote, voteOption } from "../../api/VoteApi";
+import { deleteVote, getVote, voteOption } from "../../api/VoteApi";
 import { PopUp } from "../../components/common/PopUp";
 import { currentUserDataState, currentVoteContentState } from "../../store";
 import { DELETE_VOTE, SUBMIT_VOTE } from "../../utils";
@@ -25,6 +26,8 @@ export const Vote = () => {
   const navigate = useNavigate();
 
   console.log(id);
+
+  const { refetch } = useQuery("votes", getVote);
 
   const onClickOption = (optionIndex, voteId) => {
     setSelectedOption(optionIndex);
@@ -83,6 +86,7 @@ export const Vote = () => {
         return;
       case DELETE_VOTE:
         deleteVote(currentVoteContent._id);
+        await refetch();
         navigate("/");
         return;
     }
