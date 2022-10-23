@@ -22,6 +22,11 @@ export const getPost = async (signal) => {
   return response.data;
 };
 
+export const getBestPost = async () => {
+  const response = await feedApi.get("?filter=best&pageNum=0");
+  return response.data;
+};
+
 export const addPost = async (post_title, post_text) => {
   const response = await feedApi.post("", {
     post_title,

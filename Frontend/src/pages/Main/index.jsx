@@ -9,7 +9,7 @@ import { CategoryBar } from "../../components/main/CategoryBar";
 import { Submit } from "../../components/main/Submit";
 
 import { getUser } from "../../api/UserApi";
-import { addPost, delPost, getPost } from "../../api/FeedApi";
+import { addPost, delPost, getBestPost, getPost } from "../../api/FeedApi";
 import new_icon from "../../assets/new.png";
 import new_icon2 from "../../assets/new2.png";
 import best from "../../assets/best.png";
@@ -66,6 +66,13 @@ export const Main = ({ socketValue }) => {
     refetch: refetchPosts,
     isLoading: isPostLoading,
   } = useQuery("posts", ({ signal }) => getPost(signal));
+
+  const { data: bestPosts, refetch: refetchBestPosts } = useQuery(
+    "bestPosts",
+    getBestPost
+  );
+
+  console.log(bestPosts);
 
   const { data: voteData } = useQuery("votes", getVote);
 
@@ -145,7 +152,7 @@ export const Main = ({ socketValue }) => {
           className={
             isBest ? "main_default_icon main_filter_icon" : "main_default_icon"
           }
-          onClick={handleFilter}
+          onClick={() => setIsBest(true)}
         >
           <img src={isBest ? best2 : best} alt="best_icon" />
           <h3>Best</h3>
@@ -154,31 +161,56 @@ export const Main = ({ socketValue }) => {
           className={
             !isBest ? "main_default_icon main_filter_icon" : "main_default_icon"
           }
-          onClick={handleFilter}
+          onClick={() => setIsBest(false)}
         >
           <img src={!isBest ? new_icon2 : new_icon} alt="new_icon" />
           <h3>New</h3>
         </div>
       </div>
       <div>
-        {posts?.map((post) => (
-          <Feed
-            key={post._id}
-            post_id={post._id}
-            writer_profile={post.user.profile}
-            user_id={userQuery.data._id}
-            caption={post.text}
-            title={post.title}
-            comments={post.comments}
-            likes={post.likes}
-            socketValue={socketValue}
-            user_publicAddr={userQuery.data.publicAddr}
-            writer_publicAddr={post.user.publicAddr}
-            createdAt={post.createdAt}
-            postingId={post.user._id}
-            likedUsers={post.likes.liked_user}
-          />
-        ))}
+        {isBest ? (
+          <>
+            {bestPosts?.map((post) => (
+              <Feed
+                key={post._id}
+                post_id={post._id}
+                writer_profile={post.user.profile}
+                user_id={userQuery.data._id}
+                caption={post.text}
+                title={post.title}
+                comments={post.comments}
+                likes={post.likes}
+                socketValue={socketValue}
+                user_publicAddr={userQuery.data.publicAddr}
+                writer_publicAddr={post.user.publicAddr}
+                createdAt={post.createdAt}
+                postingId={post.user._id}
+                likedUsers={post.likes.liked_user}
+              />
+            ))}
+          </>
+        ) : (
+          <>
+            {posts?.map((post) => (
+              <Feed
+                key={post._id}
+                post_id={post._id}
+                writer_profile={post.user.profile}
+                user_id={userQuery.data._id}
+                caption={post.text}
+                title={post.title}
+                comments={post.comments}
+                likes={post.likes}
+                socketValue={socketValue}
+                user_publicAddr={userQuery.data.publicAddr}
+                writer_publicAddr={post.user.publicAddr}
+                createdAt={post.createdAt}
+                postingId={post.user._id}
+                likedUsers={post.likes.liked_user}
+              />
+            ))}
+          </>
+        )}
       </div>
       {showPopUp && (
         <PopUp
