@@ -82,16 +82,36 @@
   top: -40px;
   width: 600px;
   height: 600px;
-  padding: 50px;
+  padding: 30px;
   border: 1px solid lightgray;
   background-color: white;
   border-radius: 10px;
 }
 
+.vote_nft_header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.vote_nft_title {
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.vote_nft_close_btn {
+  font-size: 24px;
+  position: absolute;
+  right: 10px;
+  background-color: white;
+  margin-bottom: 10px;
+}
+
 .vote_nft_imgs {
   display: flex;
   gap: 10px;
-  padding: 40px;
+  padding: 30px;
+  flex-wrap: wrap;
 }
 
 .vote_nft_img {
@@ -126,4 +146,30 @@
 .vote_menus {
   display: flex;
   gap: 10px;
+}
+
+@media (max-width: 600px) {
+  .vote_nft_popup {
+    width: 90vw;
+    height: 600px;
+    padding: 50px;
+    border: 1px solid lightgray;
+    background-color: white;
+    border-radius: 10px;
+  }
+
+  .vote_nft_title {
+    font-size: 18px;
+  }
+
+  .vote_nft_close_btn {
+    right: 20px;
+  }
+
+  .vote_nft_img {
+    width: 17vw;
+    height: 17vw;
+    border-radius: 10px;
+    cursor: pointer;
+  }
 }
