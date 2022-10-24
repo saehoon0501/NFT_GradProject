@@ -62,6 +62,8 @@ export const Reply = ({
     }
   };
 
+  console.log(reply_id, comment_id);
+
   const handleReply = async () => {
     await addReply(comment_id, value);
     setToReply({ reply: !toReply.reply, modify: toReply.modify });
@@ -77,7 +79,7 @@ export const Reply = ({
   };
 
   const handleDelete = () => {
-    delReply(reply_id, commentIndex, index).then((res) => {
+    delReply(comment_id, reply_id).then((res) => {
       console.log(res.data);
     });
     refetchComments();
@@ -92,8 +94,6 @@ export const Reply = ({
     setToReply({ reply: !toReply.reply, modify: true });
     setValue(caption);
   };
-
-  console.log(writer);
 
   return (
     <div>

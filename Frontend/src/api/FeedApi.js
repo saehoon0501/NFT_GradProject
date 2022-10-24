@@ -106,12 +106,9 @@ export const modifyReply = async (comment_id, context, commentIndex) => {
   return response;
 };
 
-export const delReply = async (comment_id, commentIndex, replyIndex) => {
+export const delReply = async (comment_id, reply_id) => {
   const response = await feedApi.delete(`/comment/reply/${comment_id}`, {
-    data: {
-      commentIndex,
-      replyIndex,
-    },
+    reply_id,
   });
   return response;
 };
