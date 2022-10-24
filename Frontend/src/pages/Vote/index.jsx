@@ -96,6 +96,11 @@ export const Vote = () => {
     setShowPopUp(false);
   };
 
+  const onClickClosePopUp = () => {
+    setShowSelectNFTPopUp(false);
+    setSelectedOption(-1);
+  };
+
   return (
     <div className="vote_page_wrapper">
       <h1 className="vote_page_title">{currentVoteContent.title}</h1>
@@ -134,7 +139,12 @@ export const Vote = () => {
       </div>
       {showSelectNFTPopUp && (
         <div className="vote_nft_popup">
-          <h1>투표에 사용할 NFT를 선택해주세요.</h1>
+          <div className="vote_nft_header">
+            <p className="vote_nft_title">투표에 사용할 NFT를 선택해주세요.</p>
+            <button className="vote_nft_close_btn" onClick={onClickClosePopUp}>
+              &times;
+            </button>
+          </div>
           <div className="vote_nft_imgs">
             {userData.ownerOfNFT[0].NFT_URL.map((NFT, index) => (
               <div key={index}>

@@ -35,7 +35,6 @@
   border: 1px solid #888;
   width: 855px; /* Could be more or less, depending on screen size */
   height: 855px;
-  padding: 0;
 }
 
 .modal-menu {
@@ -68,10 +67,12 @@
 .modal-nfts-imgs {
   display: flex;
   margin: 32px 0px;
+  flex-wrap: wrap;
+  gap: 32px;
 }
 
 .modal-nft-img {
-  width: 250px;
+  width: 200px;
   border-radius: 20px;
 }
 
@@ -80,7 +81,11 @@
     width: 90vw;
   }
 
+  .modal-nfts-imgs {
+    gap: 16px;
+  }
+
   .modal-nft-img {
-    width: 30vw;
+    width: 20vw;
   }
 }
