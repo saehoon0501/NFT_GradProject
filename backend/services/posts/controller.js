@@ -369,20 +369,17 @@ module.exports={
     },
 
     likeComment:(req,res,next)=>{
-        const publicAddress = res.locals.decoded.publicAddress;
-        const {commentIndex} = req.body;
-        const comment_id = req.params.comment_id;
-        console.log(commentIndex);
+        const publicAddress = res.locals.decoded.publicAddress;        
+        const comment_id = req.params.comment_id;        
 
         User.findOne({publicAddr:publicAddress})
         .then((user)=>{
             Comment.findById(comment_id)
-        .then((comment)=>{
-            console.log(comment);
-            comment.liked_user.addToSet(user.id);
-            comment.save();
-
-            return res.send(comment.liked_user);
+            .then((comment)=>{                
+                comment.liked_user.addToSet(user.id)
+                comment.save()
+                console.log("user liked", publicAddress)
+            return res.send(comment.liked_user)
         })
         })        
     },
@@ -459,7 +456,7 @@ module.exports={
         let {context} = req.body;
         const comment_id = req.params.comment_id;
 
-        if(!context == undefined || !/([^\s])/.test(context)){            
+        if(context == undefined || !/([^\s])/.test(context)){            
             return res.status(400).send('Need any character')
         }    
 
@@ -491,18 +488,18 @@ module.exports={
         const publicAddress = res.locals.decoded.publicAddress;
         const {reply_id} = req.body;
         const comment_id = req.params.comment_id;
-
+        
         try{
             const user = await User.findOne({publicAddr:publicAddress}).lean()
             let reply = await Comment.findById(reply_id)
-            let comment = await Comment.findById(comment_id).lean()
+            let comment = await Comment.findById(comment_id).lean()                        
             
             if(!user | !reply | !comment) return res.status(400).send('not found error')
-
-            let isInArray = comment.replies.some((replyItem)=>{
+            console.log(comment.replies)
+            let isInArray = comment.replies.some((replyItem)=>{                
                 return replyItem.equals(reply.id)
             })
-            
+            console.log(isInArray)
             if(user._id.toString() == reply.user.toString() && isInArray){            
                 reply.caption = '삭제된 내용입니다.'                        
                 await reply.save()

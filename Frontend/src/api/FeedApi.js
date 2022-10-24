@@ -66,9 +66,8 @@ export const getComment = async (post_id) => {
   return response.data;
 };
 
-export const likeComment = async (comment_id, index) => {
-  const response = await feedApi.post(`/comment/like/${comment_id}`, {
-    commentIndex: index,
+export const likeComment = async (comment_id) => {
+  const response = await feedApi.post(`/comment/like/${comment_id}`, {    
   });
   return response;
 };
@@ -82,10 +81,8 @@ export const delComment = async (comment_id, post_id) => {
   return response;
 };
 
-export const likeReply = async (comment_id, commentIndex, replyIndex) => {
-  const response = await feedApi.post(`/comment/reply/${comment_id}`, {
-    commentIndex,
-    replyIndex,
+export const likeReply = async (comment_id) => {
+  const response = await feedApi.post(`/comment/like/${comment_id}`, {  
   });
   return response;
 };
