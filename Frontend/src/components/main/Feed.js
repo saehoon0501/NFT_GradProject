@@ -130,13 +130,7 @@ const Feed = ({
       </div>
       <div>
         {/* Content */}
-        <div
-          onClick={handleClick}
-          className="ql-editor feed_click"
-          style={{ padding: "10px 10px 10px 10px", minHeight: "60px" }}
-        >
-          {parse(caption)}
-        </div>
+        <div className="ql-editor">{parse(caption)}</div>
       </div>
       <div className="feed_menu">
         <div className="feed_menu_comments" onClick={handleClick}>

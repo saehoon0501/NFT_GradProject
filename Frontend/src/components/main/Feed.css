@@ -8,6 +8,10 @@
   border: 1px solid lightgray;
   border-radius: 5px;
   width: 500px;
+  height: 200px;
+  overflow: hidden;
+  position: relative;
+  padding-bottom: 50px;
 }
 
 .feed_header {
@@ -45,6 +49,10 @@
   margin-top: 10px;
 }
 
+.ql-editor {
+  padding: 10px;
+}
+
 .ql-editor img {
   max-width: 100%;
   border-radius: 5px;
@@ -54,6 +62,9 @@
 .feed_menu {
   display: flex;
   padding: 10px 10px 5px 15px;
+  position: absolute;
+  bottom: 0;
+  background-color: white;
 }
 
 .feed_menu_comments {
