@@ -8,7 +8,7 @@
 
 .feedview-content {
   background-color: white;
-  width: 900px;
+  width: 700px;
   margin: 10px 0px;
   display: flex;
   flex-direction: column;
@@ -195,4 +195,15 @@ textarea::-webkit-scrollbar {
   .comment_list_blank {
     width: 95vw;
   }
+}
+
+.ql-editor {
+  padding: 10px;
+  height: 100%;
+  cursor: pointer;
+}
+
+.ql-editor p {
+  max-width: 100%;  
+  border-radius: 5px;  
 }

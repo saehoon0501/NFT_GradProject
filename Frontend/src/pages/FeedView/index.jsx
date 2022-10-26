@@ -125,7 +125,7 @@ export const FeedView = () => {
           />
           <div className="feedview-header-name">
             <p>{writer_profile.username}</p>
-            <span>{title}</span>
+            <h2>{title}</h2>
           </div>
           <span className="feedview-header-date">
             {elapsedTimePeriod(createdAt)}
