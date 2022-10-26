@@ -127,11 +127,15 @@ const Feed = ({
             </button>
           )}
         </div>
-      </div>
-      <div>
+      </div>      
         {/* Content */}
-        <div className="ql-editor">{parse(caption)}</div>
-      </div>
+        <div
+          onClick={handleClick}
+          className="ql-editor feed_click"
+          style={{ padding: "10px 10px 10px 10px", minHeight: "60px" }}
+        >
+          {parse(caption)}
+        </div>              
       <div className="feed_menu">
         <div className="feed_menu_comments" onClick={handleClick}>
           <h4>댓글 {comments?.length}개</h4>

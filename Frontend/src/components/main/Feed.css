@@ -1,6 +1,6 @@
 .feed_wrapper {
   background-color: white;
-  max-height: 600px;
+  max-height: 200px;
   margin-bottom: 20px;
   display: flex;
   flex-direction: column;
@@ -51,10 +51,12 @@
 
 .ql-editor {
   padding: 10px;
+  height: 100%;
+  cursor: pointer;
 }
 
 .ql-editor img {
-  max-width: 100%;
+  max-width: 100%;  
   border-radius: 5px;
   text-align: center;
 }
