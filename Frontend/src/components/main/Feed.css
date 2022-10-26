@@ -56,9 +56,12 @@
 }
 
 .ql-editor img {
-  max-width: 100%;  
+  display: block;
+  margin: auto;
+  max-width: 85%;  
   border-radius: 5px;
   text-align: center;
+  align-items: center;
 }
 
 .feed_menu {
