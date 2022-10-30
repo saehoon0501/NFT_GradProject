@@ -18,9 +18,11 @@ import { useEffect } from "react";
 import { useState } from "react";
 
 export const Profile = () => {
-  const { data: user, isLoading } = useQuery("user", ({ signal }) =>
-    getUser(signal)
-  );
+  const {
+    data: user,
+    isLoading,
+    refetch,
+  } = useQuery("user", ({ signal }) => getUser(signal));
   const [postData, setPostData] = useState([]);
   // getUserComments().then((result) => console.log(result));
 
@@ -62,7 +64,7 @@ export const Profile = () => {
       <div className="profile-wrapper">
         <ProfileChangeImage user={user} />
         <ProfilePic userProfile={user?.profile} />
-        <ProfileCaption userProfile={user?.profile} />
+        <ProfileCaption userProfile={user?.profile} refetch={refetch} />
       </div>
       <div className="profile-post-wrapper">
         <span className="profile-post-title">게시물</span>

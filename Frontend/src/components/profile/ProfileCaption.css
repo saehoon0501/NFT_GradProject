@@ -93,6 +93,11 @@
   z-index: 1000;
 }
 
+.profile-intro {
+  font-size: 14px;
+  font-weight: 500;
+}
+
 .profile-dimmed {
   width: 100vw;
   height: 160vh;
