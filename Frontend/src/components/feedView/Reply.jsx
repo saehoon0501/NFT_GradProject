@@ -53,7 +53,7 @@ export const Reply = ({
 
   const handleLike = () => {
     if (!like.liked) {
-      likeReply(comment_id, commentIndex, index).then((res) => {
+      likeReply(reply_id, commentIndex, index).then((res) => {
         console.log(res.data.length);
         if (res.data.includes(user_id)) {
           setLike({ liked: true, liked_user: res.data });
