@@ -4,9 +4,8 @@ import "./ProfileCaption.css";
 
 import { updateUser } from "../../api/UserApi";
 import { CANCEL_EDIT_PROFILE, PROCEED_EDIT_PROFILE } from "../../utils";
-import { PopUp } from "../common/PopUp";
 
-export const ProfileCaption = ({ userProfile, isOwner = true }) => {
+export const ProfileCaption = ({ userProfile, isOwner = true, refetch }) => {
   const [intro, setIntro] = useState(`${userProfile.caption}`);
   const [profileName, setProfileName] = useState(`${userProfile.username}`);
   const [editProfile, setEditProfile] = useState(true);
@@ -44,15 +43,14 @@ export const ProfileCaption = ({ userProfile, isOwner = true }) => {
     }
   };
 
-  const onClickSubmitPopUp = () => {
+  const onClickSubmitPopUp = async () => {
     setShowPopUp(false);
     switch (currentPopUp) {
       case PROCEED_EDIT_PROFILE:
         nameRef.current = profileName;
         introRef.current = intro;
-        updateUser(intro, profileName).then((res) => {
-          console.log(res.data);
-        });
+        await updateUser(intro, profileName);
+        refetch();
         setEditProfile(true);
         return;
       case CANCEL_EDIT_PROFILE:
@@ -82,6 +80,9 @@ export const ProfileCaption = ({ userProfile, isOwner = true }) => {
               </button>
             )}
           </div>
+          <span className="profile-intro">
+            한줄 소개 : {userProfile.caption}
+          </span>
           <div className="profile-text">
             <h3>게시물 {userProfile.post_ids.length}</h3>
             <h3 style={{ color: "blue" }}>RGB {userProfile.points}</h3>
