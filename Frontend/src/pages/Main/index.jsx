@@ -39,6 +39,7 @@ export const Main = ({ socketValue }) => {
   const [currentVoteContent, setCurrentVoteContent] = useRecoilState(
     currentVoteContentState
   );
+  const [currentPosts, setCurrentPosts] = useState([]);
 
   const [showPopUp, setShowPopUp] = useRecoilState(showPopUpState);
   const [isOpen, setIsOpen] = useRecoilState(isWritingPost);
@@ -65,14 +66,18 @@ export const Main = ({ socketValue }) => {
     data: posts,
     refetch: refetchPosts,
     isLoading: isPostLoading,
-  } = useQuery("posts", ({ signal }) => getPost(signal));
+  } = useQuery("posts", ({ signal }) => getPost(signal), {
+    onSuccess: (data) => {
+      setCurrentPosts(data);
+    },
+  });
 
-  const { data: bestPosts, refetch: refetchBestPosts } = useQuery(
-    "bestPosts",
-    getBestPost
-  );
-
-  console.log(bestPosts);
+  const { refetch: refetchBestPosts } = useQuery("bestPosts", getBestPost, {
+    onSuccess: (data) => {
+      setCurrentPosts(data);
+    },
+    enabled: false,
+  });
 
   const { data: voteData } = useQuery("votes", getVote);
 
@@ -134,6 +139,16 @@ export const Main = ({ socketValue }) => {
     setShowPopUp(false);
   };
 
+  const onClickShowBestPosts = () => {
+    refetchBestPosts();
+    setIsBest(true);
+  };
+
+  const onClickShowNewPosts = () => {
+    refetchPosts();
+    setIsBest(false);
+  };
+
   console.log(userQuery.data);
   console.log(posts);
 
@@ -152,7 +167,7 @@ export const Main = ({ socketValue }) => {
           className={
             isBest ? "main_default_icon main_filter_icon" : "main_default_icon"
           }
-          onClick={() => setIsBest(true)}
+          onClick={onClickShowBestPosts}
         >
           <img src={isBest ? best2 : best} alt="best_icon" />
           <h3>Best</h3>
@@ -161,7 +176,7 @@ export const Main = ({ socketValue }) => {
           className={
             !isBest ? "main_default_icon main_filter_icon" : "main_default_icon"
           }
-          onClick={() => setIsBest(false)}
+          onClick={onClickShowNewPosts}
         >
           <img src={!isBest ? new_icon2 : new_icon} alt="new_icon" />
           <h3>New</h3>
@@ -170,7 +185,7 @@ export const Main = ({ socketValue }) => {
       <div>
         {isBest ? (
           <>
-            {bestPosts?.map((post) => (
+            {currentPosts?.map((post) => (
               <Feed
                 key={post._id}
                 post_id={post._id}
@@ -191,7 +206,7 @@ export const Main = ({ socketValue }) => {
           </>
         ) : (
           <>
-            {posts?.map((post) => (
+            {currentPosts?.map((post) => (
               <Feed
                 key={post._id}
                 post_id={post._id}
