@@ -5,7 +5,6 @@ import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import "./style.css";
 
 import Feed from "../../components/main/Feed";
-import { CategoryBar } from "../../components/main/CategoryBar";
 import { Submit } from "../../components/main/Submit";
 
 import { getUser } from "../../api/UserApi";
@@ -62,15 +61,15 @@ export const Main = ({ socketValue }) => {
       setIsUserDataSend(true);
     },
   });
-  const {
-    data: posts,
-    refetch: refetchPosts,
-    isLoading: isPostLoading,
-  } = useQuery("posts", ({ signal }) => getPost(signal), {
-    onSuccess: (data) => {
-      setCurrentPosts(data);
-    },
-  });
+  const { refetch: refetchPosts, isLoading: isPostLoading } = useQuery(
+    "posts",
+    ({ signal }) => getPost(signal),
+    {
+      onSuccess: (data) => {
+        setCurrentPosts(data);
+      },
+    }
+  );
 
   const { refetch: refetchBestPosts } = useQuery("bestPosts", getBestPost, {
     onSuccess: (data) => {
@@ -84,10 +83,6 @@ export const Main = ({ socketValue }) => {
   if (userQuery.isError) {
     navigate("/login");
   }
-
-  const handleFilter = () => {
-    setIsBest(!isBest);
-  };
 
   useEffect(() => {
     setIsAuth(false);
@@ -149,12 +144,8 @@ export const Main = ({ socketValue }) => {
     setIsBest(false);
   };
 
-  console.log(userQuery.data);
-  console.log(posts);
-
   return (
     <div className="main_wrapper">
-      <CategoryBar />
       <LoginUser users={loginUsers} />
       <VoteList
         setCurrentVoteContent={setCurrentVoteContent}
