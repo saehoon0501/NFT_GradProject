@@ -250,8 +250,7 @@ module.exports={
                 like.liked_num -= 1
                 like.liked_user.pull(user._id)
             }
-            like.save((err,data)=>{
-                if(err) console.log(err);
+            like.save((data)=>{
                 console.log(data);
                 return res.send(like);
                 })    
@@ -376,9 +375,13 @@ module.exports={
         .then((user)=>{
             Comment.findById(comment_id)
             .then((comment)=>{                
-                comment.liked_user.addToSet(user.id)
+                comment.liked_user.addToSet(user.id)                
                 comment.save()
-                console.log("user liked", publicAddress)
+                .then((result)=>{
+                    console.log("user liked", publicAddress)
+                    console.log(result)
+                })
+               
             return res.send(comment.liked_user)
         })
         })        
