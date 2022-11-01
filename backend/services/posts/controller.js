@@ -246,6 +246,7 @@ module.exports={
         .then( (user)=>{
             Like.findById(likes._id)
             .then(like=>{
+                console.log(like.liked_user.includes(user._id))
             if(like.liked_user.includes(user._id)){
                 like.liked_num -= 1
                 like.liked_user.pull(user._id)
