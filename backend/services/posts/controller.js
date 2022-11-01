@@ -242,7 +242,7 @@ module.exports={
         const publicAddress = res.locals.decoded.publicAddress;
         const {likes} = req.body;        
 
-        await User.findOne({id:publicAddress}).lean()
+        await User.findOne({publicAddr:publicAddress}).lean()
         .then( (user)=>{
             Like.findById(likes._id)
             .then(like=>{
