@@ -108,7 +108,7 @@ button {
   height: 120vh;
   background-color: lightgray;
   opacity: 0.5;
-  position: absolute;
+  position: fixed;
   z-index: 999;
   top: -200px;
 }
