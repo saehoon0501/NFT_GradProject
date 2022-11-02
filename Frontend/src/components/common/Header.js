@@ -93,13 +93,9 @@ export const Header = ({ socketValue }) => {
   };
 
   useEffect(() => {
-    console.log(socketValue);
-
     socketValue?.on("getNotification", (arg) => {
       console.log(arg);
     });
-
-    console.log("Getting Socket Data");
   }, [socketValue]);
 
   return (

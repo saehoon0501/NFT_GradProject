@@ -15,15 +15,13 @@ feedApi.interceptors.request.use((config) => {
   return config;
 });
 
-export const getPost = async (signal) => {
-  const response = await feedApi.get("", {
-    signal,
-  });
+export const getPost = async (pageNum) => {
+  const response = await feedApi.get(`?pageNum=${pageNum}`);
   return response.data;
 };
 
-export const getBestPost = async () => {
-  const response = await feedApi.get("?filter=best&pageNum=0");
+export const getBestPost = async (pageNum) => {
+  const response = await feedApi.get(`?filter=best&pageNum=${pageNum}`);
   return response.data;
 };
 
@@ -67,8 +65,7 @@ export const getComment = async (post_id) => {
 };
 
 export const likeComment = async (comment_id) => {
-  const response = await feedApi.post(`/comment/like/${comment_id}`, {    
-  });
+  const response = await feedApi.post(`/comment/like/${comment_id}`, {});
   return response;
 };
 
@@ -82,8 +79,7 @@ export const delComment = async (comment_id, post_id) => {
 };
 
 export const likeReply = async (comment_id) => {
-  const response = await feedApi.post(`/comment/like/${comment_id}`, {  
-  });
+  const response = await feedApi.post(`/comment/like/${comment_id}`, {});
   return response;
 };
 
