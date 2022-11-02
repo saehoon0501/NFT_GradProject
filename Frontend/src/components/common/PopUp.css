@@ -1,9 +1,9 @@
 .popup_wrapper {
-  position: absolute;
+  position: fixed;
   width: 400px;
   height: 140px;
-  left: 5vw;
-  top: 10vh;
+  left: 30vw;
+  top: 20vh;
   border: 1px solid black;
   padding: 40px;
   border-radius: 10px;
@@ -34,4 +34,22 @@
 .popup_btn:hover {
   background-color: black;
   color: white;
+}
+
+@media (max-width: 915px) {
+  .popup_wrapper {
+    left: 25vw;
+  }
+}
+
+@media (max-width: 650px) {
+  .popup_wrapper {
+    left: 10vw;
+  }
+}
+
+@media (min-width: 1200px) {
+  .popup_wrapper {
+    left: 40vw;
+  }
 }

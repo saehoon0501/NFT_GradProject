@@ -139,7 +139,7 @@ export const Header = ({ socketValue }) => {
                 <button onClick={onClickToggleAlarm}>X</button>
               </div>
               <div className="alarm_contents">
-                {dummyAlarmData.map((alarm) => (
+                {[].map((alarm) => (
                   <div className="alarm_content">
                     <img src={alarm.imgUrl} alt={`${alarm.name}`} />
                     <p>{`${alarm.name}님이 ${alarm.postName}를 좋아합니다.`}</p>
