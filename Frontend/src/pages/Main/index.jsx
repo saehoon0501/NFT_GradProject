@@ -39,6 +39,7 @@ export const Main = ({ socketValue }) => {
     currentVoteContentState
   );
   const [currentPosts, setCurrentPosts] = useState([]);
+  const [currentPostCount, setCurrentPostCount] = useState(0);
 
   const [showPopUp, setShowPopUp] = useRecoilState(showPopUpState);
   const [isOpen, setIsOpen] = useRecoilState(isWritingPost);
@@ -63,7 +64,7 @@ export const Main = ({ socketValue }) => {
   });
   const { refetch: refetchPosts, isLoading: isPostLoading } = useQuery(
     "posts",
-    ({ signal }) => getPost(signal),
+    () => getPost(currentPostCount),
     {
       onSuccess: (data) => {
         setCurrentPosts(data);
@@ -71,12 +72,16 @@ export const Main = ({ socketValue }) => {
     }
   );
 
-  const { refetch: refetchBestPosts } = useQuery("bestPosts", getBestPost, {
-    onSuccess: (data) => {
-      setCurrentPosts(data);
-    },
-    enabled: false,
-  });
+  const { refetch: refetchBestPosts } = useQuery(
+    "bestPosts",
+    () => getBestPost(currentPostCount),
+    {
+      onSuccess: (data) => {
+        setCurrentPosts(data);
+      },
+      enabled: false,
+    }
+  );
 
   const { data: voteData } = useQuery("votes", getVote);
 
@@ -95,6 +100,18 @@ export const Main = ({ socketValue }) => {
       });
     }
   }, [socketValue]);
+
+  useEffect(async () => {
+    let addingData;
+    if (isBest) {
+      const { data } = await refetchBestPosts();
+      addingData = data;
+    } else {
+      const { data } = await refetchPosts();
+      addingData = data;
+    }
+    setCurrentPosts([...currentPosts, ...addingData]);
+  }, [currentPostCount]);
 
   if (userQuery.isLoading || isPostLoading) {
     return <Loading />;
@@ -135,13 +152,21 @@ export const Main = ({ socketValue }) => {
   };
 
   const onClickShowBestPosts = () => {
+    setCurrentPostCount(0);
     refetchBestPosts();
     setIsBest(true);
   };
 
   const onClickShowNewPosts = () => {
+    setCurrentPostCount(0);
     refetchPosts();
     setIsBest(false);
+  };
+
+  window.onscroll = async function () {
+    if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
+      setCurrentPostCount(currentPostCount + 1);
+    }
   };
 
   return (
@@ -176,9 +201,9 @@ export const Main = ({ socketValue }) => {
       <div>
         {isBest ? (
           <>
-            {currentPosts?.map((post) => (
+            {currentPosts?.map((post, index) => (
               <Feed
-                key={post._id}
+                key={post._id + index}
                 post_id={post._id}
                 writer_profile={post.user.profile}
                 user_id={userQuery.data._id}
@@ -197,9 +222,9 @@ export const Main = ({ socketValue }) => {
           </>
         ) : (
           <>
-            {currentPosts?.map((post) => (
+            {currentPosts?.map((post, index) => (
               <Feed
-                key={post._id}
+                key={post._id + index}
                 post_id={post._id}
                 writer_profile={post.user.profile}
                 user_id={userQuery.data._id}

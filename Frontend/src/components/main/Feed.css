@@ -8,6 +8,7 @@
   border: 1px solid lightgray;
   border-radius: 5px;
   width: 500px;
+  height: 30vh;
   min-height: 100px;
   overflow: hidden;
   position: relative;
@@ -58,7 +59,7 @@
 .ql-editor img {
   display: block;
   margin: auto;
-  max-width: 85%;  
+  max-width: 85%;
   border-radius: 5px;
   text-align: center;
   align-items: center;
@@ -143,6 +144,5 @@ textarea::-webkit-scrollbar {
 @media (max-width: 915px) {
   .feed_wrapper {
     width: 90vw;
-    height: 30vh;
   }
 }
