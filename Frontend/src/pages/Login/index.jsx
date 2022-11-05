@@ -21,17 +21,25 @@ export const Login = () => {
       });
   };
 
+  const onClickNFTBox = (row, col) => {
+    console.log(`Row:${row}, Col:${col}`);
+  };
+
   return (
     <div className="login-wrapper">
-      <div className="login-left"></div>
-      {/* {!minted ? (
-        <button className="primary__button" onClick={onClickMintToken}>
-          Mint Token
-        </button>
-      ) : (
-        <p>Token Minted</p>
-      )} */}
-
+      <div className="login-left">
+        {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((row) => (
+          <div key={row} className="nft-box-row">
+            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((col) => (
+              <div
+                key={row + col}
+                onClick={() => onClickNFTBox(row, col)}
+                className="nft-box"
+              ></div>
+            ))}
+          </div>
+        ))}
+      </div>
       <div className="login-service-wrapper">
         <p className="login-service-title">
           보유한 NFT를 사용해 NCC에 접속하세요.
