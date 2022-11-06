@@ -1,115 +1,37 @@
-import { NFTLogin } from "../../components/login/Web3Client";
+import React from "react";
+import { useRecoilState } from "recoil";
 
+import { mintToken, NFTLogin } from "../../components/login/Web3Client";
+import { mintedState } from "../../store";
+
+import Logo from "../../assets/logo.png";
 import "./style.css";
 
-const dummyNFTBoxData = [
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    {
-      imgUrl: "https://s.hdnux.com/photos/01/27/40/42/22939793/3/1200x0.jpg",
-      link: "https://www.mlb.com/player/jeremy-pena-665161",
-    },
-    ,
-    0,
-  ],
-  [
-    0,
-    0,
-    0,
-    0,
-    {
-      imgUrl: "https://s.hdnux.com/photos/01/27/40/42/22939793/3/1200x0.jpg",
-      link: "https://www.mlb.com/player/jeremy-pena-665161",
-    },
-    0,
-    0,
-    0,
-    0,
-    0,
-  ],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [
-    0,
-    0,
-    0,
-    0,
-    {
-      imgUrl: "https://s.hdnux.com/photos/01/27/40/42/22939793/3/1200x0.jpg",
-      link: "https://www.mlb.com/player/jeremy-pena-665161",
-    },
-    ,
-    0,
-    0,
-    0,
-    0,
-    0,
-  ],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [
-    0,
-    {
-      imgUrl: "https://s.hdnux.com/photos/01/27/40/42/22939793/3/1200x0.jpg",
-      link: "https://www.mlb.com/player/jeremy-pena-665161",
-    },
-    ,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-  ],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-];
-
-dummyNFTBoxData.map((row) => {
-  row.map((col) => {
-    console.log(col);
-  });
-});
-
 export const Login = () => {
-  const onClickNFTBox = (row, col) => {
-    console.log(`Row:${row}, Col:${col}`);
+  const [minted, setMinted] = useRecoilState(mintedState);
+
+  const onClickMintToken = () => {
+    mintToken()
+      .then((tx) => {
+        console.log(tx);
+        setMinted(true);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   return (
     <div className="login-wrapper">
-      <div className="login-left">
-        {dummyNFTBoxData.map((row, rowIndex) => (
-          <div key={rowIndex} className="nft-box-row">
-            {row.map((col, colIndex) =>
-              col === 0 ? (
-                <div
-                  key={rowIndex + colIndex + ""}
-                  onClick={() => onClickNFTBox(rowIndex, colIndex)}
-                  className="nft-box"
-                ></div>
-              ) : (
-                <a className="nft-box-link" href={col.link} target="_blank">
-                  <img
-                    className="nft-box-img"
-                    src={col.imgUrl}
-                    alt={col.imgUrl}
-                  />
-                </a>
-              )
-            )}
-          </div>
-        ))}
-      </div>
+      <div className="login-left"></div>
+      {/* {!minted ? (
+        <button className="primary__button" onClick={onClickMintToken}>
+          Mint Token
+        </button>
+      ) : (
+        <p>Token Minted</p>
+      )} */}
+
       <div className="login-service-wrapper">
         <p className="login-service-title">
           보유한 NFT를 사용해 NCC에 접속하세요.
