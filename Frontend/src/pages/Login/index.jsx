@@ -1,26 +1,86 @@
-import React from "react";
-import { useRecoilState } from "recoil";
+import { NFTLogin } from "../../components/login/Web3Client";
 
-import { mintToken, NFTLogin } from "../../components/login/Web3Client";
-import { mintedState } from "../../store";
-
-import Logo from "../../assets/logo.png";
 import "./style.css";
 
+const dummyNFTBoxData = [
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    {
+      imgUrl: "https://s.hdnux.com/photos/01/27/40/42/22939793/3/1200x0.jpg",
+      link: "https://www.mlb.com/player/jeremy-pena-665161",
+    },
+    ,
+    0,
+  ],
+  [
+    0,
+    0,
+    0,
+    0,
+    {
+      imgUrl: "https://s.hdnux.com/photos/01/27/40/42/22939793/3/1200x0.jpg",
+      link: "https://www.mlb.com/player/jeremy-pena-665161",
+    },
+    0,
+    0,
+    0,
+    0,
+    0,
+  ],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [
+    0,
+    0,
+    0,
+    0,
+    {
+      imgUrl: "https://s.hdnux.com/photos/01/27/40/42/22939793/3/1200x0.jpg",
+      link: "https://www.mlb.com/player/jeremy-pena-665161",
+    },
+    ,
+    0,
+    0,
+    0,
+    0,
+    0,
+  ],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [
+    0,
+    {
+      imgUrl: "https://s.hdnux.com/photos/01/27/40/42/22939793/3/1200x0.jpg",
+      link: "https://www.mlb.com/player/jeremy-pena-665161",
+    },
+    ,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+  ],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+];
+
+dummyNFTBoxData.map((row) => {
+  row.map((col) => {
+    console.log(col);
+  });
+});
+
 export const Login = () => {
-  const [minted, setMinted] = useRecoilState(mintedState);
-
-  const onClickMintToken = () => {
-    mintToken()
-      .then((tx) => {
-        console.log(tx);
-        setMinted(true);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-
   const onClickNFTBox = (row, col) => {
     console.log(`Row:${row}, Col:${col}`);
   };
@@ -28,15 +88,25 @@ export const Login = () => {
   return (
     <div className="login-wrapper">
       <div className="login-left">
-        {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((row) => (
-          <div key={row} className="nft-box-row">
-            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((col) => (
-              <div
-                key={row + col}
-                onClick={() => onClickNFTBox(row, col)}
-                className="nft-box"
-              ></div>
-            ))}
+        {dummyNFTBoxData.map((row, rowIndex) => (
+          <div key={rowIndex} className="nft-box-row">
+            {row.map((col, colIndex) =>
+              col === 0 ? (
+                <div
+                  key={rowIndex + colIndex + ""}
+                  onClick={() => onClickNFTBox(rowIndex, colIndex)}
+                  className="nft-box"
+                ></div>
+              ) : (
+                <a className="nft-box-link" href={col.link} target="_blank">
+                  <img
+                    className="nft-box-img"
+                    src={col.imgUrl}
+                    alt={col.imgUrl}
+                  />
+                </a>
+              )
+            )}
           </div>
         ))}
       </div>
