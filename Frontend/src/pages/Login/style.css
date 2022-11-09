@@ -19,13 +19,21 @@
 .nft-box {
   width: 10px;
   height: 10px;
-  border: 0.5px solid lightgray;
   border-radius: 2px;
   cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.nft-box-inner {
+  width: 6px;
+  height: 6px;
+  border: 1px solid lightgray;
 }
 
 .nft-box:hover {
-  background-color: lightgray;
+  background-color: pink;
 }
 
 .nft-box-blank {
@@ -33,6 +41,10 @@
   height: 10px;
   border: 0.5px solid lightgray;
   background-color: lightgray;
+}
+
+.nft-box-blank:hover {
+  background-color: pink;
 }
 
 .nft-box-link {
