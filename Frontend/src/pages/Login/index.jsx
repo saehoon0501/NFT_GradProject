@@ -26,6 +26,8 @@ export const Login = () => {
                   onClick={() => onClickNFTBox(rowIndex, colIndex)}
                   className="nft-box"
                 />
+              ) : col.imgUrl === "" && col.link === "" ? (
+                <div key={rowIndex + colIndex + ""} className="nft-box-blank" />
               ) : (
                 <a className="nft-box-link" href={col.link} target="_blank">
                   <img

@@ -3,6 +3,7 @@
   justify-content: center;
   align-items: center;
   height: 100vh;
+  gap: 50px;
 }
 
 .login-left {
@@ -27,6 +28,13 @@
   background-color: lightgray;
 }
 
+.nft-box-blank {
+  width: 10px;
+  height: 10px;
+  border: 0.5px solid lightgray;
+  background-color: lightgray;
+}
+
 .nft-box-link {
   width: 10px;
   height: 10px;
@@ -36,7 +44,6 @@
 .nft-box-img {
   width: 10px;
   height: 10px;
-  border-radius: 2px;
   cursor: pointer;
   top: 0px;
   position: absolute;
