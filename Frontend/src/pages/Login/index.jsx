@@ -1,78 +1,7 @@
 import { NFTLogin } from "../../components/login/Web3Client";
+import { dummyNFTBoxData } from "../../utils/dummyData";
 
 import "./style.css";
-
-const dummyNFTBoxData = [
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    {
-      imgUrl: "https://s.hdnux.com/photos/01/27/40/42/22939793/3/1200x0.jpg",
-      link: "https://www.mlb.com/player/jeremy-pena-665161",
-    },
-    ,
-    0,
-  ],
-  [
-    0,
-    0,
-    0,
-    0,
-    {
-      imgUrl: "https://s.hdnux.com/photos/01/27/40/42/22939793/3/1200x0.jpg",
-      link: "https://www.mlb.com/player/jeremy-pena-665161",
-    },
-    0,
-    0,
-    0,
-    0,
-    0,
-  ],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [
-    0,
-    0,
-    0,
-    0,
-    {
-      imgUrl: "https://s.hdnux.com/photos/01/27/40/42/22939793/3/1200x0.jpg",
-      link: "https://www.mlb.com/player/jeremy-pena-665161",
-    },
-    ,
-    0,
-    0,
-    0,
-    0,
-    0,
-  ],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [
-    0,
-    {
-      imgUrl: "https://s.hdnux.com/photos/01/27/40/42/22939793/3/1200x0.jpg",
-      link: "https://www.mlb.com/player/jeremy-pena-665161",
-    },
-    ,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-  ],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-];
 
 dummyNFTBoxData.map((row) => {
   row.map((col) => {
@@ -96,7 +25,9 @@ export const Login = () => {
                   key={rowIndex + colIndex + ""}
                   onClick={() => onClickNFTBox(rowIndex, colIndex)}
                   className="nft-box"
-                ></div>
+                />
+              ) : col.imgUrl === "" && col.link === "" ? (
+                <div key={rowIndex + colIndex + ""} className="nft-box-blank" />
               ) : (
                 <a className="nft-box-link" href={col.link} target="_blank">
                   <img
