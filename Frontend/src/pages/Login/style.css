@@ -9,7 +9,6 @@
 .login-left {
   width: 500px;
   height: 500px;
-  border: 1px solid black;
 }
 
 .nft-box-row {
@@ -51,14 +50,6 @@
   width: 10px;
   height: 10px;
   position: relative;
-}
-
-.nft-box-img {
-  width: 10px;
-  height: 10px;
-  cursor: pointer;
-  top: 0px;
-  position: absolute;
 }
 
 .nft-box-img:hover {

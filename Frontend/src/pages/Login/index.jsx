@@ -1,26 +1,29 @@
+import axios from "axios";
+import { useEffect, useState } from "react";
 import { NFTLogin } from "../../components/login/Web3Client";
-import { dummyNFTBoxData } from "../../utils/dummyData";
-
 import "./style.css";
 
-dummyNFTBoxData.map((row) => {
-  row.map((col) => {
-    console.log(col);
-  });
-});
-
 export const Login = () => {
+
+  const [squares, setSquares] = useState([]);
+
   const onClickNFTBox = (row, col) => {
     console.log(`Row:${row}, Col:${col}`);
   };
 
+  useEffect( async ()=>{
+    const BillboardData = await axios.get("BillboardData.json");    
+    setSquares(BillboardData.data);
+  },[]);
+
   return (
     <div className="login-wrapper">
       <div className="login-left">
-        {dummyNFTBoxData.map((row, rowIndex) => (
+      {squares.map((row,rowIndex)=>{
+        return(
           <div key={rowIndex} className="nft-box-row">
-            {row.map((col, colIndex) =>
-              col === 0 ? (
+          {row.map((col, colIndex) =>
+              col.isOwned === false ? (
                 <div
                   key={rowIndex + colIndex + ""}
                   onClick={() => onClickNFTBox(rowIndex, colIndex)}
@@ -28,20 +31,17 @@ export const Login = () => {
                 >
                   <div className="nft-box-inner"></div>
                 </div>
-              ) : col.imgUrl === "" && col.link === "" ? (
+              ) : col.link === "" ? (
                 <div key={rowIndex + colIndex + ""} className="nft-box-blank" />
               ) : (
-                <a className="nft-box-link" href={col.link} target="_blank">
-                  <img
-                    className="nft-box-img"
-                    src={col.imgUrl}
-                    alt={col.imgUrl}
-                  />
+                <a className="nft-box-link" href={col.link} target="_blank">                  
                 </a>
               )
             )}
           </div>
-        ))}
+        );
+      })
+      }
       </div>
       <div className="login-service-wrapper">
         <p className="login-service-title">

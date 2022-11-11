@@ -8,7 +8,6 @@ const Web3 = require('web3')
 const config = require('./config')
 const DistrictK = require("./contracts/DistrictK.json");
 
-
 const app = express(); // express module on
 
 app.use(cors());
