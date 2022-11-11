@@ -8,10 +8,12 @@ export const Login = () => {
   const [billboardData, setBillboard] = useState();
   const [left, setLeft] = useState(0);
   const [top, setTop] = useState(0);
+  const [description, setDescription] = useState("");
 
   const billboard = useRef();
   const square = useRef();
   const tooltip = useRef();
+  const whereToGo = useRef();
 
   const getRow = (event) => {
     var y = Math.floor((event.pageY - billboard.current.offsetTop) / 10);
@@ -29,7 +31,7 @@ export const Login = () => {
     var row = getRow(event);
     var col = getCol(event);
     const squareNumber = col + row*50 + 1;
-    let title = "Square #" + squareNumber + "\n";
+    let title = "Square #" + squareNumber + "\r";
 
     console.log([billboard.current.offsetLeft, event.pageY]);
     // console.log([billboard.current.offsetLeft, billboard.current.offsetTop]);
@@ -42,7 +44,7 @@ export const Login = () => {
       setLeft(10*((squareNumber-1)%50)+ billboard.current.offsetLeft);
       setTop(10*Math.floor((squareNumber-1)/50)+ billboard.current.offsetTop);
       square.current.style.display = "block";
-
+      whereToGo.current.removeAttribute("href", "");
     } else if(billboardData[row][col].isOwned === true && billboardData[row][col].link === ""){
       billboard.current.style.cursor = "not-allowed";
       title = title + " WAS PURCHASED BUT NOT YET PERSONALIZED";
@@ -50,6 +52,7 @@ export const Login = () => {
       setLeft(10*((squareNumber-1)%50)+ billboard.current.offsetLeft);
       setTop(10*Math.floor((squareNumber-1)/50)+ billboard.current.offsetTop);
       square.current.style.display = "block";
+      whereToGo.current.removeAttribute("href", "");
     }else{
       billboard.current.style.cursor = "pointer";
       title = title + billboardData[row][col].description;
@@ -57,12 +60,10 @@ export const Login = () => {
       setLeft(10*((squareNumber-1)%50)+ billboard.current.offsetLeft);
       setTop(10*Math.floor((squareNumber-1)/50)+ billboard.current.offsetTop);
       square.current.style.display = "block";
-
+      whereToGo.current.setAttribute("href", billboardData[row][col].link);
     }
 
-    tooltip.current.text = "title";
-    tooltip.current.style.left = 10 * ((squareNumber-1) % 50);
-    tooltip.current.style.top = 10 * Math.floor((squareNumber-1) / 50) + 30;
+    setDescription(title);
     tooltip.current.style.display = "block";
   };
 
@@ -74,21 +75,20 @@ export const Login = () => {
   const closeTooltip = () => {
     square.current.style.display = "none";
     tooltip.current.style.display = "none";
-    console.log(square.current);
   }
 
   return (
     <div className="login-wrapper">
-     <a id="whereToGo" href="">
+     <a ref={whereToGo}>
       <div className="login-left">
         <img src="wholeSquare.png" ref={billboard} onMouseEnter={onMouseHover} onMouseMove={onMouseHover} onMouseOut={closeTooltip}/>
         
         <div ref={square}
           style={{background:"pink", opacity:"0.8", width:"10px", height:"10px", top, left,
-          position:"absolute", pointerEvents:"none", display:"none"}}>
-        
-        <div ref={tooltip} style={{color:"black", top, left}}></div>        
-        </div>
+          position:"absolute", pointerEvents:"none", display:"none"}}>              
+          <div ref={tooltip} style={{position:"relative", color:"black", width:"140px",
+          padding:"10px", top:"30px", fontSize:"1em", background:"white", opacity:"1"}}>{description}</div>
+        </div>        
       </div>
       </a>
       {/* {squares.map((row,rowIndex)=>{
