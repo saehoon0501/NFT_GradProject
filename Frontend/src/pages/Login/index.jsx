@@ -1,32 +1,104 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { NFTLogin } from "../../components/login/Web3Client";
 import "./style.css";
 
 export const Login = () => {
 
-  const [squares, setSquares] = useState([]);
+  const [billboardData, setBillboard] = useState();
+  const [left, setLeft] = useState(0);
+  const [top, setTop] = useState(0);
 
-  const onClickNFTBox = (row, col) => {
-    console.log(`Row:${row}, Col:${col}`);
+  const billboard = useRef();
+  const square = useRef();
+  const tooltip = useRef();
+
+  const getRow = (event) => {
+    var y = Math.floor((event.pageY - billboard.current.offsetTop) / 10);
+    y = y <= 0 ? 0 : y >= 49 ? 49 : y;
+    return y;
+  }
+
+  const getCol = (event) => {
+    var x = Math.floor((event.pageX - billboard.current.offsetLeft) / 10);
+    x = x <= 0 ? 0 : x >= 49 ? 49 : x;
+    return x;
+  }
+
+  const onMouseHover = (event) => {
+    var row = getRow(event);
+    var col = getCol(event);
+    const squareNumber = col + row*50 + 1;
+    let title = "Square #" + squareNumber + "\n";
+
+    console.log([billboard.current.offsetLeft, event.pageY]);
+    // console.log([billboard.current.offsetLeft, billboard.current.offsetTop]);
+
+    if(billboardData[row][col].isOwned === false){
+
+      billboard.current.style.cursor = "pointer";
+      title = title + " is available for sale, click to buy.";
+      
+      setLeft(10*((squareNumber-1)%50)+ billboard.current.offsetLeft);
+      setTop(10*Math.floor((squareNumber-1)/50)+ billboard.current.offsetTop);
+      square.current.style.display = "block";
+
+    } else if(billboardData[row][col].isOwned === true && billboardData[row][col].link === ""){
+      billboard.current.style.cursor = "not-allowed";
+      title = title + " WAS PURCHASED BUT NOT YET PERSONALIZED";
+
+      setLeft(10*((squareNumber-1)%50)+ billboard.current.offsetLeft);
+      setTop(10*Math.floor((squareNumber-1)/50)+ billboard.current.offsetTop);
+      square.current.style.display = "block";
+    }else{
+      billboard.current.style.cursor = "pointer";
+      title = title + billboardData[row][col].description;
+
+      setLeft(10*((squareNumber-1)%50)+ billboard.current.offsetLeft);
+      setTop(10*Math.floor((squareNumber-1)/50)+ billboard.current.offsetTop);
+      square.current.style.display = "block";
+
+    }
+
+    tooltip.current.text = "title";
+    tooltip.current.style.left = 10 * ((squareNumber-1) % 50);
+    tooltip.current.style.top = 10 * Math.floor((squareNumber-1) / 50) + 30;
+    tooltip.current.style.display = "block";
   };
 
   useEffect( async ()=>{
-    const BillboardData = await axios.get("BillboardData.json");    
-    setSquares(BillboardData.data);
+    const res = await axios.get("BillboardData.json");
+    setBillboard(res.data);
   },[]);
+
+  const closeTooltip = () => {
+    square.current.style.display = "none";
+    tooltip.current.style.display = "none";
+    console.log(square.current);
+  }
 
   return (
     <div className="login-wrapper">
+     <a id="whereToGo" href="">
       <div className="login-left">
-      {squares.map((row,rowIndex)=>{
+        <img src="wholeSquare.png" ref={billboard} onMouseEnter={onMouseHover} onMouseMove={onMouseHover} onMouseOut={closeTooltip}/>
+        
+        <div ref={square}
+          style={{background:"pink", opacity:"0.8", width:"10px", height:"10px", top, left,
+          position:"absolute", pointerEvents:"none", display:"none"}}>
+        
+        <div ref={tooltip} style={{color:"black", top, left}}></div>        
+        </div>
+      </div>
+      </a>
+      {/* {squares.map((row,rowIndex)=>{
         return(
           <div key={rowIndex} className="nft-box-row">
           {row.map((col, colIndex) =>
               col.isOwned === false ? (
                 <div
                   key={rowIndex + colIndex + ""}
-                  onClick={() => onClickNFTBox(rowIndex, colIndex)}
+                  onMouseEnter={() => onMouseHover(rowIndex, colIndex)}
                   className="nft-box"
                 >
                   <div className="nft-box-inner"></div>
@@ -41,8 +113,7 @@ export const Login = () => {
           </div>
         );
       })
-      }
-      </div>
+      } */}
       <div className="login-service-wrapper">
         <p className="login-service-title">
           보유한 NFT를 사용해 NCC에 접속하세요.
