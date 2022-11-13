@@ -20,12 +20,13 @@ export const Search = () => {
     console.log(data);
     setPosts(data);
     setIsLoading(false);
-  }, []);
+  }, [keyword]);
 
   if (isLoading) {
     return <Loading />;
   }
 
+  console.log(keyword);
   console.log(posts);
 
   return (
