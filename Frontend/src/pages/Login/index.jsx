@@ -83,49 +83,18 @@ export const Login = () => {
 
   return (
     <div className="login-wrapper">
-      <a ref={whereToGo}>
-        <div className="login-left">
-          <img
-            src="Billboard.png"
-            ref={billboard}
-            onMouseEnter={onMouseHover}
-            onMouseMove={onMouseHover}
-            onMouseOut={closeTooltip}
-          />
-
-          <div
-            ref={square}
-            style={{
-              background: "pink",
-              opacity: "0.8",
-              width: "10px",
-              height: "10px",
-              top,
-              left,
-              position: "absolute",
-              pointerEvents: "none",
-              display: "none",
-            }}
-          >
-            <div
-              ref={tooltip}
-              style={{
-                position: "relative",
-                color: "black",
-                width: "140px",
-                padding: "10px",
-                top: "30px",
-                fontSize: "1em",
-                background: "white",
-                opacity: "1",
-                borderRadius: "20px",
-              }}
-            >
-              {description}
-            </div>
-          </div>
-        </div>
-      </a>
+     <a ref={whereToGo}>
+      <div className="login-left">
+        <img src="wholeSquare.png" ref={billboard} onMouseEnter={onMouseHover} onMouseMove={onMouseHover} onMouseOut={closeTooltip}/>
+        
+        <div ref={square}
+          style={{background:"pink", opacity:"0.8", width:"10px", height:"10px", top, left,
+          position:"absolute", pointerEvents:"none", display:"none"}}>              
+          <div ref={tooltip} style={{position:"relative", color:"black", width:"140px",
+          padding:"10px", top:"30px", fontSize:"1em", background:"white", opacity:"1", borderRadius:"20px"}}>{description}</div>
+        </div>        
+      </div>
+      </a>     
       <div className="login-service-wrapper">
         <p className="login-service-title">
           보유한 NFT를 사용해 NCC에 접속하세요.

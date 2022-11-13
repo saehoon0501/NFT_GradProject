@@ -1,7 +1,7 @@
 const fs = require('fs');
 const sharp = require('sharp');
 
-const BOARD = "/Users/saehoonbyun/Documents/GitHub/NFT_GradProject/Frontend/public/Billboard.png"; 
+const BOARD = "/Users/saehoonbyun/Documents/GitHub/NFT_GradProject/Frontend/public/wholeSquare.png"; 
 const INDIVIDUAL_SQUARE_EDGE_PIXELS = 10;
 const COMPOSITE_SQUARE_EDGE_SQUARES = 50;
 const NUM_SQUARES = COMPOSITE_SQUARE_EDGE_SQUARES * COMPOSITE_SQUARE_EDGE_SQUARES;
