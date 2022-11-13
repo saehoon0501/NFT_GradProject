@@ -79,7 +79,6 @@ export const ProfileCaption = ({ userProfile, isOwner = true, refetch }) => {
                 프로필 편집
               </button>
             )}
-            <br></br>
           </div>
           <span className="profile-intro">
             {userProfile.caption}
