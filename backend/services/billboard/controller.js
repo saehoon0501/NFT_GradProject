@@ -1,7 +1,7 @@
 const fs = require('fs');
 const sharp = require('sharp');
 
-const BOARD = "/Users/saehoonbyun/Documents/GitHub/NFT_GradProject/backend/assets/Billboard.png"; 
+const BOARD = "/Users/saehoonbyun/Documents/GitHub/NFT_GradProject/Frontend/public/Billboard.png"; 
 const INDIVIDUAL_SQUARE_EDGE_PIXELS = 10;
 const COMPOSITE_SQUARE_EDGE_SQUARES = 50;
 const NUM_SQUARES = COMPOSITE_SQUARE_EDGE_SQUARES * COMPOSITE_SQUARE_EDGE_SQUARES;
@@ -25,8 +25,6 @@ module.exports = {
         const row = Math.floor((squareNumber-1)/ COMPOSITE_SQUARE_EDGE_SQUARES);
         const col = (squareNumber - 1) % COMPOSITE_SQUARE_EDGE_SQUARES;
 
-        updateMetaData(row, col, url, description);
-
         const composites = [];
 
         composites.push({
@@ -39,10 +37,17 @@ module.exports = {
         const inputFile = fs.existsSync(BOARD)? BOARD : null;
         const inputBuffer = fs.readFileSync(inputFile);
 
+        try{
         const output = await sharp(inputBuffer)
         .composite(composites)
         .toFile(BOARD);
 
+        updateMetaData(row, col, url, description);
+
         return res.send(output);
+        }catch(e){
+            return res.send(e);
+        }
+        
     }
 }
