@@ -36,7 +36,7 @@ const uploadURL = (file) => {
   });
 };
 
-export const Submit = ({ user, title, setTitle }) => {
+export const Submit = ({ user, title, setTitle, setIsBest }) => {
   const [isOpen, setIsOpen] = useRecoilState(isWritingPost);
   const [selectedImage, setImage] = useState(null);
   const [showPopUp, setShowPopUp] = useRecoilState(showPopUpState);
