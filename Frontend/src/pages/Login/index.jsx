@@ -33,9 +33,6 @@ export const Login = () => {
     const squareNumber = col + row*50 + 1;
     let title = "Square #" + squareNumber + "\r";
 
-    console.log([billboard.current.offsetLeft, event.pageY]);
-    // console.log([billboard.current.offsetLeft, billboard.current.offsetTop]);
-
     if(billboardData[row][col].isOwned === false){
 
       billboard.current.style.cursor = "pointer";
@@ -81,39 +78,16 @@ export const Login = () => {
     <div className="login-wrapper">
      <a ref={whereToGo}>
       <div className="login-left">
-        <img src="wholeSquare.png" ref={billboard} onMouseEnter={onMouseHover} onMouseMove={onMouseHover} onMouseOut={closeTooltip}/>
+        <img src="Billboard.png" ref={billboard} onMouseEnter={onMouseHover} onMouseMove={onMouseHover} onMouseOut={closeTooltip}/>
         
         <div ref={square}
           style={{background:"pink", opacity:"0.8", width:"10px", height:"10px", top, left,
           position:"absolute", pointerEvents:"none", display:"none"}}>              
           <div ref={tooltip} style={{position:"relative", color:"black", width:"140px",
-          padding:"10px", top:"30px", fontSize:"1em", background:"white", opacity:"1"}}>{description}</div>
+          padding:"10px", top:"30px", fontSize:"1em", background:"white", opacity:"1", borderRadius:"20px"}}>{description}</div>
         </div>        
       </div>
-      </a>
-      {/* {squares.map((row,rowIndex)=>{
-        return(
-          <div key={rowIndex} className="nft-box-row">
-          {row.map((col, colIndex) =>
-              col.isOwned === false ? (
-                <div
-                  key={rowIndex + colIndex + ""}
-                  onMouseEnter={() => onMouseHover(rowIndex, colIndex)}
-                  className="nft-box"
-                >
-                  <div className="nft-box-inner"></div>
-                </div>
-              ) : col.link === "" ? (
-                <div key={rowIndex + colIndex + ""} className="nft-box-blank" />
-              ) : (
-                <a className="nft-box-link" href={col.link} target="_blank">                  
-                </a>
-              )
-            )}
-          </div>
-        );
-      })
-      } */}
+      </a>     
       <div className="login-service-wrapper">
         <p className="login-service-title">
           보유한 NFT를 사용해 NCC에 접속하세요.
