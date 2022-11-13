@@ -20,6 +20,7 @@ const Feed = ({
   post_id,
   writer_profile,
   user_id,
+  user_role,
   caption,
   title,
   likes,
@@ -121,7 +122,7 @@ const Feed = ({
         </div>
         <div>
           <span className="feed_date">{elapsedTimePeriod(createdAt)}</span>
-          {user_id === postingId && (
+          {((user_id === postingId) || (user_role == "admin")) && (
             <button className="feed_delete_btn" onClick={handleDelete}>
               ✕
             </button>

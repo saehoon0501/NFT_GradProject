@@ -215,6 +215,7 @@ export const Main = ({ socketValue }) => {
                 post_id={post._id}
                 writer_profile={post.user.profile}
                 user_id={userQuery.data._id}
+                user_role={userQuery.data.role}
                 caption={post.text}
                 title={post.title}
                 comments={post.comments}
@@ -236,6 +237,7 @@ export const Main = ({ socketValue }) => {
                 post_id={post._id}
                 writer_profile={post.user.profile}
                 user_id={userQuery.data._id}
+                user_role={userQuery.data.role}
                 caption={post.text}
                 title={post.title}
                 comments={post.comments}

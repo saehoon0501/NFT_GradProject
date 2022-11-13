@@ -186,7 +186,7 @@ module.exports={
             return res.status(400).send(error)
         }
 
-        if(user.profile.post_ids.includes(post_id)){
+        if(user.profile.post_ids.includes(post_id) || user.role == "admin"){
             Post.findById(post_id).lean()
             .then((post)=>{
                 if(post==null) return res.status(400).send("Post not found")

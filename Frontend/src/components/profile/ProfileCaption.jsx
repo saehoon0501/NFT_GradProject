@@ -79,9 +79,10 @@ export const ProfileCaption = ({ userProfile, isOwner = true, refetch }) => {
                 프로필 편집
               </button>
             )}
+            <br></br>
           </div>
           <span className="profile-intro">
-            한줄 소개 : {userProfile.caption}
+            {userProfile.caption}
           </span>
           <div className="profile-text">
             <h3>게시물 {userProfile.post_ids.length}</h3>
