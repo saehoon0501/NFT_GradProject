@@ -4,6 +4,7 @@ import "./ProfileCaption.css";
 
 import { updateUser } from "../../api/UserApi";
 import { CANCEL_EDIT_PROFILE, PROCEED_EDIT_PROFILE } from "../../utils";
+import { useNavigate } from "react-router-dom";
 
 export const ProfileCaption = ({ userProfile, isOwner = true, refetch }) => {
   const [intro, setIntro] = useState(`${userProfile.caption}`);
@@ -14,6 +15,8 @@ export const ProfileCaption = ({ userProfile, isOwner = true, refetch }) => {
 
   const nameRef = useRef(profileName);
   const introRef = useRef(intro);
+
+  const navigate = useNavigate();
 
   const onClickConfirm = async () => {
     setShowPopUp(true);
@@ -32,6 +35,10 @@ export const ProfileCaption = ({ userProfile, isOwner = true, refetch }) => {
 
   const onClickEditProfile = () => {
     setEditProfile(false);
+  };
+
+  const onClickNFTSetting = () => {
+    navigate("/nft");
   };
 
   const toggleContent = () => {
@@ -72,17 +79,23 @@ export const ProfileCaption = ({ userProfile, isOwner = true, refetch }) => {
           <div className="profile-about-wrapper">
             <h3>{nameRef.current}</h3>
             {isOwner && (
-              <button
-                className="profile-caption-btn"
-                onClick={onClickEditProfile}
-              >
-                프로필 편집
-              </button>
+              <>
+                <button
+                  className="profile-caption-btn"
+                  onClick={onClickEditProfile}
+                >
+                  프로필 편집
+                </button>
+                <button
+                  className="profile-caption-btn"
+                  onClick={onClickNFTSetting}
+                >
+                  광고판 설정
+                </button>
+              </>
             )}
           </div>
-          <span className="profile-intro">
-            {userProfile.caption}
-          </span>
+          <span className="profile-intro">{userProfile.caption}</span>
           <div className="profile-text">
             <h3>게시물 {userProfile.post_ids.length}</h3>
             <h3 style={{ color: "blue" }}>RGB {userProfile.points}</h3>
