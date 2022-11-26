@@ -4,7 +4,15 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import "./App.css";
 import { Header } from "./components/common/Header";
 import { init } from "./components/login/Web3Client";
-import { FeedView, Login, Profile, Main, MyComments, User } from "./pages";
+import {
+  FeedView,
+  Login,
+  Profile,
+  Main,
+  MyComments,
+  User,
+  NFTAd,
+} from "./pages";
 import { Search } from "./pages/Search";
 import { io } from "socket.io-client";
 import { Vote } from "./pages/Vote";
@@ -32,6 +40,7 @@ const App = () => {
         <Route exact path="/comments" element={<MyComments />} />
         <Route exact path="/vote/create" element={<CreateVote />} />
         <Route exact path="/vote/:id" element={<Vote />} />
+        <Route exact path="/nft" element={<NFTAd />} />
       </Routes>
     </Router>
   );

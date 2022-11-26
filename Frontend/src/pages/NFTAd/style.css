@@ -1,0 +1,54 @@
+.NFTAd-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 50px;
+}
+
+.NFTAd-title {
+  font-size: 36px;
+  font-size: 600;
+}
+
+.NFTAd-contents {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 30px;
+  border: 1px solid black;
+  border-radius: 10px;
+  margin: 40px;
+  padding-right: 100px;
+}
+
+.NFTAd-content {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.NFTAd-content-title {
+  width: 200px;
+  text-align: end;
+  font-size: 18px;
+  font-weight: 200;
+}
+
+.NFTAd-content-input {
+  padding: 10px;
+}
+
+.NFTAd-content-file {
+  border: 1px solid black;
+  width: 170px;
+  border-radius: 3px;
+}
+
+.NFTAd-submit-btn {
+  cursor: pointer;
+  font-size: 16px;
+  padding: 8px 14px;
+  background-color: white;
+  border-radius: 5px;
+  border: 1px solid lightgray;
+}
