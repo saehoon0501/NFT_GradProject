@@ -1,28 +1,36 @@
 .profile-caption-wrapper {
   text-align: left;
-  width: 400px;
+  width: 500px;
   padding: 10px 30px;
 }
 
 .profile-about-wrapper {
   display: flex;
-  font-size: 22px;
+  font-size: 20px;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 15px;
+}
+
+.profile-name h3{
+  display: block;
+  width: 200px;
+  height: 30px;
+  margin-bottom: 6px;
+  line-height: 30px;
+  overflow: hidden;
 }
 
 .profile-caption-btns {
   display: flex;
   justify-content: center;
   margin-top: 20px;
-  gap: 10px;
 }
 
 .profile-caption-btn {
   cursor: pointer;
-  font-size: 16px;
-  padding: 8px 14px;
+  font-size: 15px;
+  padding: 4px 4px;
   background-color: white;
   border-radius: 5px;
   border: 1px solid lightgray;

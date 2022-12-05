@@ -1,34 +1,57 @@
 import { useState } from "react";
+import {personalizeSquare} from "../../api/BillboardApi";
 import "./style.css";
 
 export const NFTAd = () => {
   const [number, setNumber] = useState("");
-  const [image, setImage] = useState("");
-  const [title, setTitle] = useState("");
-  const [url, setUrl] = useState("");
+  const [rgbData, setRgbData] = useState("");
+  const [url, setURL] = useState("");
+  const [description, setDescription] = useState("");
 
   const onChangeNumber = (event) => {
     const { value } = event.target;
     setNumber(value);
   };
+
   const onChangeImage = (event) => {
-    const { file } = event.target;
-    setImage(file);
-  };
-  const onChangeTitle = (event) => {
-    const { value } = event.target;
-    setTitle(value);
-  };
-  const onChangeUrl = (event) => {
-    const { value } = event.target;
-    setUrl(value);
+    const reader = new FileReader();
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext("2d");    
+
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        context.drawImage(img, 0, 0);
+        let pixelData = [];
+        const contextPixel = context.getImageData(0, 0 , 10, 10);
+        console.log(contextPixel);
+        for(let i = 0; i < contextPixel.data.length; i+=4){
+          pixelData.push(contextPixel.data[i]);
+          pixelData.push(contextPixel.data[i+1]);
+          pixelData.push(contextPixel.data[i+2]);
+        }        
+        setRgbData(pixelData);
+      }
+      img.src = event.target.result;            
+    }
+
+    reader.readAsDataURL(event.target.files[0]);
   };
 
-  const onClickSubmit = () => {
-    console.log(number);
-    console.log(image);
-    console.log(title);
-    console.log(url);
+  const onChangeUrl = (event) => {
+    const { value } = event.target;
+    setURL(value);
+  };
+
+  const onChangeDescription = (event) => {
+    const { value } = event.target;
+    setDescription(value);
+  };
+
+  const onClickSubmit = async () => {
+    console.log(number, rgbData, url, description);
+    const result = personalizeSquare(number, rgbData, url, description);
+    console.log(result);
   };
 
   return (
@@ -50,21 +73,21 @@ export const NFTAd = () => {
             className="NFTAd-content-file"
             type="file"
             name=""
-            id=""
+            id="input-image"
           />
         </div>
         <div className="NFTAd-content">
-          <p className="NFTAd-content-title">Title</p>
+          <p className="NFTAd-content-title">링크 주소</p>
           <input
-            onChange={onChangeTitle}
+            onChange={onChangeUrl}
             className="NFTAd-content-input"
             type="text"
           />
         </div>
         <div className="NFTAd-content">
-          <p className="NFTAd-content-title">URL</p>
+          <p className="NFTAd-content-title">설명</p>
           <input
-            onChange={onChangeUrl}
+            onChange={onChangeDescription}
             className="NFTAd-content-input"
             type="text"
           />

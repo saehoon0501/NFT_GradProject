@@ -24,40 +24,21 @@ export const Profile = () => {
     refetch,
   } = useQuery("user", ({ signal }) => getUser(signal));
   const [postData, setPostData] = useState([]);
-  // getUserComments().then((result) => console.log(result));
 
   useEffect(() => {
     async function fetchData() {
       if (user) {
         const data = await certainUserPost(user.publicAddr);
-        console.log(data);
         setPostData(data[0].posts);
       }
     }
     fetchData();
   }, [user]);
 
-  console.log(postData);
 
   if (isLoading) {
     return <Loading />;
   }
-
-  // const handleClick = () => {
-  //   navigate(`/post/${post_id}`, {
-  //     state: {
-  //       post_id,
-  //       writer_profile,
-  //       user_id,
-  //       caption,
-  //       title,
-  //       likes,
-  //       comment_ids: comments,
-  //     },
-  //   });
-  // };
-
-  console.log(user);
 
   return (
     <div className="profile-container">

@@ -75,9 +75,11 @@ export const ProfileCaption = ({ userProfile, isOwner = true, refetch }) => {
   return (
     <div className="profile-caption-wrapper">
       {editProfile ? (
-        <div>
+        <div style={{width: "400px"}}>
           <div className="profile-about-wrapper">
+            <div className="profile-name">
             <h3>{nameRef.current}</h3>
+            </div>
             {isOwner && (
               <>
                 <button
