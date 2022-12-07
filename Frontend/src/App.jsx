@@ -31,8 +31,8 @@ const App = () => {
     <Router>
       <Header socketValue={socketValue} />
       <Routes>
-        <Route exact path="/" element={<Main socketValue={socketValue} />} />
-        <Route exact path="/login" element={<Login />} />
+        <Route exact path="/" element={<Login />} />
+        <Route exact path="/home" element={<Main socketValue={socketValue} />} />
         <Route exact path="/profile" element={<Profile />} />
         <Route exact path="/profile/:user_id" element={<User />} />
         <Route exact path="/search/:keyword" element={<Search />} />

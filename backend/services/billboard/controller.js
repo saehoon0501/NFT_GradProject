@@ -44,7 +44,7 @@ module.exports = {
 
         updateMetaData(row, col, url, description);
 
-        return res.send(output);
+        return res.send("updated");
         }catch(e){
             return res.send(e);
         }
