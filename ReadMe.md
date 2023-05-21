@@ -42,9 +42,9 @@
 # ❗️ 프로젝트 실행 방법
 - 프롬프트 상 Frontend 파일에 접근해 npm start 입력
 - 프롬프트 상 backend 파일에 접근해 nodemon index.js 입력
-- backend 파일에 config.js 파일을 만들어 MongoDB atlas 주소를 mongoPath로 module export해줘야 한다.
+- backend 파일에 config.js 파일을 만들어 MongoDB atlas 주소를 mongoPath로 module export 한다.
 - Truffle로 블록체인 테스트 넷을 실행
-- 스마트 컨트랙트를 배포한 후 그 주소를 config.js 파일에 contractAddress로 module export해줘야 한다.
+- 스마트 컨트랙트를 배포한 후 그 주소를 config.js 파일에 contractAddress로 module export 한다.
 
 관련 문서 링크
 https://drive.google.com/file/d/1qUERhKRbPYl1O5SeLJB4Qu8j4dQpGnVf/view?usp=share_link
