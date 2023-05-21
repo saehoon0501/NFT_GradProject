@@ -13,22 +13,22 @@
 # 💫 핵심 기능
 1. ### NFT를 커뮤니티 사이트의 유저 계정 및 프로필로 활용해  기존 로그인 방식을 대체하고 기본적인 커뮤니티 활동을 가능하게 한다.
 <center>
-<img src="Frontend/src/assets/LoginScreen.png" width="400px" height="300px" title="px(픽셀) 크기 설정" alt="LoginScreen"></img><br/>
-로그인 화면
-</center>
+<img src="Frontend/src/assets/LoginScreen.png" width="400px" height="300px" title="px(픽셀) 크기 설정" alt="LoginScreen"></img></center>
+<center>로그인 화면</center>
+
 <br/>
 <center>
 <img src="Frontend/src/assets/mainPage.png" width="500px" height="200px" title="px(픽셀) 크기 설정" alt="mainPage"></img><br/>
 메인 페이지
-</center>
+</center><br/>
 
 2. ### NFT를 활용해 웹사이트 광고판을 만들어 자신이 원하는 사이트를 이미지,URL을 설정하여 광고한다.
 
-<center><img src="Frontend/public/wholeSquare.png" width="500px" height="400px" title="px(픽셀) 크기 설정" alt="billboard"></img><br/></center>
+<center><img src="Frontend/public/wholeSquare.png" width="500px" height="400px" title="px(픽셀) 크기 설정" alt="billboard"></img></center>
 <center>광고판 모습</center>  
 <br/>
 <center>  
-<img src="Frontend/src/assets/billboard_info.png" width="250px" height="200px" title="px(픽셀) 크기 설정" alt="billboardInfo"></img><br/>
+<img src="Frontend/src/assets/billboard_info.png" width="250px" height="200px" title="px(픽셀) 크기 설정" alt="billboardInfo"></img>
 광고판 칸에 대한 정보(이미지,URL,설명으로 구성)</center>
 <br/>
 
