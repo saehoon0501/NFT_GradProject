@@ -15,10 +15,9 @@
 <center>
 <img src="Frontend/src/assets/LoginScreen.png" width="400px" height="300px" title="px(픽셀) 크기 설정" alt="LoginScreen"></img></center>
 <center>로그인 화면</center>
-
 <br/>
 <center>
-<img src="Frontend/src/assets/mainPage.png" width="500px" height="200px" title="px(픽셀) 크기 설정" alt="mainPage"></img><br/>
+<img src="Frontend/src/assets/mainPage.png" width="500px" height="200px" title="px(픽셀) 크기 설정" alt="mainPage"></img>
 메인 페이지
 </center><br/>
 
