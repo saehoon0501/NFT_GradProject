@@ -8,9 +8,9 @@
 
 ## 컴포넌트 다이어그램
 <center>
-<img src="Frontend/src/assets/system design.png" width="500px" height="300px" title="px(픽셀) 크기 설정" alt="ProjectImage"></img></center>
+<img src="Frontend/src/assets/system design.png" width="500px" height="300px" title="px(픽셀) 크기 설정" alt="ProjectImage"></img></center><br/>
 
-## ❗️ 핵심 기능
+# 💫 핵심 기능
 1. ### NFT를 커뮤니티 사이트의 유저 계정 및 프로필로 활용해  기존 로그인 방식을 대체하고 기본적인 커뮤니티 활동을 가능하게 한다.
 <center>
 <img src="Frontend/src/assets/LoginScreen.png" width="400px" height="300px" title="px(픽셀) 크기 설정" alt="LoginScreen"></img><br/>
@@ -32,10 +32,17 @@
 광고판 칸에 대한 정보(이미지,URL,설명으로 구성)</center>
 <br/>
 
-## 🛠️ 사용 기술
+# 🛠️ 사용 기술
 - React
 - NodeJS
 - MongoDB
 - Solidity
-- Ganache & Truffle
+- Ganache & Truffle  
+<br/>
 
+# ❗️ 프로젝트 실행 방법
+- 프롬프트 상 Frontend 파일에 접근해 npm start 입력
+- 프롬프트 상 backend 파일에 접근해 nodemon index.js 입력
+- backend 파일에 config.js 파일을 만들어 MongoDB atlas 주소를 mongoPath로 module export해줘야 한다.
+- Truffle로 블록체인 테스트 넷을 실행
+- 스마트 컨트랙트를 배포한 후 그 주소를 config.js 파일에 contractAddress로 module export해줘야 한다.
