@@ -82,12 +82,12 @@ export const Vote = () => {
         });
         setCurrentVoteContent("");
         setSelectedOption("");
-        navigate("/");
+        navigate("/home");
         return;
       case DELETE_VOTE:
         deleteVote(currentVoteContent._id);
         await refetch();
-        navigate("/");
+        navigate("/home");
         return;
     }
   };

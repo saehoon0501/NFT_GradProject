@@ -90,7 +90,7 @@ export const NFTLogin = () => {
       if (result != null) {
         localStorage.setItem("accessToken", result.accessToken);
         setIsAuth(true);
-        navigate("/");
+        navigate("/home");
       } else {
         window.alert("Login Failed Try Again");
       }
