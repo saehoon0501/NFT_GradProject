@@ -2,9 +2,9 @@
   "name": "nodenft",
   "version": "1.0.0",
   "description": "NFTGradProject",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "nodemon app.js"
   },
   "author": "",
   "license": "ISC",
@@ -20,5 +20,8 @@
     "socket.io": "^4.5.1",
     "web3": "^1.7.5"
   },
-  "keywords": []
+  "keywords": [],
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  }
 }
