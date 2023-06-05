@@ -16,5 +16,4 @@ services.use('/poll', pollRouter);
 services.use('/uploads', uploadRouter);
 services.use('/billboard', billboardRouter);
 
-
 module.exports = services;

@@ -13,7 +13,6 @@ app.use(cors());
 app.use(express.static("public"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname + "public")));
 
 app.use("/api", services);
 

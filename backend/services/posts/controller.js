@@ -1,6 +1,6 @@
 const {Post, Like, Comment} = require('../../models/post.model');
 const User = require('../../models/user.model');
-const socket = require("../../index")
+const socket = require("../../app")
 const mongoose =  require(`mongoose`)
 const QuillDeltaToHtmlConverter = require('quill-delta-to-html').QuillDeltaToHtmlConverter;
 

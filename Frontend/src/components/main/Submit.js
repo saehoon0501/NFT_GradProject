@@ -98,15 +98,11 @@ export const Submit = ({ user, title, setTitle, setIsBest }) => {
     setCurrentPopUp(CANCEL_FEED);
   };
 
-  const handleImage = () => {
-    setImage(null);
-  };
-
   const handleSubmit = () => {
     setShowPopUp(true);
     setCurrentPopUp(WRITE_FEED);
     setCurrentPostTitle(title);
-    setCurrentPostText(quill.current.getEditor().getContents());
+    setCurrentPostText(quill.current.getEditor().getContents());    
   };
 
   const onChangeTitle = (e) => {
