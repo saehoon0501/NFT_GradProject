@@ -22,6 +22,7 @@
   },
   "keywords": [],
   "devDependencies": {
-    "nodemon": "^2.0.22"
+    "nodemon": "^2.0.22",
+    "typescript": "^5.1.3"
   }
 }
