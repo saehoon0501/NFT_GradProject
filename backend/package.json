@@ -4,7 +4,9 @@
   "description": "NFTGradProject",
   "main": "app.js",
   "scripts": {
-    "start": "nodemon app.js"
+    "start": "nodemon app.ts",
+    "build-ts": "tsc",
+    "watch-ts": "tsc -w"
   },
   "author": "",
   "license": "ISC",
