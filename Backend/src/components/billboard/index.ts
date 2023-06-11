@@ -1,1 +1,2 @@
-export = require("./routes");
+import billboardRouter from "./routes";
+export = billboardRouter;

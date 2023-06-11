@@ -1,5 +1,5 @@
-import User = require("../users/user.model");
-import Poll = require("../polls/poll.model");
+import { User } from "../users/model";
+import { Poll } from "./model";
 
 export = {
   getPoll: (req, res, next) => {

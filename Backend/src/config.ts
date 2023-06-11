@@ -4,6 +4,7 @@ export = {
   mongoPath:
     "mongodb+srv://Byunboi0501:tpgns1@atlascluster.pywwtlx.mongodb.net/?retryWrites=true&w=majority",
   contractAddress: "0x7bb614f229851e11825f9dc3b4d50f04bf22b25f",
+  port: 4000,
   abi: [
     {
       inputs: [],

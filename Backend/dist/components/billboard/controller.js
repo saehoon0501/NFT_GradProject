@@ -8,8 +8,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-const fs = require('fs');
-const sharp = require('sharp');
+const fs = require("fs");
+const sharp = require("sharp");
 const BOARD = "/Users/saehoonbyun/Documents/GitHub/NFT_GradProject/Frontend/public/wholeSquare.png";
 const INDIVIDUAL_SQUARE_EDGE_PIXELS = 10;
 const COMPOSITE_SQUARE_EDGE_SQUARES = 50;
@@ -31,9 +31,13 @@ module.exports = {
         const composites = [];
         composites.push({
             input: Buffer.from(rgbData, "hex"),
-            raw: { width: INDIVIDUAL_SQUARE_EDGE_PIXELS, height: INDIVIDUAL_SQUARE_EDGE_PIXELS, channels: 3 },
+            raw: {
+                width: INDIVIDUAL_SQUARE_EDGE_PIXELS,
+                height: INDIVIDUAL_SQUARE_EDGE_PIXELS,
+                channels: 3,
+            },
             left: INDIVIDUAL_SQUARE_EDGE_PIXELS * col,
-            top: INDIVIDUAL_SQUARE_EDGE_PIXELS * row
+            top: INDIVIDUAL_SQUARE_EDGE_PIXELS * row,
         });
         const inputFile = fs.existsSync(BOARD) ? BOARD : null;
         const inputBuffer = fs.readFileSync(inputFile);
@@ -47,5 +51,5 @@ module.exports = {
         catch (e) {
             return res.send(e);
         }
-    })
+    }),
 };

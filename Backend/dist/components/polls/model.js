@@ -25,6 +25,6 @@ let pollSchema = new Schema({
             },
         },
     ],
-}, { timestamps: true });
+}, { timestamps: true, strict: true });
 const Poll = pollDb.model("poll", pollSchema);
 exports.Poll = Poll;

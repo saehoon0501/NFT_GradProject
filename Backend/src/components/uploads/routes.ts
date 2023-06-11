@@ -1,11 +1,10 @@
-import express = require("express");
-import controller = require("./controller");
-import verify = require("../../middleware/jwt");
+import express from "express";
+import controller from "./controller";
 
 const uploadRouter = express.Router();
 
 uploadRouter
   .route("/")
-  .post(verify, controller.upload.single("file"), controller.returnURL);
+  .post(controller.upload.single("file"), controller.returnURL);
 
-module.exports = uploadRouter;
+export = uploadRouter;

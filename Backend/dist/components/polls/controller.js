@@ -1,11 +1,10 @@
 "use strict";
-const User = require("../users/user.model");
-const Poll = require("../polls/poll.model");
+const model_1 = require("./model");
 module.exports = {
     getPoll: (req, res, next) => {
         const poll_id = req.query.poll_id;
         if (poll_id == undefined) {
-            Poll.find()
+            model_1.Poll.find()
                 .lean()
                 .then((poll) => {
                 if (!poll)
@@ -18,7 +17,7 @@ module.exports = {
             });
         }
         else {
-            Poll.findById(poll_id)
+            model_1.Poll.findById(poll_id)
                 .lean()
                 .then((poll) => {
                 if (!poll)
@@ -36,7 +35,7 @@ module.exports = {
         const publicAddress = res.locals.decoded.publicAddress;
         if (!title || !options)
             return res.status(400).send("Need title, options");
-        User.findOne({ publicAddr: publicAddress })
+        model_2.User.findOne({ publicAddr: publicAddress })
             .lean()
             .then((result) => {
             if (!result.role || result.role != "admin")
@@ -46,7 +45,7 @@ module.exports = {
                 ObjectOptions.push({ name: option });
             });
             //create new poll data
-            const newPoll = new Poll({
+            const newPoll = new model_1.Poll({
                 title: title,
                 options: ObjectOptions,
                 votes: [],
@@ -59,12 +58,12 @@ module.exports = {
         const publicAddress = res.locals.decoded.publicAddress;
         if (!poll_id)
             return res.status(400).send("No poll id");
-        User.findOne({ publicAddr: publicAddress })
+        model_2.User.findOne({ publicAddr: publicAddress })
             .lean()
             .then((result) => {
             if (!result.role || result.role != "admin")
                 return res.status(400).send("Not Authorized User");
-            Poll.deleteOne({ _id: poll_id })
+            model_1.Poll.deleteOne({ _id: poll_id })
                 .lean()
                 .then((result) => res.send(result))
                 .catch((err) => {
@@ -83,7 +82,7 @@ module.exports = {
         if (!voted_item && voted_item != 0)
             return res.status(400).send("Parameter missing");
         let owner = false;
-        User.findOne({ _id: user_id })
+        model_2.User.findOne({ _id: user_id })
             .lean()
             .then((result) => {
             for (let collection of result.ownerOfNFT) {
@@ -102,7 +101,7 @@ module.exports = {
                 console.log("owner result", owner);
                 return res.status(400).send("Not an owner of NFT");
             }
-            Poll.findById(poll_id)
+            model_1.Poll.findById(poll_id)
                 .then((result) => {
                 if (result == null)
                     return res.status(400).send("Poll not found");

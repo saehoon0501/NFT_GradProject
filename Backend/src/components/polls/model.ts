@@ -1,7 +1,7 @@
-import mongoose = require("mongoose");
-import Schema = mongoose.Schema;
-import config = require("../../config");
+import mongoose from "mongoose";
+import config from "../../config";
 
+const Schema = mongoose.Schema;
 const pollDb = mongoose.createConnection(config.mongoPath);
 
 let pollSchema = new Schema(
@@ -23,7 +23,8 @@ let pollSchema = new Schema(
       },
     ],
   },
-  { timestamps: true }
+  { timestamps: true, strict: true }
 );
+const Poll = pollDb.model("poll", pollSchema);
 
-export = pollDb.model("poll", pollSchema);
+export { Poll };

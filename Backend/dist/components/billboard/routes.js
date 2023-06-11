@@ -1,7 +1,9 @@
 "use strict";
-const express = require("express");
-const controller = require("./controller");
-const verify = require("../../../middleware/jwt");
-const billboardRouter = express.Router();
-billboardRouter.route("/").post(verify, controller.personalize);
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+const express_1 = __importDefault(require("express"));
+const controller_1 = __importDefault(require("./controller"));
+const billboardRouter = express_1.default.Router();
+billboardRouter.route("/").post(controller_1.default.personalize);
 module.exports = billboardRouter;

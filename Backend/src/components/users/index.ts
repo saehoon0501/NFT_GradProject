@@ -1,1 +1,2 @@
-export = require("./routes");
+import userRouter from "./routes";
+export = userRouter;

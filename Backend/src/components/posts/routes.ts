@@ -1,6 +1,6 @@
-const express = require("express");
-const controller = require("./controller");
-const verify = require("../../../middleware/jwt");
+import express from "express";
+import controller from "./controller";
+import { verify } from "../../middleware/jwt";
 
 const postRouter = express.Router();
 
@@ -16,7 +16,7 @@ postRouter
 postRouter
   .route("/comment/reply/:comment_id")
   .post(verify, controller.addReply);
-postRouter.route("/like").post(verify, controller.addLike);
+postRouter.route("/like").post(verify, controller.likePost);
 
 postRouter
   .route("/comment/:comment_id")
@@ -29,4 +29,4 @@ postRouter
   .route("/comment/reply/:comment_id")
   .delete(verify, controller.delReply);
 
-module.exports = postRouter;
+export = postRouter;

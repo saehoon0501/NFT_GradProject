@@ -1,1 +1,2 @@
-export = require("./routes");
+import uploadRouter from "./routes";
+export = uploadRouter;

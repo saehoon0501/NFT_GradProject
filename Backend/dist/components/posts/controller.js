@@ -8,135 +8,41 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-const { Post, Like, Comment } = require("./post.model");
-const User = require("../../../models/user.model");
-const socket = require("../../app");
-const mongoose = require(`mongoose`);
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+var _a;
+Object.defineProperty(exports, "__esModule", { value: true });
+const service_1 = __importDefault(require("./service"));
+const service_2 = __importDefault(require("../users/service"));
 const QuillDeltaToHtmlConverter = require("quill-delta-to-html").QuillDeltaToHtmlConverter;
-module.exports = {
-    getPost: (req, res, next) => {
+class postController {
+}
+_a = postController;
+postController.getPost = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
         const filter = req.query.filter;
         let pageNum = parseInt(req.query.pageNum);
+        let result;
         if (req.query.pageNum == undefined) {
             pageNum = 0;
         }
-        let posts_result;
         if (filter == "best") {
             let lastWeek = new Date();
             lastWeek.setDate(lastWeek.getDate() - 14);
-            console.log(lastWeek);
-            posts_result = Post.aggregate([
-                { $match: { createdAt: { $gt: lastWeek } } },
-                {
-                    $lookup: {
-                        from: Like.collection.name,
-                        localField: "likes",
-                        foreignField: "_id",
-                        as: "likes",
-                    },
-                },
-                { $unwind: "$likes" },
-                { $sort: { "likes.liked_num": -1 } },
-                { $skip: pageNum * 10 },
-                { $limit: 10 },
-                {
-                    $lookup: {
-                        from: User.collection.name,
-                        localField: "user",
-                        foreignField: "_id",
-                        as: "user",
-                    },
-                },
-                {
-                    $lookup: {
-                        from: Comment.collection.name,
-                        localField: "comments",
-                        foreignField: "_id",
-                        as: "comments",
-                    },
-                },
-                {
-                    $project: {
-                        _id: 1,
-                        "user._id": 1,
-                        "user.publicAddr": 1,
-                        "user.profile.profile_pic": 1,
-                        "user.profile.username": 1,
-                        "user.profile.caption": 1,
-                        "user.profile.points": 1,
-                        title: 1,
-                        text: 1,
-                        likes: 1,
-                        "comments._id": 1,
-                        createdAt: 1,
-                    },
-                },
-                { $unwind: "$user" },
-            ]).exec();
-            posts_result
-                .then((results) => {
-                console.log("getPost실행", results);
-                return res.send(results);
-            })
-                .catch((error) => res.status(400).send(error));
+            result = yield service_1.default.getBestPosts(lastWeek, pageNum);
         }
         else {
-            posts_result = Post.aggregate([
-                { $sort: { _id: -1 } },
-                { $skip: pageNum * 10 },
-                { $limit: 10 },
-                {
-                    $lookup: {
-                        from: User.collection.name,
-                        localField: "user",
-                        foreignField: "_id",
-                        as: "user",
-                    },
-                },
-                {
-                    $lookup: {
-                        from: Comment.collection.name,
-                        localField: "comments",
-                        foreignField: "_id",
-                        as: "comments",
-                    },
-                },
-                {
-                    $lookup: {
-                        from: Like.collection.name,
-                        localField: "likes",
-                        foreignField: "_id",
-                        as: "likes",
-                    },
-                },
-                {
-                    $project: {
-                        _id: 1,
-                        "user._id": 1,
-                        "user.publicAddr": 1,
-                        "user.profile.profile_pic": 1,
-                        "user.profile.username": 1,
-                        "user.profile.caption": 1,
-                        "user.profile.points": 1,
-                        title: 1,
-                        text: 1,
-                        likes: 1,
-                        comments: 1,
-                        createdAt: 1,
-                    },
-                },
-                { $unwind: "$user" },
-                { $unwind: "$likes" },
-            ]).exec();
-            posts_result
-                .then((results) => {
-                console.log("getPost실행");
-                return res.send(results);
-            })
-                .catch((error) => res.status(400).send(error));
+            result = yield service_1.default.getPosts(pageNum);
         }
-    },
-    createPost: (req, res, next) => {
+        return res.send(result);
+    }
+    catch (error) {
+        next(error);
+    }
+});
+postController.createPost = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
         const publicAddress = res.locals.decoded.publicAddress;
         let { post_title, post_text } = req.body;
         const converter = new QuillDeltaToHtmlConverter(post_text.ops, {});
@@ -146,449 +52,269 @@ module.exports = {
         }
         post_title = post_title.replace(/^\s+/g, "");
         post_title = post_title.replace(/\s+$/g, "");
-        User.findOne({ publicAddr: publicAddress }).then((user) => {
-            if (!user) {
-                return res.status(401).send({ error: "User not Found" });
-            }
-            const like = new Like({});
-            const post = new Post({
-                user: user.id,
-                title: post_title,
-                text: content,
-                likes: like,
-            });
-            like.save();
-            post.save().then(() => __awaiter(void 0, void 0, void 0, function* () {
-                yield User.updateOne({
-                    _id: user.id,
-                }, {
-                    $push: { "profile.post_ids": post._id },
-                });
-                console.log("Post created");
-                const data = {
-                    _id: post.id,
-                    user: user,
-                    title: post.title,
-                    text: post.text,
-                    likes: like,
-                    comments: [],
-                    createdAt: post.createdAt,
-                };
-                return res.send(data);
-            }));
+        const user = yield service_2.default.getUserByAddress(publicAddress);
+        if (!user) {
+            throw new Error("User Not Found");
+        }
+        const like = yield service_1.default.createLike();
+        const post = yield service_1.default.createPost({
+            user: user.id,
+            title: post_title,
+            text: content,
+            likes: like,
         });
-    },
-    delPost: (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+        return res.send({
+            _id: post.id,
+            user: user,
+            title: post.title,
+            text: post.text,
+            likes: like,
+            comments: [],
+            createdAt: post.createdAt,
+        });
+    }
+    catch (err) {
+        next(err);
+    }
+});
+postController.delPost = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
         const publicAddress = res.locals.decoded.publicAddress;
         const post_id = req.params.post_id;
-        let user;
-        try {
-            user = yield User.findOne({ publicAddr: publicAddress });
-        }
-        catch (error) {
-            return res.status(400).send(error);
-        }
+        const user = yield service_2.default.getUserByAddress(publicAddress);
         if (user.profile.post_ids.includes(post_id) || user.role == "admin") {
-            Post.findById(post_id)
-                .lean()
-                .then((post) => {
-                if (post == null)
-                    return res.status(400).send("Post not found");
-                Promise.all([
-                    Post.deleteOne({ _id: post_id }),
-                    Like.deleteOne({ _id: post.likes }),
-                    post.comments.map((comment_id) => {
-                        Comment.findById(comment_id)
-                            .lean()
-                            .then((comment) => {
-                            if (comment.replies.length > 0) {
-                                comment.replies.map((reply_id) => __awaiter(void 0, void 0, void 0, function* () {
-                                    console.log("reply_id", reply_id);
-                                    yield Comment.deleteOne({ _id: reply_id });
-                                }));
-                            }
-                            Comment.deleteOne({ _id: comment_id }).then((result) => console.log("delPost comment deleted", result));
-                        });
-                    }),
-                ])
-                    .then((result) => {
-                    console.log("delPost Promise all 결과", result);
-                    user.profile.post_ids.pull(post_id);
-                    user.save().then(() => __awaiter(void 0, void 0, void 0, function* () {
-                        return res.send("post deleted");
-                    }));
-                })
-                    .catch((error) => res.status(400).send(error));
-            });
+            const post = yield service_1.default.findPost(post_id);
+            if (!post) {
+                throw new Error("Post Not Found");
+            }
+            const result = yield service_1.default.deletePost(post_id, post, user);
+            if (!result) {
+                throw new Error("Post deletion Stopped");
+            }
+            return res.send("Post Deleted");
         }
-        else {
-            return res.send("Not a writer of post");
-        }
-    }),
-    addLike: (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+        return res.send("Post Not Deleted");
+    }
+    catch (error) {
+        next(error);
+    }
+});
+postController.likePost = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
         const publicAddress = res.locals.decoded.publicAddress;
         const { likes } = req.body;
-        yield User.findOne({ publicAddr: publicAddress })
-            .lean()
-            .then((user) => {
-            Like.findById(likes._id)
-                .then((like) => {
-                if (!like.liked_user.includes(user._id)) {
-                    like.liked_num += 1;
-                    like.liked_user.addToSet(user._id);
-                }
-                like.save((err, data) => {
-                    if (err)
-                        console.log(err);
-                    console.log(data);
-                    return res.send(like);
-                });
-            })
-                .catch((error) => res.status(400).send(error));
-        });
-    }),
-    delLike: (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+        const user = yield service_2.default.getUserByAddress(publicAddress);
+        if (!user) {
+            throw new Error("User Not Found");
+        }
+        const like = yield service_1.default.getLike(likes._id);
+        if (!like) {
+            throw new Error("Like Not Found");
+        }
+        if (!like.liked_user.includes(user.id)) {
+            like.liked_num += 1;
+            like.liked_user.addToSet(user.id);
+            yield like.save();
+        }
+        return res.send(like);
+    }
+    catch (error) {
+        next(error);
+    }
+});
+postController.delLike = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
         const publicAddress = res.locals.decoded.publicAddress;
         const { likes } = req.body;
-        yield User.findOne({ publicAddr: publicAddress })
-            .lean()
-            .then((user) => {
-            Like.findById(likes._id)
-                .then((like) => {
-                if (like.liked_user.includes(user._id)) {
-                    like.liked_num -= 1;
-                    like.liked_user.pull(user._id);
-                }
-                like.save((data) => {
-                    console.log(data);
-                    return res.send(like);
-                });
-            })
-                .catch((error) => res.status(400).send(error));
+        const user = yield service_2.default.getUserByAddress(publicAddress);
+        if (!user) {
+            throw new Error("User Not Found");
+        }
+        let like = yield service_1.default.getLike(likes._id);
+        if (!like) {
+            throw new Error("Like Not Found");
+        }
+        if (like.liked_user.includes(user.id)) {
+            like.liked_num -= 1;
+            like.liked_user.pull(user.id);
+        }
+        like.save((err, data) => {
+            if (err)
+                throw new Error("Like Not Found");
+            console.log(data);
+            return res.send(like);
         });
-    }),
-    getComment: (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    }
+    catch (error) {
+        res.status(400).send(error);
+    }
+});
+postController.getComment = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
         const post_id = req.params.post_id;
-        if (!mongoose.Types.ObjectId.isValid(post_id))
-            return res.status(400).send("wrong post id");
-        try {
-            const result = yield Post.aggregate([
-                { $match: { _id: mongoose.Types.ObjectId(post_id) } },
-                {
-                    $lookup: {
-                        from: Comment.collection.name,
-                        localField: "comments",
-                        foreignField: "_id",
-                        as: "comments",
-                    },
-                },
-                { $unwind: "$comments" },
-                { $project: { comments: 1 } },
-                {
-                    $lookup: {
-                        from: User.collection.name,
-                        localField: "comments.user",
-                        foreignField: "_id",
-                        as: "comments.user",
-                    },
-                },
-                { $unwind: "$comments.user" },
-                {
-                    $project: {
-                        "comments._id": 1,
-                        "comments.user._id": 1,
-                        "comments.user.profile.username": 1,
-                        "comments.user.profile.caption": 1,
-                        "comments.user.profile.profile_pic": 1,
-                        "comments.caption": 1,
-                        "comments.liked_user": 1,
-                        "comments.replies": 1,
-                        "comments.updatedAt": 1,
-                        "comments.__v": 1,
-                    },
-                },
-                {
-                    $lookup: {
-                        from: Comment.collection.name,
-                        localField: "comments.replies",
-                        foreignField: "_id",
-                        as: "comments.replies",
-                    },
-                },
-                {
-                    $unwind: {
-                        path: "$comments.replies",
-                        preserveNullAndEmptyArrays: true,
-                    },
-                },
-                {
-                    $lookup: {
-                        from: User.collection.name,
-                        localField: "comments.replies.user",
-                        foreignField: "_id",
-                        as: "comments.replies.user",
-                    },
-                },
-                {
-                    $unwind: {
-                        path: "$comments.replies.user",
-                        preserveNullAndEmptyArrays: true,
-                    },
-                },
-                {
-                    $project: {
-                        "comments.replies.user.publicAddr": 0,
-                        "comments.replies.user.ownerOfNFT": 0,
-                        "comments.replies.user.profile.post_ids": 0,
-                        "comments.replies.user.profile.comment_ids": 0,
-                        "comments.replies.user.profile.points": 0,
-                        "comments.replies.user.profile.liked_user": 0,
-                        "comments.replies.user.__v": 0,
-                        "comments.replies.replies": 0,
-                        "comments.replies.createdAt": 0,
-                    },
-                },
-                {
-                    $group: {
-                        _id: "$comments._id",
-                        user: { $first: "$comments.user" },
-                        caption: { $first: "$comments.caption" },
-                        liked_user: { $first: "$comments.liked_user" },
-                        updatedAt: { $first: "$comments.updatedAt" },
-                        replies: { $push: "$comments.replies" },
-                        __v: { $first: "$comments.__v" },
-                    },
-                },
-            ]).sort({ updatedAt: 1 });
-            console.log(result);
-            return res.send(result);
-        }
-        catch (error) {
-            return res.status(400).send(error);
-        }
-    }),
-    addComment: (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+        const result = yield service_1.default.getComments(post_id);
+        return res.send(result);
+    }
+    catch (error) {
+        next(error);
+    }
+});
+postController.addComment = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
         const publicAddress = res.locals.decoded.publicAddress;
         let { context } = req.body;
         const post_id = req.params.post_id;
         if (!context == undefined || !/([^\s])/.test(context)) {
-            return res.status(400).send("Need any character");
+            throw new Error("Need any character");
         }
         context = context.replace(/^\s+/g, "");
         context = context.replace(/\s+$/g, "");
-        let user = yield User.findOne({ publicAddr: publicAddress }).lean();
-        console.log("댓글 추가 user Found", user);
-        const comment = new Comment({
+        console.log(publicAddress);
+        const user = yield service_2.default.getUserByAddress(publicAddress);
+        if (!user) {
+            throw new Error("User Not Found");
+        }
+        yield service_1.default.updateComment({
             user: user._id,
             caption: context,
             replies: [],
-        });
-        yield Promise.all([
-            User.updateOne({ publicAddr: publicAddress }, { $addToSet: { "profile.comment_ids": comment._id } }),
-            Post.updateOne({ _id: post_id }, { $addToSet: { comments: comment._id } }),
-            comment.save(),
-        ]).then(() => {
-            socket.namespace.to(post_id).emit("getNotification", `commentAdded`);
-            return res.send("comment added");
-        });
-    }),
-    likeComment: (req, res, next) => {
+        }, publicAddress, post_id);
+        return res.send("Success");
+    }
+    catch (error) {
+        next(error);
+    }
+});
+postController.likeComment = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
         const publicAddress = res.locals.decoded.publicAddress;
         const comment_id = req.params.comment_id;
-        User.findOne({ publicAddr: publicAddress }).then((user) => {
-            Comment.findById(comment_id).then((comment) => {
-                comment.liked_user.addToSet(user.id);
-                comment.save().then((result) => {
-                    console.log("user liked", publicAddress);
-                    console.log(result);
-                });
-                return res.send(comment.liked_user);
-            });
-        });
-    },
-    modifyComment: (req, res, next) => {
+        const user = yield service_2.default.getUserByAddress(publicAddress);
+        if (!user) {
+            throw new Error("User Not Found");
+        }
+        const comment = yield service_1.default.getCommentById(comment_id);
+        if (!comment) {
+            throw new Error("Comment Not Found");
+        }
+        comment.liked_user.addToSet(user.id);
+        const result = yield comment.save();
+        console.log(result);
+        return res.send(comment.liked_user);
+    }
+    catch (error) {
+        next(error);
+    }
+});
+postController.modifyComment = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
         const publicAddress = res.locals.decoded.publicAddress;
         let { context } = req.body;
         const comment_id = req.params.comment_id;
         if (!context == undefined || !/([^\s])/.test(context)) {
-            return res.status(400).send("Need any character");
+            throw new Error("Need any character");
         }
         context = context.replace(/^\s+/g, "");
         context = context.replace(/\s+$/g, "");
-        User.findOne({ publicAddr: publicAddress }).then((user) => {
-            if (!user)
-                return res.status(400).send("user not found");
-            Comment.findOne({ _id: comment_id })
-                .then((comment) => __awaiter(void 0, void 0, void 0, function* () {
-                if (user.id == comment.user.toString()) {
-                    if (comment.caption == "삭제된 내용입니다.")
-                        return res.status(400).send("Deleted comment");
-                    comment.caption = context;
-                    comment.__v++;
-                    comment.save().then(() => __awaiter(void 0, void 0, void 0, function* () {
-                        return res.send("comment modified");
-                    }));
-                }
-                else {
-                    return res.status(400).send("not a owner of comment");
-                }
-            }))
-                .catch((err) => res.send(err));
-        });
-    },
-    delComment: (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+        const user = yield service_2.default.getUserByAddress(publicAddress);
+        let comment = yield service_1.default.getCommentById(comment_id);
+        console.log(comment);
+        if (!user) {
+            throw new Error("User Not Found");
+        }
+        if (!comment) {
+            throw new Error("Comment Not Found");
+        }
+        console.log(comment);
+        if (user.id == String(comment.user)) {
+            if (comment.caption == "삭제된 내용입니다.")
+                throw new Error("Deleted comment");
+            comment.caption = context;
+            comment.save().then(() => __awaiter(void 0, void 0, void 0, function* () {
+                return res.send("comment modified");
+            }));
+        }
+        else {
+            throw new Error("not a writer of comment");
+        }
+    }
+    catch (error) {
+        next(error);
+    }
+});
+postController.delComment = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
         const publicAddress = res.locals.decoded.publicAddress;
         const { post_id } = req.body;
         const comment_id = req.params.comment_id;
-        try {
-            let result = yield Promise.all([
-                User.findOne({ publicAddr: publicAddress }),
-                Comment.findOne({ _id: comment_id }),
-                Post.findOne({ _id: post_id }),
-            ]);
-            console.log(result);
-            let user = result[0];
-            let comment = result[1];
-            let post = result[2];
-            if (user.id == comment.user.toString()) {
-                if (comment.replies.length <= 0) {
-                    Comment.deleteOne({ _id: comment_id });
-                    console.log("delComment", post);
-                    post.comments.pull(comment_id);
-                }
-                else {
-                    comment.caption = "삭제된 내용입니다.";
-                    comment.save();
-                }
-                user.profile.comment_ids.pull(comment_id);
-                Promise.all([user.save(), post.save()]).then(() => __awaiter(void 0, void 0, void 0, function* () {
-                    return res.send("message deleted");
-                }));
-            }
-            else {
-                return res.status(400).send("not a owner of comment");
-            }
+        if (post_id === undefined || comment_id === undefined) {
+            throw new Error("Post_id or Comment_id is missing");
         }
-        catch (err) {
-            console.log("delComment Promise all error", err);
-            return res.status(400).send(err);
-        }
-    }),
-    addReply: (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+        const user = yield service_2.default.getUserByAddress(publicAddress);
+        let comment = yield service_1.default.getCommentById(comment_id);
+        let post = yield service_1.default.getPostById(post_id);
+        yield service_1.default.deleteComment(user, comment, post);
+        return res.send("message deleted");
+    }
+    catch (err) {
+        next(err);
+    }
+});
+postController.addReply = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
         const publicAddress = res.locals.decoded.publicAddress;
         let { context } = req.body;
         const comment_id = req.params.comment_id;
         if (context == undefined || !/([^\s])/.test(context)) {
-            return res.status(400).send("Need any character");
+            throw new Error("Need any character");
         }
         context = context.replace(/^\s+/g, "");
         context = context.replace(/\s+$/g, "");
-        let user = yield User.findOne({ publicAddr: publicAddress });
-        let comment = yield Comment.findOne({ _id: comment_id });
+        let user = yield service_2.default.getUserByAddress(publicAddress);
+        let comment = yield service_1.default.getCommentById(comment_id);
         if (comment == null || user == null)
-            return res.status(400).send("comment or user not found");
-        const newComment = new Comment({
-            user: user._id,
-            caption: context,
-            replies: null,
-        });
-        console.log("작성된 답글", newComment);
-        comment.replies.push(newComment._id);
-        comment.markModified("replies");
-        comment.__v--;
-        user.profile.comment_ids.addToSet(newComment._id);
-        Promise.all([newComment.save(), user.save(), comment.save()]).then(() => res.send("답글 추가됨"));
-    }),
-    delReply: (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-        const publicAddress = res.locals.decoded.publicAddress;
-        const { reply_id } = req.body;
-        const comment_id = req.params.comment_id;
-        try {
-            const user = yield User.findOne({ publicAddr: publicAddress }).lean();
-            let reply = yield Comment.findById(reply_id);
-            let comment = yield Comment.findById(comment_id).lean();
-            if (!user | !reply | !comment)
-                return res.status(400).send("not found error");
-            console.log(comment.replies);
-            let isInArray = comment.replies.some((replyItem) => {
-                return replyItem.equals(reply.id);
-            });
-            console.log(isInArray);
-            if (user._id.toString() == reply.user.toString() && isInArray) {
-                reply.caption = "삭제된 내용입니다.";
-                yield reply.save();
-            }
-            return res.send("reply deleted");
+            throw new Error("comment or user not found");
+        yield service_1.default.addReply(user, comment, context);
+        return res.send("Success");
+    }
+    catch (err) {
+        next(err);
+    }
+});
+postController.delReply = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const publicAddress = res.locals.decoded.publicAddress;
+    const { reply_id } = req.body;
+    const comment_id = req.params.comment_id;
+    try {
+        const user = yield service_2.default.getUserByAddress(publicAddress);
+        let reply = yield service_1.default.getCommentById(reply_id);
+        let comment = yield service_1.default.getCommentById(comment_id);
+        if (!user || !reply || !comment)
+            throw new Error("Something Not Found");
+        const result = yield service_1.default.deleteReply(user, reply, comment);
+        if (!result) {
+            throw new Error("Reply Deletion Failed");
         }
-        catch (error) {
-            console.log("delReply error", error);
-            return res.status(400).send(err);
+        return res.send("reply deleted");
+    }
+    catch (error) {
+        next(error);
+    }
+});
+postController.getSearch = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const keyword = req.query.keyword;
+    try {
+        if (keyword == null || keyword.length < 2)
+            throw new Error("Keyword should be at least have 2 characters");
+        let result = yield service_1.default.getSearch(keyword);
+        if (!result) {
+            throw new Error("Search Not Found");
         }
-    }),
-    getSearch: (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-        const keyword = req.query.keyword;
-        try {
-            if (keyword == null || keyword.length < 2)
-                return res
-                    .status(400)
-                    .send("Keyword should be at least have 2 characters");
-            let result = yield Post.aggregate([
-                {
-                    $search: {
-                        index: "contentIndex",
-                        compound: {
-                            must: [
-                                {
-                                    text: {
-                                        query: keyword,
-                                        path: ["title", "text"],
-                                        fuzzy: { maxEdits: 2, prefixLength: 2 },
-                                    },
-                                },
-                            ],
-                        },
-                    },
-                },
-                { $limit: 10 },
-                {
-                    $lookup: {
-                        from: User.collection.name,
-                        localField: "user",
-                        foreignField: "_id",
-                        as: "user",
-                    },
-                },
-                { $unwind: "$user" },
-                {
-                    $lookup: {
-                        from: Like.collection.name,
-                        localField: "likes",
-                        foreignField: "_id",
-                        as: "likes",
-                    },
-                },
-                { $unwind: "$likes" },
-                {
-                    $project: {
-                        _id: 1,
-                        "user._id": 1,
-                        "user.profile.username": 1,
-                        "user.profile.profile_pic": 1,
-                        createdAt: 1,
-                        title: 1,
-                        text: 1,
-                        comments: 1,
-                        likes: 1,
-                        score: { $meta: "searchScore" },
-                    },
-                },
-            ]);
-            console.log("Search result", result);
-            return res.send(result);
-        }
-        catch (error) {
-            console.log("Search Error", error);
-            return res.status(400).send(error);
-        }
-    }),
-};
+        return res.send(result);
+    }
+    catch (error) {
+        console.log("Search Error", error);
+        return res.status(400).send(error);
+    }
+});
+exports.default = postController;

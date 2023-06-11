@@ -1,6 +1,6 @@
-const express = require("express");
-const controller = require("./controller");
-const verify = require("../../../middleware/jwt");
+import express from "express";
+import controller from "./controller";
+import { verify } from "../../middleware/jwt";
 
 const pollRouter = express.Router();
 
@@ -9,4 +9,4 @@ pollRouter.route("/").post(verify, controller.createPoll);
 pollRouter.route("/:poll_id").patch(verify, controller.votePoll);
 pollRouter.route("/:poll_id").delete(verify, controller.deletePoll);
 
-module.exports = pollRouter;
+export = pollRouter;

@@ -1,1 +1,2 @@
-export = require("./routes");
+import postRouter from "./routes";
+export = postRouter;

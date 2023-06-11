@@ -1,161 +1,88 @@
-import User = require("./user.model");
-import { Post, Comment } from "../posts/post.model";
+import userService from "./service";
+import { User, UserModel } from "./model";
 
-module.exports = {
-  getProfile: (req, res, next) => {
-    let publicAddress;
+class userController {
+  public static getProfile = async (req, res, next) => {
+    try {
+      let user: User;
 
-    if (req.query.userId == undefined) {
-      publicAddress = res.locals.decoded.publicAddress;
-      User.findOne(
-        { publicAddr: `${publicAddress}` },
-        {
-          comment_ids: 0,
-          likes_ids: 0,
-          "profile.comment_ids": 0,
-          "profile.likes_ids": 0,
-        }
-      )
-        .then((user) => {
-          if (!user) {
-            return res.status(401).send({ error: "User not Found" });
-          }
+      if (req.query.userId == undefined) {
+        const publicAddress = res.locals.decoded.publicAddress;
+        user = await userService.getUserByAddress(publicAddress);
+      } else {
+        const publicAddress: string = req.query.userId.toLowerCase();
+        user = await userService.getUserByAddress(publicAddress);
+      }
 
-          return res.json(user);
-        })
-        .catch((err) => {
-          console.log("유저 정보 sndProfile: User.findOne Error", err);
-          return res.status(400).send(err);
-        });
-    } else {
-      publicAddress = req.query.userId;
-      User.findById({ _id: `${publicAddress}` })
-        .then((user) => {
-          if (!user) {
-            return res.status(401).send({ error: "User not Found" });
-          }
-          return res.json(user);
-        })
-        .catch((err) => {
-          console.log("유저 정보 sndProfile: User.findById Error", err);
-          return res.status(400).send(err);
-        });
+      if (!user) {
+        throw new Error("user cannot be found");
+      }
+
+      return res.json(user);
+    } catch (err) {
+      console.log("유저 정보 sndProfile: User.findOne Error", err);
+      next(err);
     }
-  },
-  updateProfile: (req, res, next) => {
-    const publicAddress = res.locals.decoded.publicAddress;
+  };
 
-    const { caption, profileName, profile_pic } = req.body;
+  public static updateProfile = async (req, res, next) => {
+    try {
+      let result;
+      const publicAddress = res.locals.decoded.publicAddress;
+      const { caption, profileName, profile_pic } = req.body;
 
-    if (caption || profileName) {
-      User.updateOne(
-        {
-          publicAddr: `${publicAddress}`,
-        },
-        {
-          $set: {
-            "profile.username": `${profileName}`,
-            "profile.caption": `${caption}`,
-          },
-        }
-      )
-        .then((result) => {
-          console.log("updateProfile 실행 결과", result);
-          return res.send("user info updated");
-        })
-        .catch((err) => {
-          console.log("updateProfile: User.updateOne Error", err);
-          return res.status(400).send(err);
-        });
+      if (caption || profileName) {
+        result = await userService.updateUserDescription(
+          publicAddress,
+          caption,
+          profileName
+        );
+      }
+
+      if (profile_pic) {
+        result = await userService.updateUserPic(publicAddress, profile_pic);
+      }
+
+      if (result.matchedCount == 0) {
+        throw new Error("user cannot be updated");
+      }
+
+      return res.send("user info updated");
+    } catch (err) {
+      console.log("updateProfile: User.findOneandUpdate Error", err);
+      next(err);
     }
+  };
 
-    if (profile_pic) {
-      User.updateOne(
-        {
-          $and: [
-            { publicAddr: `${publicAddress}` },
-            { "ownerOfNFT.NFT_URL": `${profile_pic}` },
-          ],
-        },
-        {
-          $set: { "profile.profile_pic": `${profile_pic}` },
-        }
-      )
-        .then(() => {
-          return res.send("user info updated");
-        })
-        .catch((err) => {
-          console.log("updateProfile: User.findOneandUpdate Error", err);
-          return res.status(400).send(err);
-        });
+  public static getUserPost = async (req, res, next) => {
+    try {
+      let result;
+      const publicAddress = res.locals.decoded.publicAddress;
+
+      result = await userService.getUserPost(publicAddress);
+
+      if (!result) throw new Error("user cannot be found");
+
+      return res.send(result);
+    } catch (err) {
+      console.log("getUerPost: User.aggregate error", err);
+      return res.status(400).send(err);
     }
-  },
-  getUserPost: (req, res, next) => {
-    let publicAddress;
+  };
 
-    if (req.query.publicAddress == undefined) {
-      publicAddress = res.locals.decoded.publicAddress;
-    } else {
-      publicAddress = req.query.publicAddress;
+  public static getUserComment = async (req, res, next) => {
+    try {
+      const publicAddress = res.locals.decoded.publicAddress;
+      let result = await userService.getUserComment(publicAddress);
+
+      if (!result) throw new Error("user cannot be updated");
+
+      return res.send(result[0]);
+    } catch (err) {
+      console.log("getUserComment: User.aggregate error", err);
+      return res.status(400).send(err);
     }
+  };
+}
 
-    User.aggregate([
-      { $match: { publicAddr: publicAddress } },
-      {
-        $lookup: {
-          from: Post.collection.name,
-          localField: "profile.post_ids",
-          foreignField: "_id",
-          as: "posts",
-        },
-      },
-      {
-        $project: {
-          ownerOfNFT: 0,
-          profile: 0,
-          "posts.updatedAt": 0,
-          "posts.user": 0,
-        },
-      },
-    ])
-      .then((user) => {
-        if (!user) return res.status(400).send("user not found");
-        console.log("user Post", user);
-        return res.send(user);
-      })
-      .catch((err) => {
-        console.log("getUerPost: User.aggregate error", err);
-        return res.status(400).send(err);
-      });
-  },
-  getUserComment: (req, res, next) => {
-    const publicAddress = res.locals.decoded.publicAddress;
-
-    User.aggregate([
-      { $match: { publicAddr: publicAddress } },
-      {
-        $lookup: {
-          from: Comment.collection.name,
-          localField: "profile.comment_ids",
-          foreignField: "_id",
-          as: "comments",
-        },
-      },
-      {
-        $project: {
-          "comments._id": 1,
-          "comments.caption": 1,
-          "comments.updatedAt": 1,
-        },
-      },
-    ])
-      .then((result) => {
-        if (!result) return res.status(400).send("user not found");
-        return res.send(result[0]);
-      })
-      .catch((err) => {
-        console.log("getUserComment: User.aggregate error", err);
-        return res.status(400).send(err);
-      });
-  },
-};
+export default userController;

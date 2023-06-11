@@ -1,10 +1,13 @@
 "use strict";
-const express = require("express");
-const controller = require("./controller");
-const verify = require("../../../middleware/jwt");
-const pollRouter = express.Router();
-pollRouter.route("/").get(verify, controller.getPoll);
-pollRouter.route("/").post(verify, controller.createPoll);
-pollRouter.route("/:poll_id").patch(verify, controller.votePoll);
-pollRouter.route("/:poll_id").delete(verify, controller.deletePoll);
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+const express_1 = __importDefault(require("express"));
+const controller_1 = __importDefault(require("./controller"));
+const jwt_1 = require("../../middleware/jwt");
+const pollRouter = express_1.default.Router();
+pollRouter.route("/").get(jwt_1.verify, controller_1.default.getPoll);
+pollRouter.route("/").post(jwt_1.verify, controller_1.default.createPoll);
+pollRouter.route("/:poll_id").patch(jwt_1.verify, controller_1.default.votePoll);
+pollRouter.route("/:poll_id").delete(jwt_1.verify, controller_1.default.deletePoll);
 module.exports = pollRouter;

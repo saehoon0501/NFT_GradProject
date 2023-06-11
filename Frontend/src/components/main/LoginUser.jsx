@@ -1,23 +1,5 @@
 import "./LoginUser.css";
 
-const dummyData = [
-  {
-    imgUrl:
-      "https://img1.daumcdn.net/thumb/S180x180/?fname=https%3A%2F%2Ft1.daumcdn.net%2Fsports%2Fplayer%2F300%2F3%2F9552.jpg&scode=default_face_profile_big_p",
-    name: "무키 베츠",
-  },
-  {
-    imgUrl:
-      "https://img1.daumcdn.net/thumb/S180x180/?fname=https%3A%2F%2Ft1.daumcdn.net%2Fsports%2Fplayer%2F300%2F3%2F310056.jpg&scode=default_face_profile_big_p",
-    name: "트레이 터너",
-  },
-  {
-    imgUrl:
-      "http://a.espncdn.com/combiner/i?img=/i/headshots/mlb/players/full/30193.png",
-    name: "프레디 프리먼",
-  },
-];
-
 export const LoginUser = ({ users }) => {
   return (
     <div className="loginUser_wrapper">

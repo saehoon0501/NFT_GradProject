@@ -1,1 +1,2 @@
-export = require("./routes");
+import pollRouter from "./routes";
+export = pollRouter;

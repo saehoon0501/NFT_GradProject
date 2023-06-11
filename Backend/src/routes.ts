@@ -5,6 +5,7 @@ import postRouter from "./components/posts";
 import pollRouter from "./components/polls";
 import uploadRouter from "./components/uploads";
 import billboardRouter from "./components/billboard";
+import { verify } from "./middleware/jwt";
 
 const router = express.Router();
 
@@ -15,4 +16,4 @@ router.use("/poll", pollRouter);
 router.use("/uploads", uploadRouter);
 router.use("/billboard", billboardRouter);
 
-export = router;
+export { router };

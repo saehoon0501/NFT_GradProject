@@ -1,9 +1,8 @@
-const express = require("express");
-const controller = require("./controller");
-const verify = require("../../../middleware/jwt");
+import express from "express";
+import controller from "./controller";
 
 const billboardRouter = express.Router();
 
-billboardRouter.route("/").post(verify, controller.personalize);
+billboardRouter.route("/").post(controller.personalize);
 
-module.exports = billboardRouter;
+export = billboardRouter;
