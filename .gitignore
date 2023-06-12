@@ -1,5 +1,6 @@
 node_modules
-backend/public/uploads/
-backend/.DS_Store
+Backend/public/uploads/
+Backend/.DS_Store
 .DS_Store
-backend/config.js
+Backend/config.js
+Backend/dist
