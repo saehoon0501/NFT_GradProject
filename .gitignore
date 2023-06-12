@@ -2,5 +2,5 @@ node_modules
 Backend/public/uploads/
 Backend/.DS_Store
 .DS_Store
-Backend/config.js
+Backend/src/config.ts
 Backend/dist
