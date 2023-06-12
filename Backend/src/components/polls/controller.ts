@@ -1,143 +1,136 @@
-import { User } from "../users/model";
+import { HydratedDocument, Schema } from "mongoose";
+import pollService from "./service";
 import { Poll } from "./model";
+import userService from "../users/service";
 
-export = {
-  getPoll: (req, res, next) => {
-    const poll_id = req.query.poll_id;
+class pollController {
+  public static getPoll = async (req, res, next) => {
+    try {
+      const poll_id = req.query.poll_id;
 
-    if (poll_id == undefined) {
-      Poll.find()
-        .lean()
-        .then((poll) => {
-          if (!poll) return res.status(400).send("Poll not found");
-          return res.send(poll);
-        })
-        .catch((err) => {
-          console.log("getPoll: Poll.find error", err);
-          return res.status(400).send(err);
-        });
-    } else {
-      Poll.findById(poll_id)
-        .lean()
-        .then((poll) => {
-          if (!poll) return res.status(400).send("Poll not found");
-          return res.send(poll);
-        })
-        .catch((err) => {
-          console.log("getPoll: Poll.findById error", err);
-          return res.status(400).send(err);
-        });
+      let poll: HydratedDocument<Poll> | HydratedDocument<Poll>[];
+      if (poll_id === undefined) {
+        poll = await pollService.getAllPoll();
+      } else {
+        poll = await pollService.getPollById(poll_id);
+
+        if (!poll) throw new Error("Poll not found");
+      }
+      return res.send(poll);
+    } catch (err) {
+      console.log("getPoll: Poll.findById error", err);
+      next(err);
     }
-  },
-  createPoll: (req, res, next) => {
-    const { title, options } = req.body;
-    const publicAddress = res.locals.decoded.publicAddress;
+  };
 
-    if (!title || !options) return res.status(400).send("Need title, options");
+  public static createPoll = async (req, res, next) => {
+    try {
+      const { title, options } = req.body;
+      const publicAddress = res.locals.decoded.publicAddress;
 
-    User.findOne({ publicAddr: publicAddress })
-      .lean()
-      .then((result) => {
-        if (!result.role || result.role != "admin")
-          return res.status(400).send("Non-Authorized User");
+      if (!title || !options) throw new Error("Need title, options");
 
-        let ObjectOptions = [];
+      const user = await userService.getUserByAddress(publicAddress);
 
-        options.map((option) => {
-          ObjectOptions.push({ name: option });
-        });
+      if (!user || user.role != "admin") throw new Error("Non-Authorized User");
 
-        //create new poll data
-        const newPoll = new Poll({
-          title: title,
-          options: ObjectOptions,
-          votes: [],
-        });
+      let ObjectOptions: { name: string; vote_count: number }[] = [];
 
-        newPoll.save().then((result) => res.send(result));
+      options.map((option): void => {
+        ObjectOptions.push({ name: option, vote_count: 0 });
       });
-  },
-  deletePoll: (req, res, next) => {
-    const poll_id = req.params.poll_id;
-    const publicAddress = res.locals.decoded.publicAddress;
 
-    if (!poll_id) return res.status(400).send("No poll id");
+      //create new poll data
+      const newPoll = pollService.createPoll(title, ObjectOptions);
 
-    User.findOne({ publicAddr: publicAddress })
-      .lean()
-      .then((result) => {
-        if (!result.role || result.role != "admin")
-          return res.status(400).send("Not Authorized User");
+      const result = await newPoll.save();
+      if (result.acknowleged == false) {
+        throw new Error("Poll Not Created");
+      }
+      return res.send(result);
+    } catch (err) {
+      next(err);
+    }
+  };
 
-        Poll.deleteOne({ _id: poll_id })
-          .lean()
-          .then((result) => res.send(result))
-          .catch((err) => {
-            console.log("getPoll: Poll.deleteOne error", err);
-            return res.status(400).send(err);
-          });
-      });
-  },
+  public static deletePoll = async (req, res, next) => {
+    try {
+      const poll_id = req.params.poll_id;
+      const publicAddress = res.locals.decoded.publicAddress;
+      console.log(poll_id);
 
-  votePoll: (req, res, next) => {
-    const poll_id = req.params.poll_id;
-    const { voted_item, user_id, usedNFT } = req.body;
+      const user = await userService.getUserByAddress(publicAddress);
 
-    if (!poll_id) return res.status(400).send("No poll id");
-    if (!user_id || !usedNFT || !usedNFT.collection_id || !usedNFT.NFT_URL)
-      return res.status(400).send("Parameter missing");
-    if (!voted_item && voted_item != 0)
-      return res.status(400).send("Parameter missing");
+      if (!user || user.role != "admin") {
+        throw new Error("Not Authorized");
+      }
 
-    let owner = false;
+      const result = await pollService.deletePoll("poll_id");
 
-    User.findOne({ _id: user_id })
-      .lean()
-      .then((result) => {
-        for (let collection of result.ownerOfNFT) {
-          if (collection.collection_id == usedNFT.collection_id) {
-            for (let nft of collection.NFT_URL) {
-              if (nft == usedNFT.NFT_URL) {
-                console.log("nft", nft == usedNFT.NFT_URL);
-                owner = true;
-                break;
-              }
+      return res.send(result);
+    } catch (err) {
+      console.log("getPoll: Poll.deleteOne error", err);
+      next(err);
+    }
+  };
+
+  public static votePoll = async (req, res, next) => {
+    try {
+      const poll_id = req.params.poll_id;
+      const { voted_item, user_id, usedNFT } = req.body;
+
+      if (!poll_id) throw new Error("No poll id");
+      if (!user_id || !usedNFT || !usedNFT.collection_id || !usedNFT.NFT_URL)
+        throw new Error("Parameter missing");
+      if (!voted_item && voted_item != 0) throw new Error("Parameter missing");
+
+      const user = await userService.getUserByID(user_id);
+
+      if (!user) throw new Error("User Not Found");
+
+      let owner = false;
+      for (const collection of user.ownerOfNFT) {
+        if (collection.collection_id === usedNFT.collection_id) {
+          for (const nft of collection.NFT_URL) {
+            if (nft === usedNFT.NFT_URL) {
+              console.log("nft", nft, usedNFT.NFT_URL);
+              owner = true;
+              break;
             }
-            break;
           }
+          if (owner) break;
         }
-        if (!owner) {
-          console.log("owner result", owner);
-          return res.status(400).send("Not an owner of NFT");
+      }
+      if (!owner) throw new Error("Not The Owner");
+
+      const poll = await pollService.getPollById(poll_id);
+
+      if (!poll) throw new Error("Poll Not Found");
+
+      let check = false;
+      poll.votes.map((vote) => {
+        if (vote.usedNFT.NFT_URL == usedNFT.NFT_URL) {
+          check = true;
+          return;
         }
-
-        Poll.findById(poll_id)
-          .then((result) => {
-            if (result == null) return res.status(400).send("Poll not found");
-
-            let check = false;
-
-            result.votes.map((vote) => {
-              if (vote.usedNFT.NFT_URL == usedNFT.NFT_URL) {
-                check = true;
-                return;
-              }
-            });
-
-            if (check) return res.status(400).send("NFT already used");
-
-            result.votes.push({ user_id, usedNFT });
-
-            if (!result.options[voted_item])
-              return res.status(400).send("Invalid Vote option");
-
-            result.options[voted_item].vote_count += 1;
-            result.save().then(() => res.send(result));
-          })
-          .catch((err) => {
-            console.log("votePoll: Poll.findById error", err);
-            return res.status(400).send(err);
-          });
       });
-  },
-};
+
+      if (check) throw new Error("NFT Already Used For This Poll");
+      if (voted_item >= poll.options.length || voted_item < 0)
+        throw new Error("Invalid Option");
+
+      poll.votes.push({ user_id, usedNFT });
+      poll.options[voted_item].vote_count += 1;
+      const result = await poll.save();
+
+      if (!result) throw new Error("Voting Stopped");
+
+      return res.send(result);
+    } catch (err) {
+      console.log("votePoll: Poll.findById error", err);
+      next(err);
+    }
+  };
+}
+
+export default pollController;

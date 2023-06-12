@@ -139,17 +139,15 @@ postService.deletePost = (post_id, post, user) => {
         model_1.LikeModel.deleteOne({ _id: post.likes }),
         user.save(),
         post.comments.map((comment_id) => {
-            model_1.CommentModel.findById(comment_id)
-                .lean()
-                .then((comment) => {
-                if (comment.replies.length > 0) {
-                    comment.replies.map((reply_id) => __awaiter(void 0, void 0, void 0, function* () {
-                        console.log("reply_id", reply_id);
-                        yield model_1.CommentModel.deleteOne({ _id: reply_id });
-                    }));
+            model_1.CommentModel.findById(comment_id).then((comment) => __awaiter(void 0, void 0, void 0, function* () {
+                if (!comment) {
+                    return;
                 }
-                model_1.CommentModel.deleteOne({ _id: comment_id }).then((result) => console.log("delPost comment deleted", result));
-            });
+                else if (comment.replies.length > 0) {
+                    comment.replies.map((reply_id) => __awaiter(void 0, void 0, void 0, function* () { return yield model_1.CommentModel.deleteOne({ _id: reply_id }); }));
+                }
+                yield model_1.CommentModel.deleteOne({ _id: comment_id });
+            }));
         }),
     ]);
 };

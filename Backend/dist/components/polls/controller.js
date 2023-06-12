@@ -1,129 +1,137 @@
 "use strict";
-const model_1 = require("./model");
-module.exports = {
-    getPoll: (req, res, next) => {
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+var _a;
+Object.defineProperty(exports, "__esModule", { value: true });
+const service_1 = __importDefault(require("./service"));
+const service_2 = __importDefault(require("../users/service"));
+class pollController {
+}
+_a = pollController;
+pollController.getPoll = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
         const poll_id = req.query.poll_id;
-        if (poll_id == undefined) {
-            model_1.Poll.find()
-                .lean()
-                .then((poll) => {
-                if (!poll)
-                    return res.status(400).send("Poll not found");
-                return res.send(poll);
-            })
-                .catch((err) => {
-                console.log("getPoll: Poll.find error", err);
-                return res.status(400).send(err);
-            });
+        let poll;
+        if (poll_id === undefined) {
+            poll = yield service_1.default.getAllPoll();
         }
         else {
-            model_1.Poll.findById(poll_id)
-                .lean()
-                .then((poll) => {
-                if (!poll)
-                    return res.status(400).send("Poll not found");
-                return res.send(poll);
-            })
-                .catch((err) => {
-                console.log("getPoll: Poll.findById error", err);
-                return res.status(400).send(err);
-            });
+            poll = yield service_1.default.getPollById(poll_id);
+            if (!poll)
+                throw new Error("Poll not found");
         }
-    },
-    createPoll: (req, res, next) => {
+        return res.send(poll);
+    }
+    catch (err) {
+        console.log("getPoll: Poll.findById error", err);
+        next(err);
+    }
+});
+pollController.createPoll = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
         const { title, options } = req.body;
         const publicAddress = res.locals.decoded.publicAddress;
         if (!title || !options)
-            return res.status(400).send("Need title, options");
-        model_2.User.findOne({ publicAddr: publicAddress })
-            .lean()
-            .then((result) => {
-            if (!result.role || result.role != "admin")
-                return res.status(400).send("Non-Authorized User");
-            let ObjectOptions = [];
-            options.map((option) => {
-                ObjectOptions.push({ name: option });
-            });
-            //create new poll data
-            const newPoll = new model_1.Poll({
-                title: title,
-                options: ObjectOptions,
-                votes: [],
-            });
-            newPoll.save().then((result) => res.send(result));
+            throw new Error("Need title, options");
+        const user = yield service_2.default.getUserByAddress(publicAddress);
+        if (!user || user.role != "admin")
+            throw new Error("Non-Authorized User");
+        let ObjectOptions = [];
+        options.map((option) => {
+            ObjectOptions.push({ name: option, vote_count: 0 });
         });
-    },
-    deletePoll: (req, res, next) => {
+        //create new poll data
+        const newPoll = service_1.default.createPoll(title, ObjectOptions);
+        const result = yield newPoll.save();
+        if (result.acknowleged == false) {
+            throw new Error("Poll Not Created");
+        }
+        return res.send(result);
+    }
+    catch (err) {
+        next(err);
+    }
+});
+pollController.deletePoll = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
         const poll_id = req.params.poll_id;
         const publicAddress = res.locals.decoded.publicAddress;
-        if (!poll_id)
-            return res.status(400).send("No poll id");
-        model_2.User.findOne({ publicAddr: publicAddress })
-            .lean()
-            .then((result) => {
-            if (!result.role || result.role != "admin")
-                return res.status(400).send("Not Authorized User");
-            model_1.Poll.deleteOne({ _id: poll_id })
-                .lean()
-                .then((result) => res.send(result))
-                .catch((err) => {
-                console.log("getPoll: Poll.deleteOne error", err);
-                return res.status(400).send(err);
-            });
-        });
-    },
-    votePoll: (req, res, next) => {
+        console.log(poll_id);
+        const user = yield service_2.default.getUserByAddress(publicAddress);
+        if (!user || user.role != "admin") {
+            throw new Error("Not Authorized");
+        }
+        const result = yield service_1.default.deletePoll("poll_id");
+        return res.send(result);
+    }
+    catch (err) {
+        console.log("getPoll: Poll.deleteOne error", err);
+        next(err);
+    }
+});
+pollController.votePoll = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
         const poll_id = req.params.poll_id;
         const { voted_item, user_id, usedNFT } = req.body;
         if (!poll_id)
-            return res.status(400).send("No poll id");
+            throw new Error("No poll id");
         if (!user_id || !usedNFT || !usedNFT.collection_id || !usedNFT.NFT_URL)
-            return res.status(400).send("Parameter missing");
+            throw new Error("Parameter missing");
         if (!voted_item && voted_item != 0)
-            return res.status(400).send("Parameter missing");
+            throw new Error("Parameter missing");
+        const user = yield service_2.default.getUserByID(user_id);
+        if (!user)
+            throw new Error("User Not Found");
         let owner = false;
-        model_2.User.findOne({ _id: user_id })
-            .lean()
-            .then((result) => {
-            for (let collection of result.ownerOfNFT) {
-                if (collection.collection_id == usedNFT.collection_id) {
-                    for (let nft of collection.NFT_URL) {
-                        if (nft == usedNFT.NFT_URL) {
-                            console.log("nft", nft == usedNFT.NFT_URL);
-                            owner = true;
-                            break;
-                        }
+        for (const collection of user.ownerOfNFT) {
+            if (collection.collection_id === usedNFT.collection_id) {
+                for (const nft of collection.NFT_URL) {
+                    if (nft === usedNFT.NFT_URL) {
+                        console.log("nft", nft, usedNFT.NFT_URL);
+                        owner = true;
+                        break;
                     }
-                    break;
                 }
+                if (owner)
+                    break;
             }
-            if (!owner) {
-                console.log("owner result", owner);
-                return res.status(400).send("Not an owner of NFT");
+        }
+        if (!owner)
+            throw new Error("Not The Owner");
+        const poll = yield service_1.default.getPollById(poll_id);
+        if (!poll)
+            throw new Error("Poll Not Found");
+        let check = false;
+        poll.votes.map((vote) => {
+            if (vote.usedNFT.NFT_URL == usedNFT.NFT_URL) {
+                check = true;
+                return;
             }
-            model_1.Poll.findById(poll_id)
-                .then((result) => {
-                if (result == null)
-                    return res.status(400).send("Poll not found");
-                let check = false;
-                result.votes.map((vote) => {
-                    if (vote.usedNFT.NFT_URL == usedNFT.NFT_URL) {
-                        check = true;
-                        return;
-                    }
-                });
-                if (check)
-                    return res.status(400).send("NFT already used");
-                result.votes.push({ user_id, usedNFT });
-                if (!result.options[voted_item])
-                    return res.status(400).send("Invalid Vote option");
-                result.options[voted_item].vote_count += 1;
-                result.save().then(() => res.send(result));
-            })
-                .catch((err) => {
-                console.log("votePoll: Poll.findById error", err);
-                return res.status(400).send(err);
-            });
         });
-    },
-};
+        if (check)
+            throw new Error("NFT Already Used For This Poll");
+        if (voted_item >= poll.options.length || voted_item < 0)
+            throw new Error("Invalid Option");
+        poll.votes.push({ user_id, usedNFT });
+        poll.options[voted_item].vote_count += 1;
+        const result = yield poll.save();
+        if (!result)
+            throw new Error("Voting Stopped");
+        return res.send(result);
+    }
+    catch (err) {
+        console.log("votePoll: Poll.findById error", err);
+        next(err);
+    }
+});
+exports.default = pollController;

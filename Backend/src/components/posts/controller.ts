@@ -94,6 +94,7 @@ class postController {
       }
       return res.send("Post Not Deleted");
     } catch (error) {
+      console.log(error);
       next(error);
     }
   };
@@ -180,7 +181,7 @@ class postController {
 
       context = context.replace(/^\s+/g, "");
       context = context.replace(/\s+$/g, "");
-      console.log(publicAddress);
+
       const user = await userService.getUserByAddress(publicAddress);
 
       if (!user) {

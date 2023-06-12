@@ -143,19 +143,19 @@ class postService {
       LikeModel.deleteOne({ _id: post.likes }),
       user.save(),
       post.comments.map((comment_id) => {
-        CommentModel.findById(comment_id)
-          .lean()
-          .then((comment) => {
-            if (comment.replies.length > 0) {
-              comment.replies.map(async (reply_id) => {
-                console.log("reply_id", reply_id);
-                await CommentModel.deleteOne({ _id: reply_id });
-              });
+        CommentModel.findById(comment_id).then(
+          async (comment: HydratedDocument<Comment> | undefined) => {
+            if (!comment) {
+              return;
+            } else if (comment.replies.length > 0) {
+              comment.replies.map(
+                async (reply_id) =>
+                  await CommentModel.deleteOne({ _id: reply_id })
+              );
             }
-            CommentModel.deleteOne({ _id: comment_id }).then((result) =>
-              console.log("delPost comment deleted", result)
-            );
-          });
+            await CommentModel.deleteOne({ _id: comment_id });
+          }
+        );
       }),
     ]);
   };

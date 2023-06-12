@@ -96,6 +96,7 @@ postController.delPost = (req, res, next) => __awaiter(void 0, void 0, void 0, f
         return res.send("Post Not Deleted");
     }
     catch (error) {
+        console.log(error);
         next(error);
     }
 });
@@ -169,7 +170,6 @@ postController.addComment = (req, res, next) => __awaiter(void 0, void 0, void 0
         }
         context = context.replace(/^\s+/g, "");
         context = context.replace(/\s+$/g, "");
-        console.log(publicAddress);
         const user = yield service_2.default.getUserByAddress(publicAddress);
         if (!user) {
             throw new Error("User Not Found");

@@ -1,8 +1,17 @@
-import mongoose from "mongoose";
+import { Schema, createConnection } from "mongoose";
 import config from "../../config";
 
-const Schema = mongoose.Schema;
-const pollDb = mongoose.createConnection(config.mongoPath);
+const pollDb = createConnection(config.mongoPath);
+
+interface Poll {
+  _id: Schema.Types.ObjectId;
+  title: string;
+  options: { name: string; vote_count: number }[];
+  votes: {
+    user_id: Schema.Types.ObjectId;
+    usedNFT: { collection_id: string; NFT_URL: string };
+  }[];
+}
 
 let pollSchema = new Schema(
   {
@@ -25,6 +34,6 @@ let pollSchema = new Schema(
   },
   { timestamps: true, strict: true }
 );
-const Poll = pollDb.model("poll", pollSchema);
+const PollModel = pollDb.model("poll", pollSchema);
 
-export { Poll };
+export { Poll, PollModel };
