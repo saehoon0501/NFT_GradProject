@@ -1,10 +1,11 @@
+import dotenv from "dotenv";
+dotenv.config();
 import express from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
 import createError from "http-errors";
 import { router } from "./routes";
 import { initSocket } from "./socket";
-import "dotenv/config";
 import { verify } from "./middleware/jwt";
 
 const app = express(); // express module on

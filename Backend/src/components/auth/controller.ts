@@ -1,7 +1,6 @@
 import jwt from "jsonwebtoken";
 import { User, UserModel } from "../users/model";
 import { ethers } from "ethers";
-import config from "../../config";
 
 export = {
   sndNonce: (req, res, next) => {
@@ -28,11 +27,10 @@ export = {
         return res.status(401).send({ error: "Signature verification failed" });
       }
       return res.json({
-        accessToken: jwt.sign(
-          { publicAddress },
-          config.secretKey,
-          config.options
-        ),
+        accessToken: jwt.sign({ publicAddress }, process.env.JWT_SECRET, {
+          algorithm: process.env.JWT_ALGO,
+          expiresIn: process.env.JWT_EXPIRE,
+        }),
       });
     });
   },

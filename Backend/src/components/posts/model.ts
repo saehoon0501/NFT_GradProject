@@ -1,7 +1,6 @@
 import { Schema, createConnection, Types } from "mongoose";
-import config = require("../../config");
 
-const postDb = createConnection(config.mongoPath);
+const postDb = createConnection(process.env.DATABASE_URL as string);
 
 interface Post {
   _id: Schema.Types.ObjectId;

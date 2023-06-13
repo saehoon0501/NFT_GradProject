@@ -4,3 +4,4 @@ Backend/.DS_Store
 .DS_Store
 Backend/src/config.ts
 Backend/dist
+.env

@@ -1,7 +1,6 @@
 import { Schema, createConnection } from "mongoose";
-import config from "../../config";
 
-const pollDb = createConnection(config.mongoPath);
+const pollDb = createConnection(process.env.DATABASE_URL as string);
 
 interface Poll {
   _id: Schema.Types.ObjectId;
