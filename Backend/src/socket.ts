@@ -10,6 +10,18 @@ const initSocket = (server, corsPort) => {
     },
   });
   io.on("connection", initialize);
+
+  const namespace = io.of("/comment");
+
+  namespace.on("connection", (socket) => {
+    socket.on("join", (post_id) => {
+      console.log(`someone just joined post: ${post_id}`);
+    });
+
+    socket.on("disconnect", () => {
+      console.log("someone has left");
+    });
+  });
 };
 
 //online user들 저장 및 업데이트
@@ -35,26 +47,19 @@ const getUser = (publicAddr: string): socketUser | undefined => {
 };
 
 const initialize = (socket) => {
-  console.log("someone logged in");
-  io.on("newUser", (newUser: socketUser) => {
+  console.log("socket connected: ", socket.data);
+
+  socket.on("newUser", (newUser: socketUser) => {
+    console.log(newUser);
+    newUser.socketId = socket.id;
     addNewUser(newUser);
+    console.log(onlineUsers);
     io.emit("onlineUsers", { onlineUsers });
   });
 
-  // io.on("disconnect", () => {
-  //   console.log("disconnect");
-  //   deleteUser(socket.id);
-  // });
-  const namespace = io.of("/comment");
-
-  namespace.on("connection", (socket) => {
-    socket.on("join", (post_id) => {
-      console.log(`someone just joined post: ${post_id}`);
-    });
-
-    socket.on("disconnect", () => {
-      console.log("someone has left");
-    });
+  socket.on("disconnect", () => {
+    console.log("disconnect");
+    deleteUser(socket.id);
   });
 };
 
