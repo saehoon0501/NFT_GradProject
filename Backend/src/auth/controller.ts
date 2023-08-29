@@ -17,7 +17,9 @@ export = {
       return res
         .status(400)
         .send({ error: "Request should have 3 elements(publicAddr, sig, msg" });
+
     console.log(publicAddress);
+
     UserModel.findOne({ publicAddr: `${publicAddress}` }).then((user: User) => {
       if (!user) {
         return res.status(401).send({ error: "User not Found" });

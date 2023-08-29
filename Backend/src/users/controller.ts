@@ -1,6 +1,5 @@
 import userService from "./service";
 import { User, UserModel } from "./model";
-
 class userController {
   public static getProfile = async (req, res, next) => {
     try {
