@@ -1,6 +1,7 @@
 import { Schema, createConnection, Types } from "mongoose";
+import { DATABASE_URL } from "../config/dev";
 
-const nftDb = createConnection(process.env.DATABASE_URL as string);
+const nftDb = createConnection(DATABASE_URL as string);
 
 interface User {
   _id: Schema.Types.ObjectId;

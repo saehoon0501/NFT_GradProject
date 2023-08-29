@@ -8,7 +8,7 @@ import {
 } from "./model";
 import { User, UserModel } from "../users/model";
 import { Types, HydratedDocument } from "mongoose";
-import { io } from "../../socket";
+import { io } from "../socket";
 
 class postService {
   public static getBestPosts = (lastWeek: Date, pageNum: number) => {

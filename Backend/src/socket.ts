@@ -1,4 +1,4 @@
-import { socketUser } from "./components/users/model";
+import { socketUser } from "./users/model";
 import socketIO from "socket.io";
 
 let io: socketIO.Server;

@@ -3,6 +3,6 @@ Backend/public/uploads/
 Backend/.DS_Store
 .DS_Store
 Backend/src/config.ts
-Backend/dist
+Backend/build
 .env
 .vscode/settings.json
