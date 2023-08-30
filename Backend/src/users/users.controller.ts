@@ -3,13 +3,13 @@ import { get, use, post } from "../decorators";
 import { Request, Response, NextFunction } from "express";
 import { verify } from "../middleware/jwt";
 import userService from "./service";
-import { AuthService } from "./auth.service";
+import { IAuthService } from "./auth.service";
 import { Inject, Service } from "typedi";
 
 @controller("/users")
 @Service()
 class UsersController {
-  constructor(@Inject() private authService: AuthService) {}
+  constructor(@Inject("AuthService") private authService: IAuthService) {}
 
   @get("/auth")
   sendNonce(req: Request, res: Response) {

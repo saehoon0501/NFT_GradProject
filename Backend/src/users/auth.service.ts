@@ -4,6 +4,7 @@ import { User, UserModel } from "./model";
 import { JWT_ALGO, JWT_EXPIRE, JWT_SECRET } from "../config/dev";
 import jwt from "jsonwebtoken";
 import { Service } from "typedi";
+import { Container } from "typedi";
 
 interface jwtInput {
   publicAddress: string;
@@ -11,8 +12,19 @@ interface jwtInput {
   msg: string;
 }
 
-@Service()
-class AuthService {
+interface IAuthService {
+  generateNonce: () => string;
+  generateJwt: (input: jwtInput) => Promise<
+    | {
+        accessToken: any;
+      }
+    | {
+        error: string;
+      }
+  >;
+}
+
+class AuthService implements IAuthService {
   generateNonce() {
     const randomBytes = ethers.BigNumber.from(ethers.utils.randomBytes(32));
     return randomBytes._hex;
@@ -38,4 +50,6 @@ class AuthService {
   }
 }
 
-export { AuthService };
+Container.set("AuthService", new AuthService());
+
+export { IAuthService };
