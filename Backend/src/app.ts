@@ -4,7 +4,9 @@ import { AppRouter } from "./AppRouter";
 import { initSocket } from "./socket";
 import { PORT } from "./config/dev";
 import { router } from "./routes";
+import "./users/users.repository";
 import "./users/auth.service";
+import "./users/users.service";
 import "./users/users.controller";
 const bodyParser = require("body-parser");
 

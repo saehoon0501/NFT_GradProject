@@ -19,7 +19,11 @@ export const ProfileChangeImage = ({ user }) => {
   const updatePic = async (event) => {
     const profile_pic = event.target.src;
 
-    profilePicMutate.mutate(profile_pic);
+    profilePicMutate.mutate([
+      user.profile.caption,
+      user.profile.username,
+      profile_pic,
+    ]);
   };
 
   const ownedNFTs = user.ownerOfNFT[0].NFT_URL.map((NFT, index) => (

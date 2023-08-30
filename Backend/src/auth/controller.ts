@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { User, UserModel } from "../users/model";
+import { User, UserModel } from "../users/UserEntity";
 import { ethers } from "ethers";
 import { JWT_ALGO, JWT_EXPIRE, JWT_SECRET } from "../config/dev";
 

@@ -1,10 +1,9 @@
-import { Request, Response, NextFunction } from "express";
 import { ethers } from "ethers";
-import { User, UserModel } from "./model";
+import { UserModel } from "./UserEntity";
 import { JWT_ALGO, JWT_EXPIRE, JWT_SECRET } from "../config/dev";
 import jwt from "jsonwebtoken";
-import { Service } from "typedi";
-import { Container } from "typedi";
+import { Container, Inject } from "typedi";
+import { IUserRepository } from "./users.repository";
 
 interface jwtInput {
   publicAddress: string;
@@ -25,6 +24,8 @@ interface IAuthService {
 }
 
 class AuthService implements IAuthService {
+  constructor(private userRepo: IUserRepository) {}
+
   generateNonce() {
     const randomBytes = ethers.BigNumber.from(ethers.utils.randomBytes(32));
     return randomBytes._hex;
@@ -32,7 +33,8 @@ class AuthService implements IAuthService {
 
   async generateJwt(input: jwtInput) {
     const { publicAddress, signature, msg } = input;
-    const user = await UserModel.findOne({ publicAddr: `${publicAddress}` });
+    const user = await this.userRepo.findByPublicAddress(publicAddress);
+
     if (!user) {
       return { error: "User not Found" };
     }
@@ -50,6 +52,6 @@ class AuthService implements IAuthService {
   }
 }
 
-Container.set("AuthService", new AuthService());
+Container.set("AuthService", new AuthService(Container.get("UserRepository")));
 
 export { IAuthService };

@@ -56,7 +56,7 @@ export const ProfileCaption = ({ userProfile, isOwner = true, refetch }) => {
       case PROCEED_EDIT_PROFILE:
         nameRef.current = profileName;
         introRef.current = intro;
-        await updateUser(intro, profileName);
+        await updateUser(intro, profileName, userProfile.profile_pic);
         refetch();
         setEditProfile(true);
         return;
@@ -75,10 +75,10 @@ export const ProfileCaption = ({ userProfile, isOwner = true, refetch }) => {
   return (
     <div className="profile-caption-wrapper">
       {editProfile ? (
-        <div style={{width: "400px"}}>
+        <div style={{ width: "400px" }}>
           <div className="profile-about-wrapper">
             <div className="profile-name">
-            <h3>{nameRef.current}</h3>
+              <h3>{nameRef.current}</h3>
             </div>
             {isOwner && (
               <>

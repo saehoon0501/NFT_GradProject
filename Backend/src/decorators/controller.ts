@@ -12,12 +12,14 @@ function bodyValidators(keys: string[]): RequestHandler {
       return;
     }
 
+    console.log(req.body);
     for (let key of keys) {
-      if (!req.body[key]) {
+      if (req.body[key] !== "" && !req.body[key]) {
         res.status(422).send(`Missing property ${key}`);
         return;
       }
     }
+
     next();
   };
 }

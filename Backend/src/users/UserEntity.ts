@@ -14,9 +14,9 @@ interface User {
     username: string;
     caption: string;
     points: number;
-    post_ids: Types.DocumentArray<Schema.Types.ObjectId>;
-    comment_ids: Types.DocumentArray<Schema.Types.ObjectId>;
-    likes_ids: Types.DocumentArray<Schema.Types.ObjectId>;
+    post_ids: object[];
+    comment_ids: object[];
+    likes_ids: object[];
     profile_pic: string;
   };
   role: string;
