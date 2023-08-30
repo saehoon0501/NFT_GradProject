@@ -7,7 +7,7 @@ export class AppRouter {
     if (!AppRouter.instance) {
       AppRouter.instance = express.Router();
     }
-    console.log("wtf");
+
     return AppRouter.instance;
   }
 }

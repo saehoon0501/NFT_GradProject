@@ -3,6 +3,7 @@ import { Methods } from "./Methods";
 import { AppRouter } from "../AppRouter";
 import { MetadataKeys } from "./MetadataKeys";
 import { Request, Response, NextFunction, RequestHandler } from "express";
+import Container from "typedi";
 
 function bodyValidators(keys: string[]): RequestHandler {
   return function (req: Request, res: Response, next: NextFunction) {
@@ -44,13 +45,14 @@ export function controller(routePrefix: string) {
         Reflect.getMetadata(MetadataKeys.validator, target.prototype, key) ||
         [];
       const validator = bodyValidators(requiredBodyProps);
+      const instance: any = Container.get(target);
 
       if (path) {
         router[method](
           routePrefix + path,
           ...middlewares,
           validator,
-          routeHandler
+          instance[key].bind(instance)
         );
       }
     });
