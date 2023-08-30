@@ -9,7 +9,7 @@ import { verify } from "./middleware/jwt";
 
 const router = express.Router();
 
-router.use("/auth", authRouter);
+// router.use("/auth", authRouter);
 router.use(verify);
 router.use("/user", userRouter);
 router.use("/post", postRouter);

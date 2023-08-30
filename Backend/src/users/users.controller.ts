@@ -1,5 +1,5 @@
-import { controller } from "../decorators";
-import { get, use } from "../decorators";
+import { bodyValidator, controller } from "../decorators";
+import { get, use, post } from "../decorators";
 import { Request, Response, NextFunction } from "express";
 import { verify } from "../middleware/jwt";
 import userService from "./service";
@@ -14,6 +14,13 @@ class UsersController {
   @get("/auth")
   sendNonce(req: Request, res: Response) {
     res.send(this.authService.generateNonce());
+  }
+
+  @post("/auth")
+  @bodyValidator("publicAddress", "signature", "msg")
+  async sndJwt(req: Request, res: Response) {
+    const result = await this.authService.generateJwt(req.body);
+    res.send(result);
   }
 
   @get("/")

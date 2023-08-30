@@ -76,7 +76,7 @@ export const NFTLogin = () => {
   const handleAuthenticate = async ({ publicAddress, signature, msg }) => {
     try {
       const result = await axios
-        .post(`${baseURL}/api/auth`, {
+        .post(`${baseURL}/api/users/auth`, {
           publicAddress: `${publicAddress}`,
           signature: `${signature}`,
           msg: `${msg}`,
@@ -105,7 +105,7 @@ export const NFTLogin = () => {
       return;
     }
 
-    axios.get(`${baseURL}/api/auth`).then(
+    axios.get(`${baseURL}/api/users/auth`).then(
       (res) => {
         const nonce = res.data;
         handleSignMessage(selectedAccount, nonce).then(
