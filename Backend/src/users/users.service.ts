@@ -3,7 +3,7 @@ import { User } from "./model/UserEntity";
 import { IUserRepository } from "./users.repository";
 
 interface IUserService {
-  getUser: (uniqueKey: string) => User;
+  getUser: (uniqueKey: string) => Promise<User>;
   getUserPosts: (publicAddress: string) => any;
   getUserComments: (publicAddress: string) => any;
   updateUser: (

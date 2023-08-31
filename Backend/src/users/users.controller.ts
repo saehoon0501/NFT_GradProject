@@ -88,7 +88,7 @@ class UsersController {
     );
     console.log(result);
     if (result.matchedCount == 0) {
-      res.status(400).send("user cannot be updated");
+      return res.status(400).send("user cannot be updated");
     }
     return res.send("user info updated");
   }

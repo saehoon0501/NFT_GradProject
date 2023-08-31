@@ -1,7 +1,7 @@
 import { Schema, createConnection, Types } from "mongoose";
 import { DATABASE_URL } from "../../config/dev";
 
-const nftDb = createConnection(DATABASE_URL as string);
+const DB = createConnection(DATABASE_URL as string);
 
 interface User {
   _id: Schema.Types.ObjectId;
@@ -14,15 +14,12 @@ interface User {
     username: string;
     caption: string;
     points: number;
-    post_ids: object[];
-    comment_ids: object[];
-    likes_ids: object[];
     profile_pic: string;
   };
   role: string;
 }
 
-const userSchema = new Schema(
+const userSchema = new Schema<User>(
   {
     publicAddr: {
       type: String,
@@ -49,7 +46,7 @@ const userSchema = new Schema(
   { strict: true }
 );
 
-const UserModel = nftDb.model("user", userSchema);
+const UserModel = DB.model("user", userSchema);
 
 type socketUser = {
   profile_pic: string;
@@ -58,4 +55,4 @@ type socketUser = {
   socketId: string;
 };
 
-export { User, socketUser, UserModel };
+export { User, socketUser, UserModel, DB };

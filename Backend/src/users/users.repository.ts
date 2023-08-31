@@ -1,10 +1,13 @@
 import Container from "typedi";
 import { User, UserModel } from "./model/UserEntity";
-import { CommentModel, PostModel } from "../posts/model";
+import { PostModel } from "../posts/model/PostEntity";
+import { PostComment, PostCommentModel } from "../posts/model/CommentEntity";
+import { Model } from "mongoose";
+import { Post } from "../posts/model/PostEntity";
 
 interface IUserRepository {
-  findByPublicAddress: (publicAddress: string) => User;
-  findById: (userId: string) => User;
+  findByPublicAddress: (publicAddress: string) => Promise<User>;
+  findById: (userId: string) => Promise<User>;
   updateUser: (
     publicAddress: string,
     {
@@ -16,19 +19,28 @@ interface IUserRepository {
       profileName: string;
       profile_pic: string;
     }
-  ) => User;
-  getUserPosts: (publicAddress: string) => any;
-  getUserComments: (publicAddress: string) => any;
+  ) => Promise<any>;
+  getUserPosts: (publicAddress: string) => Promise<Post[]>;
+  getUserComments: (publicAddress: string) => Promise<PostComment[]>;
 }
 
 class MongoUserRepository implements IUserRepository {
-  findByPublicAddress(publicAddress: string) {
-    return UserModel.findOne({ publicAddr: `${publicAddress}` });
+  constructor(private repository: Model<User>) {}
+  async findByPublicAddress(publicAddress: string) {
+    const result = (await this.repository
+      .findOne({ publicAddr: `${publicAddress}` })
+      .exec()) as User;
+    return result;
   }
-  findById(userId: string) {
-    return UserModel.findById({ _id: `${userId}` });
+
+  async findById(userId: string) {
+    const result = (await this.repository
+      .findById({ _id: `${userId}` })
+      .exec()) as User;
+    return result;
   }
-  updateUser(
+
+  async updateUser(
     publicAddress: string,
     {
       caption,
@@ -40,31 +52,34 @@ class MongoUserRepository implements IUserRepository {
       profile_pic: string;
     }
   ) {
-    return UserModel.updateOne(
-      {
-        $and: [
-          { publicAddr: `${publicAddress}` },
-          { "ownerOfNFT.NFT_URL": `${profile_pic}` },
-        ],
-      },
-      {
-        $set: {
-          "profile.username": `${profileName}`,
-          "profile.caption": `${caption}`,
-          "profile.profile_pic": `${profile_pic}`,
+    const result = await this.repository
+      .updateOne(
+        {
+          $and: [
+            { publicAddr: `${publicAddress}` },
+            { "ownerOfNFT.NFT_URL": `${profile_pic}` },
+          ],
         },
-      }
-    );
+        {
+          $set: {
+            "profile.username": `${profileName}`,
+            "profile.caption": `${caption}`,
+            "profile.profile_pic": `${profile_pic}`,
+          },
+        }
+      )
+      .exec();
+    return result;
   }
 
-  getUserPosts(publicAddress: string) {
-    return UserModel.aggregate([
+  async getUserPosts(publicAddress: string) {
+    const result = (await UserModel.aggregate([
       { $match: { publicAddr: publicAddress } },
       {
         $lookup: {
           from: PostModel.collection.name,
-          localField: "profile.post_ids",
-          foreignField: "_id",
+          localField: "_id",
+          foreignField: "user",
           as: "posts",
         },
       },
@@ -76,17 +91,18 @@ class MongoUserRepository implements IUserRepository {
           "posts.user": 0,
         },
       },
-    ]);
+    ])) as Post[];
+    return result;
   }
 
-  getUserComments(publicAddress: string) {
-    return UserModel.aggregate([
+  async getUserComments(publicAddress: string) {
+    const result = (await UserModel.aggregate([
       { $match: { publicAddr: publicAddress } },
       {
         $lookup: {
-          from: CommentModel.collection.name,
-          localField: "profile.comment_ids",
-          foreignField: "_id",
+          from: PostCommentModel.collection.name,
+          localField: "_id",
+          foreignField: "user",
           as: "comments",
         },
       },
@@ -97,10 +113,11 @@ class MongoUserRepository implements IUserRepository {
           "comments.updatedAt": 1,
         },
       },
-    ]);
+    ])) as PostComment[];
+    return result;
   }
 }
 
-Container.set("UserRepository", new MongoUserRepository());
+Container.set("UserRepository", new MongoUserRepository(UserModel));
 
 export { IUserRepository };

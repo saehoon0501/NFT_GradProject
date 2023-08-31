@@ -1,7 +1,5 @@
-import { Schema, createConnection, Types } from "mongoose";
-import { DATABASE_URL } from "../../config/dev";
-
-const DB = createConnection(DATABASE_URL as string);
+import { Schema, createConnection } from "mongoose";
+import { DB } from "../../users/model/UserEntity";
 
 interface PostComment {
   _id: Schema.Types.ObjectId;
