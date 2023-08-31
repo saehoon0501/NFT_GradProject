@@ -1,5 +1,5 @@
 import { Schema, createConnection, Types } from "mongoose";
-import { DATABASE_URL } from "../config/dev";
+import { DATABASE_URL } from "../../config/dev";
 
 const nftDb = createConnection(DATABASE_URL as string);
 
@@ -40,9 +40,6 @@ const userSchema = new Schema(
         username: { type: String, required: true },
         caption: { type: String, required: true },
         points: { type: Number },
-        post_ids: { type: [Schema.Types.ObjectId], ref: `post` },
-        comment_ids: { type: [Schema.Types.ObjectId], ref: `comment` },
-        likes_ids: { type: [Schema.Types.ObjectId], ref: `like` },
         profile_pic: { type: String, required: true },
       },
       required: true,

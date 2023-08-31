@@ -12,7 +12,6 @@ function bodyValidators(keys: string[]): RequestHandler {
       return;
     }
 
-    console.log(req.body);
     for (let key of keys) {
       if (req.body[key] !== "" && !req.body[key]) {
         res.status(422).send(`Missing property ${key}`);
@@ -29,7 +28,6 @@ export function controller(routePrefix: string) {
     const router = AppRouter.getInstance();
 
     Object.getOwnPropertyNames(target.prototype).forEach((key) => {
-      const routeHandler = target.prototype[key];
       const path = Reflect.getMetadata(
         MetadataKeys.path,
         target.prototype,
@@ -48,13 +46,14 @@ export function controller(routePrefix: string) {
         [];
       const validator = bodyValidators(requiredBodyProps);
       const instance: any = Container.get(target);
+      const routeHandler = instance[key];
 
       if (path) {
         router[method](
           routePrefix + path,
           ...middlewares,
           validator,
-          instance[key].bind(instance)
+          routeHandler.bind(instance)
         );
       }
     });

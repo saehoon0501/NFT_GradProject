@@ -1,5 +1,5 @@
 import Container from "typedi";
-import { User } from "./UserEntity";
+import { User } from "./model/UserEntity";
 import { IUserRepository } from "./users.repository";
 
 interface IUserService {

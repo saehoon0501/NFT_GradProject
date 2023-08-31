@@ -1,4 +1,4 @@
-import { socketUser } from "./users/UserEntity";
+import { socketUser } from "./users/model/UserEntity";
 import socketIO from "socket.io";
 
 let io: socketIO.Server;

@@ -6,7 +6,7 @@ import {
   Comment,
   Like,
 } from "./model";
-import { User, UserModel } from "../users/UserEntity";
+import { User, UserModel } from "../users/model/UserEntity";
 import { Types, HydratedDocument } from "mongoose";
 import { io } from "../socket";
 

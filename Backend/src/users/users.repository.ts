@@ -1,5 +1,5 @@
 import Container from "typedi";
-import { User, UserModel } from "./UserEntity";
+import { User, UserModel } from "./model/UserEntity";
 import { CommentModel, PostModel } from "../posts/model";
 
 interface IUserRepository {
