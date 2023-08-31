@@ -22,9 +22,16 @@ class UsersController {
   @post("/auth")
   @bodyValidator("publicAddress", "signature", "msg")
   async sendJwt(req: Request, res: Response) {
-    const result = await this.authService.generateJwt(req.body);
-    // console.log("controller", result);
-    res.send(result);
+    console.log("post: /auth", req.body);
+    const result = await this.authService.verifySignature(req.body);
+
+    if (!result) {
+      res.send({ error: "Invalid signature" });
+    }
+
+    const jwt = this.authService.generateJwt(req.body.publicAddress);
+
+    res.send(jwt);
   }
 
   @get("/")
