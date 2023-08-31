@@ -21,7 +21,7 @@ interface IUserRepository {
   getUserComments: (publicAddress: string) => any;
 }
 
-class UserRepository implements IUserRepository {
+class MongoUserRepository implements IUserRepository {
   findByPublicAddress(publicAddress: string) {
     return UserModel.findOne({ publicAddr: `${publicAddress}` });
   }
@@ -101,6 +101,6 @@ class UserRepository implements IUserRepository {
   }
 }
 
-Container.set("UserRepository", new UserRepository());
+Container.set("UserRepository", new MongoUserRepository());
 
 export { IUserRepository };

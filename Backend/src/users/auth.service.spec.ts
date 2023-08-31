@@ -24,7 +24,7 @@ describe("Mocking UserRepo", () => {
   });
 
   test("When input is invalid", async () => {
-    input.publicAddress = "731fb86d9a981f";
+    input.publicAddress = "0x99bd9677C44c5D8bD813e187f72b1014d53e968B";
     expect(await authService.verifySignature(input)).toEqual(false);
   });
 });
