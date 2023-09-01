@@ -1,23 +1,16 @@
-import { Schema, createConnection } from "mongoose";
+import { Schema } from "mongoose";
 import { DB } from "../../users/model/UserEntity";
 
-interface PostComment {
+interface Comment {
   _id: Schema.Types.ObjectId;
-  post_id: Schema.Types.ObjectId;
+  reply_id?: Schema.Types.ObjectId;
+  post_id?: Schema.Types.ObjectId;
   user: Schema.Types.ObjectId;
   caption: string;
   createdAt: Schema.Types.Date;
 }
 
-interface ReplyComment {
-  _id: Schema.Types.ObjectId;
-  comment_id: Schema.Types.ObjectId;
-  user: Schema.Types.ObjectId;
-  caption: string;
-  createdAt: Schema.Types.Date;
-}
-
-const PostCommentSchema = new Schema(
+const CommentSchema = new Schema(
   {
     user: {
       type: Schema.Types.ObjectId,
@@ -27,7 +20,10 @@ const PostCommentSchema = new Schema(
     post_id: {
       type: Schema.Types.ObjectId,
       ref: "post",
-      required: true,
+    },
+    reply_id: {
+      type: Schema.Types.ObjectId,
+      ref: "comments",
     },
     caption: {
       type: String,
@@ -37,27 +33,6 @@ const PostCommentSchema = new Schema(
   { timestamps: true }
 );
 
-const ReplyCommentSchema = new Schema(
-  {
-    user: {
-      type: Schema.Types.ObjectId,
-      ref: "user",
-      required: true,
-    },
-    comment_id: {
-      type: Schema.Types.ObjectId,
-      ref: "post",
-      required: true,
-    },
-    caption: {
-      type: String,
-      required: true,
-    },
-  },
-  { timestamps: true }
-);
+const CommentModel = DB.model("comments", CommentSchema);
 
-const PostCommentModel = DB.model("post_comments", PostCommentSchema);
-const ReplyCommentModel = DB.model("reply_comments", ReplyCommentSchema);
-
-export { PostCommentModel, ReplyCommentModel, PostComment, ReplyComment };
+export { CommentModel, Comment };

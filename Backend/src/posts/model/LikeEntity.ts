@@ -1,8 +1,7 @@
-import { Schema, createConnection, Types } from "mongoose";
+import { Schema, Types } from "mongoose";
 import { DB } from "../../users/model/UserEntity";
 
 interface PostLike {
-  _id: Schema.Types.ObjectId;
   post_id: Schema.Types.ObjectId;
   liked_num: number;
   liked_user: Types.DocumentArray<Schema.Types.ObjectId>;
@@ -10,7 +9,6 @@ interface PostLike {
 }
 
 interface CommentLike {
-  _id: Schema.Types.ObjectId;
   comment_id: Schema.Types.ObjectId;
   liked_num: number;
   liked_user: Types.DocumentArray<Schema.Types.ObjectId>;

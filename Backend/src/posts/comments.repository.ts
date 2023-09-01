@@ -1,9 +1,51 @@
+import { Model } from "mongoose";
+import { Container } from "typedi";
+import { Comment, CommentModel } from "./model/CommentEntity";
+
 interface ICommentRepository {
-  getCommentById; // comment를 id를 통해서 가져옴
-  addReply; // comment 데이터에 reply를 추가하는 comment를 생성
-  updateComment; // comment 데이터를 생성하고 이를 Post와 User에 추가한다.
-  deleteComment; // comment 데이터를 삭제하고 관련된 User와 Post에 반영
-  deleteReply; // comment 데이터를 삭제하고 관련된 comment에 반영
+  createPostComment: (post_id: string) => Promise<Comment>;
+  createReplyComment: (comment_id: string) => Promise<Comment>;
+  getPostComments: (post_id: string) => Promise<Comment[]>;
+  getReplyComments: (reply_id: string) => Promise<Comment[]>; // comment를 id를 통해서 가져옴
+  updateComment: (comment_id: string, caption: string) => Promise<any>;
+  deleteComment: (comment_id: string) => Promise<any>; // comment 데이터를 삭제하고 관련된 User와 Post에 반영
+  deletePostComments: (post_id: string) => Promise<any>;
 }
 
-class MongoCommentRepository {}
+class MongoCommentRepository implements ICommentRepository {
+  constructor(private repository: Model<Comment>) {}
+
+  async createPostComment(post_id: string) {
+    return await new this.repository({ post_id }).save();
+  }
+
+  async createReplyComment(comment_id: string) {
+    return await new this.repository({ comment_id }).save();
+  }
+
+  async getPostComments(post_id: string) {
+    return await this.repository.find({ post_id }).exec();
+  }
+
+  async getReplyComments(reply_id: string) {
+    return await this.repository.find({ reply_id }).exec();
+  }
+
+  async updateComment(comment_id: string, caption: string) {
+    return await this.repository
+      .updateOne({ comment_id }, { $set: { caption } })
+      .exec();
+  }
+
+  async deleteComment(comment_id: string) {
+    return await this.repository.deleteOne({ comment_id }).exec();
+  }
+
+  async deletePostComments(post_id: string) {
+    return await this.repository.deleteMany({ post_id }).exec();
+  }
+}
+
+Container.set("CommentRepository", new MongoCommentRepository(CommentModel));
+
+export { ICommentRepository };
