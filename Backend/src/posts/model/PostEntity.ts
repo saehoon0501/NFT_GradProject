@@ -2,11 +2,11 @@ import { Schema, createConnection } from "mongoose";
 import { DB } from "../../users/model/UserEntity";
 
 interface Post {
-  _id: Schema.Types.ObjectId;
-  user: Schema.Types.ObjectId;
+  _id: string;
+  user: string;
   title: string;
   text?: string;
-  createdAt: Schema.Types.Date;
+  createdAt: Date;
 }
 
 const postSchema = new Schema(

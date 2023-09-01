@@ -4,8 +4,10 @@ import {
   post,
   del,
   use,
-  bodyValidator,
   patch,
+  queryValidator,
+  paramsValidator,
+  bodValidator,
 } from "../decorators";
 import { Request, Response, NextFunction } from "express";
 import { IPostService } from "./posts.service";
@@ -13,6 +15,8 @@ import { Service, Inject } from "typedi";
 import { QuillDeltaToHtmlConverter } from "quill-delta-to-html";
 import { IUserService } from "../users/users.service";
 import { verify } from "../middleware/jwt";
+import { PostRequestDto } from "./dtos/post.dto";
+import { CreatePostRequestDto } from "./dtos/create-post.dto";
 
 @controller("/posts")
 @Service()
@@ -41,7 +45,6 @@ class PostController {
       } else {
         result = await this.postService.getPosts(pageNum);
       }
-      console.log(result);
       return res.send(result);
     } catch (error) {
       next(error);
@@ -49,68 +52,142 @@ class PostController {
   }
   @post("/")
   @use(verify)
-  @bodyValidator("post_title", "post_text")
+  @bodValidator(CreatePostRequestDto)
   async createPost(req: Request, res: Response, next: NextFunction) {
-    let { post_title, post_text } = req.body;
-    const converter = new QuillDeltaToHtmlConverter(post_text.ops, {});
+    try {
+      let { post_title, post_text } = req.body;
+      const converter = new QuillDeltaToHtmlConverter(post_text.ops, {});
 
-    const content = converter.convert();
-    const title = this.postService.sanitize(post_title);
+      const content = converter.convert();
+      const title = this.postService.sanitize(post_title);
 
-    const user = await this.userService.getUser(
-      res.locals.decoded.publicAddress
-    );
+      const user = await this.userService.getUser(
+        res.locals.decoded.publicAddress
+      );
 
-    if (!user) {
-      return res.status(401).send("User not found");
+      if (!user) {
+        return res.status(401).send("User not found");
+      }
+
+      const result = await this.postService.createPost({
+        user: user._id,
+        title,
+        content,
+      });
+
+      return res.send(result);
+    } catch (error) {
+      next(error);
     }
-
-    const result = await this.postService.createPost({
-      user: user._id,
-      title,
-      content,
-    });
-
-    return res.send(result);
   }
 
   @del("/:post_id")
   @use(verify)
-  async delPost(req: Request, res: Response, next: NextFunction) {}
+  @paramsValidator(PostRequestDto)
+  async delPost(req: Request, res: Response, next: NextFunction) {
+    try {
+      const post_id = req.params.post_id;
+
+      const user = await this.userService.getUser(
+        res.locals.decoded.publicAddress
+      );
+
+      const result = await this.postService.deletePost(user._id, post_id);
+      if (!result.acknowledged) {
+        return res.status(500).send("post deletion failed");
+      }
+
+      return res.send("post deleted");
+    } catch (error) {
+      next(error);
+    }
+  }
 
   @get("/:post_id/comments")
   @use(verify)
-  async getComments(req: Request, res: Response, next: NextFunction) {}
+  @paramsValidator(PostRequestDto)
+  async getComments(req: Request, res: Response, next: NextFunction) {
+    try {
+      const post_id = req.params.post_id;
+      if (post_id === undefined) {
+        return res.status(422).send("post_id is needed");
+      }
+
+      const result = await this.postService.getComments(post_id);
+    } catch (error) {
+      next(error);
+    }
+  }
 
   @post("/:post_id/comments")
   @use(verify)
-  async addComment(req: Request, res: Response, next: NextFunction) {}
+  async addComment(req: Request, res: Response, next: NextFunction) {
+    try {
+    } catch (error) {
+      next(error);
+    }
+  }
 
   @post("/comments/:comment_id")
   @use(verify)
-  async addReply(req: Request, res: Response, next: NextFunction) {}
+  async addReply(req: Request, res: Response, next: NextFunction) {
+    try {
+    } catch (error) {
+      next(error);
+    }
+  }
 
   @patch("/comments/:comment_id")
   @use(verify)
-  async modifyComment(req: Request, res: Response, next: NextFunction) {}
+  async modifyComment(req: Request, res: Response, next: NextFunction) {
+    try {
+    } catch (error) {
+      next(error);
+    }
+  }
 
   @post("/comments/likes")
   @use(verify)
-  async likeComment(req: Request, res: Response, next: NextFunction) {}
+  async likeComment(req: Request, res: Response, next: NextFunction) {
+    try {
+    } catch (error) {
+      next(error);
+    }
+  }
 
   @post("/likes")
   @use(verify)
-  async likePost(req: Request, res: Response, next: NextFunction) {}
+  async likePost(req: Request, res: Response, next: NextFunction) {
+    try {
+    } catch (error) {
+      next(error);
+    }
+  }
 
   @patch("/likes")
   @use(verify)
-  async delLike(req: Request, res: Response, next: NextFunction) {}
+  async delLike(req: Request, res: Response, next: NextFunction) {
+    try {
+    } catch (error) {
+      next(error);
+    }
+  }
 
   @del("/comments/:comment_id")
   @use(verify)
-  async deleteComment(req: Request, res: Response, next: NextFunction) {}
+  async deleteComment(req: Request, res: Response, next: NextFunction) {
+    try {
+    } catch (error) {
+      next(error);
+    }
+  }
 
   @get("/search")
   @use(verify)
-  async getSearch(req: Request, res: Response, next: NextFunction) {}
+  async getSearch(req: Request, res: Response, next: NextFunction) {
+    try {
+    } catch (error) {
+      next(error);
+    }
+  }
 }

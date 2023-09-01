@@ -10,7 +10,7 @@ import { IAuthService } from "./auth.service";
 let input;
 const authService: IAuthService = Container.get("AuthService");
 
-describe("Mocking UserRepo", () => {
+describe("Stubbing UserRepo", () => {
   beforeEach(() => {
     input = {
       publicAddress: "0xbe38d61731fb86d9a981f38f1bd73b106e80ce32",
@@ -19,6 +19,7 @@ describe("Mocking UserRepo", () => {
       msg: "I am signing my one-time Nonce: 0x1b25bd91775a59803fadb29e8447db344395991e2be16113eec4e7524bd26745",
     };
   });
+
   test("checking signature is valid", async () => {
     expect(await authService.verifySignature(input)).toEqual(true);
   });

@@ -4,8 +4,8 @@ import { DATABASE_URL } from "../config/dev";
 const postDb = createConnection(DATABASE_URL as string);
 
 interface Post {
-  _id: Schema.Types.ObjectId;
-  user: Schema.Types.ObjectId;
+  _id: string;
+  user: string;
   title: string;
   text?: string;
   likes: Types.DocumentArray<Schema.Types.ObjectId>;
@@ -14,14 +14,14 @@ interface Post {
 }
 
 interface Like {
-  _id: Schema.Types.ObjectId;
+  _id: string;
   liked_num: number;
   liked_user: Types.DocumentArray<Schema.Types.ObjectId>;
 }
 
 interface Comment {
-  _id: Schema.Types.ObjectId;
-  user: Schema.Types.ObjectId;
+  _id: string;
+  user: string;
   caption: string;
   liked_user: Types.DocumentArray<Schema.Types.ObjectId>;
   replies: Types.DocumentArray<Schema.Types.ObjectId>;

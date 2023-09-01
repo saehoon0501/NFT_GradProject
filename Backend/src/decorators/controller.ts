@@ -26,7 +26,6 @@ function bodyValidators(keys: string[]): RequestHandler {
 export function controller(routePrefix: string) {
   return function (target: Function) {
     const router = AppRouter.getInstance();
-
     Object.getOwnPropertyNames(target.prototype).forEach((key) => {
       const path = Reflect.getMetadata(
         MetadataKeys.path,
@@ -42,8 +41,11 @@ export function controller(routePrefix: string) {
         Reflect.getMetadata(MetadataKeys.middleware, target.prototype, key) ||
         [];
       const requiredBodyProps =
-        Reflect.getMetadata(MetadataKeys.validator, target.prototype, key) ||
-        [];
+        Reflect.getMetadata(
+          MetadataKeys.bodyValidator,
+          target.prototype,
+          key
+        ) || [];
       const validator = bodyValidators(requiredBodyProps);
       const instance: any = Container.get(target);
       const routeHandler = instance[key];

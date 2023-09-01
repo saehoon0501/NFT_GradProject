@@ -4,7 +4,7 @@ import { DATABASE_URL } from "../../config/dev";
 const DB = createConnection(DATABASE_URL as string);
 
 interface User {
-  _id: Schema.Types.ObjectId;
+  _id: string;
   publicAddr: string;
   ownerOfNFT: {
     collection_id: string;
