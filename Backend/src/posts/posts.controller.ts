@@ -1,4 +1,12 @@
-import { controller, get, post, del, use, bodyValidator } from "../decorators";
+import {
+  controller,
+  get,
+  post,
+  del,
+  use,
+  bodyValidator,
+  patch,
+} from "../decorators";
 import { Request, Response, NextFunction } from "express";
 import { IPostService } from "./posts.service";
 import { Service, Inject } from "typedi";
@@ -57,14 +65,52 @@ class PostController {
       return res.status(401).send("User not found");
     }
 
-    const post = await this.postService.createPost({
+    const result = await this.postService.createPost({
       user: user._id,
       title,
       content,
     });
 
-    return res.send(post);
+    return res.send(result);
   }
 
-  // @del("/:post_id")
+  @del("/:post_id")
+  @use(verify)
+  async delPost(req: Request, res: Response, next: NextFunction) {}
+
+  @get("/:post_id/comments")
+  @use(verify)
+  async getComments(req: Request, res: Response, next: NextFunction) {}
+
+  @post("/:post_id/comments")
+  @use(verify)
+  async addComment(req: Request, res: Response, next: NextFunction) {}
+
+  @post("/comments/:comment_id")
+  @use(verify)
+  async addReply(req: Request, res: Response, next: NextFunction) {}
+
+  @patch("/comments/:comment_id")
+  @use(verify)
+  async modifyComment(req: Request, res: Response, next: NextFunction) {}
+
+  @post("/comments/likes")
+  @use(verify)
+  async likeComment(req: Request, res: Response, next: NextFunction) {}
+
+  @post("/likes")
+  @use(verify)
+  async likePost(req: Request, res: Response, next: NextFunction) {}
+
+  @patch("/likes")
+  @use(verify)
+  async delLike(req: Request, res: Response, next: NextFunction) {}
+
+  @del("/comments/:comment_id")
+  @use(verify)
+  async deleteComment(req: Request, res: Response, next: NextFunction) {}
+
+  @get("/search")
+  @use(verify)
+  async getSearch(req: Request, res: Response, next: NextFunction) {}
 }
