@@ -13,6 +13,8 @@ import "./users/auth.service";
 import "./users/users.service";
 import "./users/users.controller";
 import "./posts/posts.repository";
+import "./posts/likes.repository";
+import "./posts/comments.repository";
 import "./posts/posts.service";
 import "./posts/posts.controller";
 const bodyParser = require("body-parser");
