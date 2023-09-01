@@ -30,8 +30,8 @@ function validatorFactory<T>(
   };
 }
 
-const bodValidator = (dto) => validatorFactory(dto, MetadataKeys.body);
+const bodyValidator = (dto) => validatorFactory(dto, MetadataKeys.body);
 const queryValidator = (dto) => validatorFactory(dto, MetadataKeys.query);
 const paramsValidator = (dto) => validatorFactory(dto, MetadataKeys.params);
 
-export { queryValidator, paramsValidator, bodValidator };
+export { queryValidator, paramsValidator, bodyValidator };

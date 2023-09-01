@@ -5,6 +5,8 @@ import { verify } from "../middleware/jwt";
 import { IAuthService } from "./auth.service";
 import { Inject, Service } from "typedi";
 import { IUserService } from "./users.service";
+import { PostAuthDto } from "./dtos/post-auth.dto";
+import { UpdateUserDto } from "./dtos/update-user.dto";
 
 @controller("/users")
 @Service()
@@ -20,9 +22,8 @@ class UsersController {
   }
 
   @post("/auth")
-  @bodyValidator("publicAddress", "signature", "msg")
+  @bodyValidator(PostAuthDto)
   async sendJwt(req: Request, res: Response) {
-    console.log("post: /auth", req.body);
     const result = await this.authService.verifySignature(req.body);
 
     if (!result) {
@@ -78,7 +79,7 @@ class UsersController {
   }
 
   @patch("/")
-  @bodyValidator("caption", "profileName", "profile_pic")
+  @bodyValidator(UpdateUserDto)
   @use(verify)
   async updateUser(req: Request, res: Response) {
     console.log("updating User", req.body);

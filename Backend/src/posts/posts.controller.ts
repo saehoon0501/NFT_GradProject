@@ -7,16 +7,17 @@ import {
   patch,
   queryValidator,
   paramsValidator,
-  bodValidator,
+  bodyValidator,
 } from "../decorators";
 import { Request, Response, NextFunction } from "express";
 import { IPostService } from "./posts.service";
 import { Service, Inject } from "typedi";
-import { QuillDeltaToHtmlConverter } from "quill-delta-to-html";
 import { IUserService } from "../users/users.service";
 import { verify } from "../middleware/jwt";
 import { PostRequestDto } from "./dtos/post.dto";
 import { CreatePostRequestDto } from "./dtos/create-post.dto";
+const QuillDeltaToHtmlConverter =
+  require("quill-delta-to-html").QuillDeltaToHtmlConverter;
 
 @controller("/posts")
 @Service()
@@ -52,19 +53,19 @@ class PostController {
   }
   @post("/")
   @use(verify)
-  @bodValidator(CreatePostRequestDto)
+  @bodyValidator(CreatePostRequestDto)
   async createPost(req: Request, res: Response, next: NextFunction) {
     try {
       let { post_title, post_text } = req.body;
+      console.log(post_text);
       const converter = new QuillDeltaToHtmlConverter(post_text.ops, {});
-
       const content = converter.convert();
+      console.log(content);
       const title = this.postService.sanitize(post_title);
 
       const user = await this.userService.getUser(
         res.locals.decoded.publicAddress
       );
-
       if (!user) {
         return res.status(401).send("User not found");
       }
@@ -72,7 +73,7 @@ class PostController {
       const result = await this.postService.createPost({
         user: user._id,
         title,
-        content,
+        text: content,
       });
 
       return res.send(result);
