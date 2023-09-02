@@ -14,10 +14,12 @@ interface ILikeRepository {
   incrementCommentLike: (user_id: string, like_id: string) => Promise<any>;
   decrementPostLike: (user_id: string, like_id: string) => Promise<any>;
   decrementCommentLike: (user_id: string, like_id: string) => Promise<any>;
-  createPostLike: () => Promise<PostLike>;
-  createCommentLike: () => Promise<CommentLike>;
-  deletePostLike: (like_id: string) => Promise<any>;
-  deleteCommentLike: (like_id: string) => Promise<any>;
+  createPostLike: (post_id: PostLike["post_id"]) => Promise<PostLike>;
+  createCommentLike: (
+    comment_id: CommentLike["comment_id"]
+  ) => Promise<CommentLike>;
+  deletePostLike: (post_id: PostLike["post_id"]) => Promise<any>;
+  deleteCommentLike: (comment_id: CommentLike["comment_id"]) => Promise<any>;
 }
 
 class MongoLikeRepository implements ILikeRepository {
@@ -66,26 +68,28 @@ class MongoLikeRepository implements ILikeRepository {
   }
 
   async decrementCommentLike(user_id: string, like_id: string) {
-    return await this.commentLikeRepository.updateOne(
-      { _id: like_id },
-      { $pull: { liked_user: { $match: user_id } }, $inc: { liked_num: -1 } }
-    );
+    return await this.commentLikeRepository
+      .updateOne(
+        { _id: like_id },
+        { $pull: { liked_user: { $match: user_id } }, $inc: { liked_num: -1 } }
+      )
+      .exec();
   }
 
-  async createPostLike() {
-    return new this.postLikeRepository().save();
+  async createPostLike(post_id: PostLike["post_id"]) {
+    return new this.postLikeRepository({ post_id }).save();
   }
 
-  async createCommentLike() {
-    return new this.commentLikeRepository().save();
+  async createCommentLike(comment_id: CommentLike["comment_id"]) {
+    return new this.commentLikeRepository({ comment_id }).save();
   }
 
-  async deletePostLike(like_id: string) {
-    return await this.postLikeRepository.deleteOne({ _id: like_id });
+  async deletePostLike(post_id: PostLike["post_id"]) {
+    return await this.postLikeRepository.deleteOne({ post_id }).exec();
   }
 
-  async deleteCommentLike(like_id: string) {
-    return await this.commentLikeRepository.deleteOne({ _id: like_id });
+  async deleteCommentLike(comment_id: CommentLike["comment_id"]) {
+    return await this.commentLikeRepository.deleteOne({ comment_id }).exec();
   }
 }
 

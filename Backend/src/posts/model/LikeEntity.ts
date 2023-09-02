@@ -2,20 +2,20 @@ import { Schema, Types } from "mongoose";
 import { DB } from "../../users/model/UserEntity";
 
 interface PostLike {
-  post_id: Schema.Types.ObjectId;
+  post_id: string;
   liked_num: number;
   liked_user: Types.DocumentArray<Schema.Types.ObjectId>;
   createdAt: Schema.Types.Date;
 }
 
 interface CommentLike {
-  comment_id: Schema.Types.ObjectId;
+  comment_id: string;
   liked_num: number;
   liked_user: Types.DocumentArray<Schema.Types.ObjectId>;
   createdAt: Schema.Types.Date;
 }
 
-const PostLikeSchema = new Schema<PostLike>({
+const PostLikeSchema = new Schema({
   post_id: {
     type: Schema.Types.ObjectId,
     ref: "post",
@@ -34,7 +34,7 @@ const PostLikeSchema = new Schema<PostLike>({
   ],
 });
 
-const CommentLikeSchema = new Schema<CommentLike>({
+const CommentLikeSchema = new Schema({
   comment_id: {
     type: Schema.Types.ObjectId,
     ref: "comment",

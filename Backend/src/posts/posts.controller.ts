@@ -57,10 +57,10 @@ class PostController {
   async createPost(req: Request, res: Response, next: NextFunction) {
     try {
       let { post_title, post_text } = req.body;
-      console.log(post_text);
+
       const converter = new QuillDeltaToHtmlConverter(post_text.ops, {});
       const content = converter.convert();
-      console.log(content);
+
       const title = this.postService.sanitize(post_title);
 
       const user = await this.userService.getUser(
@@ -93,8 +93,9 @@ class PostController {
         res.locals.decoded.publicAddress
       );
 
-      const result = await this.postService.deletePost(user._id, post_id);
-      if (!result.acknowledged) {
+      const result = await this.postService.deletePost(post_id);
+      console.log(result);
+      if (result.deletedCount === 0) {
         return res.status(500).send("post deletion failed");
       }
 
