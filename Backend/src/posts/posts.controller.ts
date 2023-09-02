@@ -20,6 +20,7 @@ import { PostCommentBodyDto } from "./dtos/post-postCommentBody.dto";
 import { PostCommentParamDto } from "./dtos/post-postCommentParam.dto";
 import { PostReplyCommentDto } from "./dtos/post-replyComment.dto";
 import { PostLikePostDto } from "./dtos/post-replyComment.dto copy";
+import { GetSearchDto } from "./dtos/get-getSearch.dto";
 const QuillDeltaToHtmlConverter =
   require("quill-delta-to-html").QuillDeltaToHtmlConverter;
 
@@ -196,28 +197,15 @@ class PostController {
     }
   }
 
-  @post("/comments/:comment_id/likes")
-  @use(verify)
-  @paramsValidator(PostReplyCommentDto)
-  async likeComment(req: Request, res: Response, next: NextFunction) {
-    try {
-      const result = await this.postService.likeComment(req.params.comment_id);
-
-      if (result.matchedCount === 0) {
-        return res.status(401).send("user cannot be updated");
-      }
-      return res.send("user info updated");
-    } catch (error) {
-      next(error);
-    }
-  }
-
   @post("/:post_id/likes")
   @use(verify)
   @paramsValidator(PostLikePostDto)
   async likePost(req: Request, res: Response, next: NextFunction) {
     try {
-      const result = await this.postService.likePost(req.params.post_id);
+      const result = await this.postService.likePost(
+        res.locals.decoded.publicAddress,
+        req.params.post_id
+      );
 
       if (result.matchedCount === 0) {
         return res.status(401).send("user cannot be updated");
@@ -228,10 +216,34 @@ class PostController {
     }
   }
 
-  @patch("/likes")
+  @patch("/:post_id/likes")
   @use(verify)
-  async delLike(req: Request, res: Response, next: NextFunction) {
+  @paramsValidator(PostLikePostDto)
+  async unLikePost(req: Request, res: Response, next: NextFunction) {
     try {
+      const result = await this.postService.unlikePost(
+        res.locals.decoded.publicAddress,
+        req.params.post_id
+      );
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  @post("/comments/:comment_id/likes")
+  @use(verify)
+  @paramsValidator(PostReplyCommentDto)
+  async likeComment(req: Request, res: Response, next: NextFunction) {
+    try {
+      const result = await this.postService.likeComment(
+        res.locals.decoded.publicAddress,
+        req.params.comment_id
+      );
+
+      if (result.matchedCount === 0) {
+        return res.status(401).send("like not updated");
+      }
+      return res.send("user info updated");
     } catch (error) {
       next(error);
     }
@@ -239,8 +251,19 @@ class PostController {
 
   @del("/comments/:comment_id")
   @use(verify)
-  async deleteComment(req: Request, res: Response, next: NextFunction) {
+  @paramsValidator(PostReplyCommentDto)
+  async unlikeComment(req: Request, res: Response, next: NextFunction) {
     try {
+      const result = await this.postService.unlikeComment(
+        res.locals.decoded.publicAddress,
+        req.params.comment_id
+      );
+
+      if (result.matchedCount === 0) {
+        return res.status(401).send("like not updated");
+      }
+
+      return res.send("user info updated");
     } catch (error) {
       next(error);
     }
@@ -248,8 +271,18 @@ class PostController {
 
   @get("/search")
   @use(verify)
+  @queryValidator(GetSearchDto)
   async getSearch(req: Request, res: Response, next: NextFunction) {
     try {
+      const result = await this.postService.getSearch(
+        req.query.keyword as string
+      );
+
+      if (!result) {
+        return res.status(401).send("Not Found");
+      }
+
+      return res.send(result);
     } catch (error) {
       next(error);
     }

@@ -10,8 +10,8 @@ import {
 interface ILikeRepository {
   getPostLike: (post_id: string) => Promise<PostLike>;
   getCommentLike: (comment_id: string) => Promise<CommentLike>;
-  incrementPostLike: (user_id: string, like_id: string) => Promise<any>;
-  incrementCommentLike: (user_id: string, like_id: string) => Promise<any>;
+  incrementPostLike: (user_id: string, post_id: string) => Promise<any>;
+  incrementCommentLike: (user_id: string, comment_id: string) => Promise<any>;
   decrementPostLike: (user_id: string, like_id: string) => Promise<any>;
   decrementCommentLike: (user_id: string, like_id: string) => Promise<any>;
   createPostLike: (post_id: PostLike["post_id"]) => Promise<PostLike>;
@@ -40,37 +40,37 @@ class MongoLikeRepository implements ILikeRepository {
       .exec()) as CommentLike;
   }
 
-  async incrementPostLike(user_id: string, like_id: string) {
+  async incrementPostLike(user_id: string, post_id: string) {
     return await this.postLikeRepository
       .updateOne(
-        { _id: like_id },
+        { post_id },
         { $addToset: { liked_user: user_id }, $inc: { liked_num: 1 } }
       )
       .exec();
   }
 
-  async incrementCommentLike(user_id: string, like_id: string) {
+  async incrementCommentLike(user_id: string, comment_id: string) {
     return await this.commentLikeRepository
       .updateOne(
-        { _id: like_id },
+        { comment_id },
         { $addToset: { liked_user: user_id }, $inc: { liked_num: 1 } }
       )
       .exec();
   }
 
-  async decrementPostLike(user_id: string, like_id: string) {
+  async decrementPostLike(user_id: string, post_id: string) {
     return await this.postLikeRepository
       .updateOne(
-        { _id: like_id },
+        { post_id },
         { $pull: { liked_user: { $match: user_id } }, $inc: { liked_num: -1 } }
       )
       .exec();
   }
 
-  async decrementCommentLike(user_id: string, like_id: string) {
+  async decrementCommentLike(user_id: string, comment_id: string) {
     return await this.commentLikeRepository
       .updateOne(
-        { _id: like_id },
+        { comment_id },
         { $pull: { liked_user: { $match: user_id } }, $inc: { liked_num: -1 } }
       )
       .exec();
