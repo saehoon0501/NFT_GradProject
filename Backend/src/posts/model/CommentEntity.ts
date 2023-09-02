@@ -2,11 +2,11 @@ import { Schema } from "mongoose";
 import { DB } from "../../users/model/UserEntity";
 
 interface Comment {
-  _id: Schema.Types.ObjectId;
-  reply_id?: Schema.Types.ObjectId;
-  post_id?: Schema.Types.ObjectId;
-  user: Schema.Types.ObjectId;
-  caption: string;
+  _id: string;
+  reply_id?: string;
+  post_id?: string;
+  user: string;
+  text: string;
   createdAt: Schema.Types.Date;
 }
 
@@ -25,7 +25,7 @@ const CommentSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "comments",
     },
-    caption: {
+    text: {
       type: String,
       required: true,
     },

@@ -16,6 +16,10 @@ import { IUserService } from "../users/users.service";
 import { verify } from "../middleware/jwt";
 import { PostRequestDto } from "./dtos/post.dto";
 import { CreatePostRequestDto } from "./dtos/create-post.dto";
+import { PostCommentBodyDto } from "./dtos/post-postCommentBody.dto";
+import { PostCommentParamDto } from "./dtos/post-postCommentParam.dto";
+import { PostReplyCommentDto } from "./dtos/post-replyComment.dto";
+import { PostLikePostDto } from "./dtos/post-replyComment.dto copy";
 const QuillDeltaToHtmlConverter =
   require("quill-delta-to-html").QuillDeltaToHtmlConverter;
 
@@ -116,6 +120,8 @@ class PostController {
       }
 
       const result = await this.postService.getComments(post_id);
+
+      return res.send(result);
     } catch (error) {
       next(error);
     }
@@ -123,8 +129,23 @@ class PostController {
 
   @post("/:post_id/comments")
   @use(verify)
+  @bodyValidator(PostCommentBodyDto)
+  @paramsValidator(PostCommentParamDto)
   async addComment(req: Request, res: Response, next: NextFunction) {
     try {
+      let { context } = req.body;
+      const post_id = req.params.post_id;
+
+      context = this.postService.sanitize(context);
+
+      const user = this.userService.getUser(res.locals.decoded.publicAddress);
+      if (!user) {
+        throw new Error("User Not Found");
+      }
+
+      const result = await this.postService.createPostComment(post_id);
+
+      return res.send(result);
     } catch (error) {
       next(error);
     }
@@ -132,8 +153,23 @@ class PostController {
 
   @post("/comments/:comment_id")
   @use(verify)
+  @bodyValidator(PostCommentBodyDto)
+  @paramsValidator(PostReplyCommentDto)
   async addReply(req: Request, res: Response, next: NextFunction) {
     try {
+      let { context } = req.body;
+      const comment_id = req.params.post_id;
+
+      context = this.postService.sanitize(context);
+
+      const user = this.userService.getUser(res.locals.decoded.publicAddress);
+      if (!user) {
+        throw new Error("User Not Found");
+      }
+
+      const result = await this.postService.createReplyComment(comment_id);
+
+      return res.send(result);
     } catch (error) {
       next(error);
     }
@@ -141,26 +177,52 @@ class PostController {
 
   @patch("/comments/:comment_id")
   @use(verify)
-  async modifyComment(req: Request, res: Response, next: NextFunction) {
+  @bodyValidator(PostCommentBodyDto)
+  @paramsValidator(PostReplyCommentDto)
+  async updateComment(req: Request, res: Response, next: NextFunction) {
     try {
+      let { context } = req.body;
+      const comment_id = req.params.comment_id;
+
+      context = this.postService.sanitize(context);
+
+      const result = await this.postService.updateComment(comment_id, context);
+      if (result.matchedCount === 0) {
+        return res.status(401).send("user cannot be updated");
+      }
+      return res.send("user info updated");
     } catch (error) {
       next(error);
     }
   }
 
-  @post("/comments/likes")
+  @post("/comments/:comment_id/likes")
   @use(verify)
+  @paramsValidator(PostReplyCommentDto)
   async likeComment(req: Request, res: Response, next: NextFunction) {
     try {
+      const result = await this.postService.likeComment(req.params.comment_id);
+
+      if (result.matchedCount === 0) {
+        return res.status(401).send("user cannot be updated");
+      }
+      return res.send("user info updated");
     } catch (error) {
       next(error);
     }
   }
 
-  @post("/likes")
+  @post("/:post_id/likes")
   @use(verify)
+  @paramsValidator(PostLikePostDto)
   async likePost(req: Request, res: Response, next: NextFunction) {
     try {
+      const result = await this.postService.likePost(req.params.post_id);
+
+      if (result.matchedCount === 0) {
+        return res.status(401).send("user cannot be updated");
+      }
+      return res.send("user info updated");
     } catch (error) {
       next(error);
     }
