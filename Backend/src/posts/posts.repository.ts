@@ -1,9 +1,10 @@
 import { PostModel, Post } from "./model/PostEntity";
 import { UserModel } from "../users/model/UserEntity";
-import { PostCommentModel } from "./model/CommentEntity";
+import { CommentModel } from "./model/CommentEntity";
 import { PostLike, PostLikeModel } from "./model/LikeEntity";
 import Container from "typedi";
-import { HydratedDocument } from "mongoose";
+import { HydratedDocument, Model } from "mongoose";
+const mongoose = require("mongoose");
 
 interface IPostRepository {
   getBestPosts; // 최근 일주일 동안 좋아요 수가 많은 순서대로 Post 10개를 가져온다.
@@ -17,89 +18,101 @@ interface IPostRepository {
 }
 
 class MongoPostRepository {
+  constructor(private repository: Model<Post>) {}
+
   getBestPosts(lastWeek: Date, pageNum: number) {
-    return PostModel.aggregate([
-      { $match: { createdAt: { $gt: lastWeek } } },
-      {
-        $lookup: {
-          from: PostLikeModel.collection.name,
-          localField: "likes",
-          foreignField: "_id",
-          as: "likes",
+    return this.repository
+      .aggregate([
+        { $match: { createdAt: { $gte: lastWeek } } },
+        {
+          $lookup: {
+            from: PostLikeModel.collection.name,
+            localField: "_id",
+            foreignField: "post_id",
+            as: "likes",
+          },
         },
-      },
-      { $unwind: "$likes" },
-      { $sort: { "likes.liked_num": -1 } },
-      { $skip: pageNum * 10 },
-      { $limit: 10 },
-    ]);
+        { $unwind: "$likes" },
+        { $sort: { "likes.liked_num": -1 } },
+        { $skip: pageNum * 10 },
+        { $limit: 10 },
+      ])
+      .exec();
   }
 
   getPosts(pageNum: number) {
-    return PostModel.aggregate([
-      { $sort: { _id: -1 } },
-      { $skip: pageNum * 10 },
-      { $limit: 10 },
-      {
-        $lookup: {
-          from: PostLikeModel.collection.name,
-          localField: "likes",
-          foreignField: "_id",
-          as: "likes",
+    return this.repository
+      .aggregate([
+        { $sort: { _id: -1 } },
+        { $skip: pageNum * 10 },
+        { $limit: 10 },
+        {
+          $lookup: {
+            from: PostLikeModel.collection.name,
+            localField: "_id",
+            foreignField: "post_id",
+            as: "likes",
+          },
         },
-      },
-      { $unwind: "$likes" },
-    ]);
+        { $unwind: "$likes" },
+      ])
+      .exec();
   }
 
   enrichPosts(post: any) {
-    return post.aggregate([
-      {
-        $lookup: {
-          from: UserModel.collection.name,
-          localField: "user",
-          foreignField: "_id",
-          as: "user",
+    return post
+      .aggregate([
+        {
+          $lookup: {
+            from: UserModel.collection.name,
+            localField: "user",
+            foreignField: "_id",
+            as: "user",
+          },
         },
-      },
-      {
-        $lookup: {
-          from: PostCommentModel.collection.name,
-          localField: "comments",
-          foreignField: "_id",
-          as: "comments",
+        {
+          $lookup: {
+            from: CommentModel.collection.name,
+            localField: "post_id",
+            foreignField: "_id",
+            as: "comments",
+          },
         },
-      },
-      {
-        $project: {
-          _id: 1,
-          "user._id": 1,
-          "user.publicAddr": 1,
-          "user.profile.profile_pic": 1,
-          "user.profile.username": 1,
-          "user.profile.caption": 1,
-          "user.profile.points": 1,
-          title: 1,
-          text: 1,
-          likes: 1,
-          comments: 1,
-          createdAt: 1,
+        {
+          $project: {
+            _id: 1,
+            "user._id": 1,
+            "user.publicAddr": 1,
+            "user.profile.profile_pic": 1,
+            "user.profile.username": 1,
+            "user.profile.caption": 1,
+            "user.profile.points": 1,
+            title: 1,
+            text: 1,
+            likes: 1,
+            comments: 1,
+            createdAt: 1,
+          },
         },
-      },
-      { $unwind: "$user" },
-    ]);
+        { $unwind: "$user" },
+      ])
+      .exec();
   }
 
   createPost({ user, title, text }) {
-    const post: HydratedDocument<Post> = new PostModel({
+    const post: HydratedDocument<Post> = new this.repository({
       user,
       title,
       text,
     });
     return post.save();
   }
+
+  deletePost(post_id: string) {
+    return PostModel.deleteOne({ _id: post_id }).exec();
+  }
 }
 
-Container.set("PostRepository", new MongoPostRepository());
+Container.set("PostRepository", new MongoPostRepository(PostModel));
 
 export { IPostRepository };
