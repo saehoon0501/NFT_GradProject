@@ -140,14 +140,17 @@ class PostController {
 
       context = this.postService.sanitize(context);
 
-      const user = this.userService.getUser(res.locals.decoded.publicAddress);
+      const user = await this.userService.getUser(
+        res.locals.decoded.publicAddress
+      );
       if (!user) {
         throw new Error("User Not Found");
       }
 
       const result = await this.postService.createPostComment(
-        res.locals.decoded.publicAddress,
-        post_id
+        user._id,
+        post_id,
+        context
       );
 
       return res.send(result);

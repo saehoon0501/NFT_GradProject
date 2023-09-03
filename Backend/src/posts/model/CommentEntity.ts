@@ -6,7 +6,7 @@ interface Comment {
   reply_id?: string;
   post_id?: string;
   user: string;
-  text: string;
+  context: string;
   createdAt: Schema.Types.Date;
 }
 
@@ -25,7 +25,7 @@ const CommentSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "comments",
     },
-    text: {
+    context: {
       type: String,
       required: true,
     },
