@@ -1,11 +1,12 @@
 import Container from "typedi";
-import { Model } from "mongoose";
+import { Model, ObjectId, UpdateQuery } from "mongoose";
 import {
   CommentLike,
   CommentLikeModel,
   PostLike,
   PostLikeModel,
 } from "./model/LikeEntity";
+import { Types } from "mongoose";
 
 interface ILikeRepository {
   getPostLike: (post_id: string) => Promise<PostLike>;
@@ -43,8 +44,15 @@ class MongoLikeRepository implements ILikeRepository {
   async incrementPostLike(user_id: string, post_id: string) {
     return await this.postLikeRepository
       .updateOne(
-        { post_id },
-        { $addToset: { liked_user: user_id }, $inc: { liked_num: 1 } }
+        {
+          post_id,
+          liked_user: {
+            $not: {
+              $in: user_id,
+            },
+          },
+        },
+        { $addToSet: { liked_user: user_id }, $inc: { liked_num: 1 } }
       )
       .exec();
   }
@@ -52,8 +60,15 @@ class MongoLikeRepository implements ILikeRepository {
   async incrementCommentLike(user_id: string, comment_id: string) {
     return await this.commentLikeRepository
       .updateOne(
-        { comment_id },
-        { $addToset: { liked_user: user_id }, $inc: { liked_num: 1 } }
+        {
+          comment_id,
+          liked_user: {
+            $not: {
+              $in: user_id,
+            },
+          },
+        },
+        { $addToSet: { liked_user: user_id }, $inc: { liked_num: 1 } }
       )
       .exec();
   }
@@ -61,8 +76,11 @@ class MongoLikeRepository implements ILikeRepository {
   async decrementPostLike(user_id: string, post_id: string) {
     return await this.postLikeRepository
       .updateOne(
-        { post_id },
-        { $pull: { liked_user: { $match: user_id } }, $inc: { liked_num: -1 } }
+        { post_id, liked_num: { $gt: 0 } },
+        {
+          $pull: { liked_user: user_id } as UpdateQuery<PostLike>,
+          $inc: { liked_num: -1 },
+        }
       )
       .exec();
   }
@@ -70,8 +88,11 @@ class MongoLikeRepository implements ILikeRepository {
   async decrementCommentLike(user_id: string, comment_id: string) {
     return await this.commentLikeRepository
       .updateOne(
-        { comment_id },
-        { $pull: { liked_user: { $match: user_id } }, $inc: { liked_num: -1 } }
+        { comment_id, liked_num: { $gt: 0 } },
+        {
+          $pull: { liked_user: user_id } as UpdateQuery<PostLike>,
+          $inc: { liked_num: -1 },
+        }
       )
       .exec();
   }

@@ -28,11 +28,12 @@ class UsersController {
 
     if (!result) {
       res.send({ error: "Invalid signature" });
+      return;
     }
 
-    const jwt = this.authService.generateJwt(req.body.publicAddress);
+    const jwt = this.authService.generateJwt(result._id);
 
-    res.send(jwt);
+    return res.send(jwt);
   }
 
   @get("/")

@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import { Container } from "typedi";
 import { IUserRepository } from "./users.repository";
 import { Signature } from "ethers";
+import { User } from "./model/UserEntity";
 
 interface jwtInput {
   publicAddress: string;
@@ -13,7 +14,7 @@ interface jwtInput {
 
 interface IAuthService {
   generateNonce: () => string;
-  verifySignature: (input: jwtInput) => Promise<boolean>;
+  verifySignature: (input: jwtInput) => Promise<User | undefined>;
   generateJwt: (publicAddress: string) => { accessToken };
 }
 
@@ -30,19 +31,19 @@ class AuthService implements IAuthService {
     const user = await this.userRepo.findByPublicAddress(publicAddress);
 
     if (!user) {
-      return false;
+      return undefined;
     }
     const signedAddr = ethers.utils.verifyMessage(msg, signature);
 
     if (signedAddr.toLowerCase() !== publicAddress) {
-      return false;
+      return undefined;
     }
-    return true;
+    return user;
   }
 
-  generateJwt(publicAddress: string) {
+  generateJwt(user_id: string) {
     return {
-      accessToken: jwt.sign({ publicAddress }, JWT_SECRET, {
+      accessToken: jwt.sign({ user_id }, JWT_SECRET, {
         algorithm: JWT_ALGO,
         expiresIn: JWT_EXPIRE,
       }),
