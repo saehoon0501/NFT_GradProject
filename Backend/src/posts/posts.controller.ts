@@ -56,6 +56,7 @@ class PostController {
       next(error);
     }
   }
+
   @post("/")
   @use(verify)
   @bodyValidator(CreatePostRequestDto)
@@ -144,7 +145,10 @@ class PostController {
         throw new Error("User Not Found");
       }
 
-      const result = await this.postService.createPostComment(post_id);
+      const result = await this.postService.createPostComment(
+        res.locals.decoded.publicAddress,
+        post_id
+      );
 
       return res.send(result);
     } catch (error) {
@@ -249,7 +253,7 @@ class PostController {
     }
   }
 
-  @del("/comments/:comment_id")
+  @patch("/comments/:comment_id")
   @use(verify)
   @paramsValidator(PostReplyCommentDto)
   async unlikeComment(req: Request, res: Response, next: NextFunction) {

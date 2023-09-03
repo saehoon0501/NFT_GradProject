@@ -8,18 +8,20 @@ function validatorFactory<T>(
   source: MetadataKeys.query | MetadataKeys.body | MetadataKeys.params
 ) {
   return function (target: any, key: string, desc: PropertyDescriptor) {
-    Reflect.defineMetadata(MetadataKeys.query, model, target, key);
+    Reflect.defineMetadata(source, model, target, key);
 
     const method = desc.value;
     desc.value = async function () {
-      const model = Reflect.getMetadata(MetadataKeys.query, target, key);
+      const model = Reflect.getMetadata(source, target, key);
 
       const [req, res] = arguments;
       const plain = req[source];
-
+      console.log(plain);
       const result = await validate(plainToInstance(model, plain), {
         validationError: { target: false },
       });
+
+      console.log(result);
 
       if (result.length > 0) {
         return res.status(422).send(result);
