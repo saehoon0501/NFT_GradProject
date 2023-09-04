@@ -14,7 +14,8 @@ import { IPostService } from "./posts.service";
 import { Service, Inject } from "typedi";
 import { IUserService } from "../users/users.service";
 import { verify } from "../middleware/jwt";
-import { PostRequestDto } from "./dtos/post.dto";
+import { PostRequestDto } from "./dtos/post-post.dto";
+import { PostSerializer } from "./posts.serializer";
 import { CreatePostRequestDto } from "./dtos/create-post.dto";
 import { PostCommentBodyDto } from "./dtos/post-postCommentBody.dto";
 import { PostCommentParamDto } from "./dtos/post-postCommentParam.dto";
@@ -22,6 +23,8 @@ import { PostReplyCommentDto } from "./dtos/post-replyComment.dto";
 import { PostLikePostDto } from "./dtos/post-replyComment.dto copy";
 import { Post } from "./model/PostEntity";
 import { GetSearchDto } from "./dtos/get-getSearch.dto";
+import { GetSendPostDto } from "./dtos/get-sendPost.dto";
+import { PostsDto } from "./dtos/posts.dto";
 const QuillDeltaToHtmlConverter =
   require("quill-delta-to-html").QuillDeltaToHtmlConverter;
 
@@ -30,29 +33,29 @@ const QuillDeltaToHtmlConverter =
 class PostController {
   constructor(
     @Inject("PostService") private postService: IPostService,
-    @Inject("UserService") private userService: IUserService
+    @Inject("UserService") private userService: IUserService,
+    @Inject("PostSerializer") private serializer: PostSerializer
   ) {}
 
   @get("/")
+  @queryValidator(GetSendPostDto)
   async sendPost(req: Request, res: Response, next: NextFunction) {
     try {
       const filter = req.query.filter;
-      let pageNum: number;
+      const pageNum = parseInt(req.query.pageNum as string);
       let result: Post[];
 
-      if (req.query.pageNum == undefined) {
-        pageNum = 0;
-      } else {
-        pageNum = parseInt(req.query.pageNum as string);
-      }
       if (filter == "best") {
         let lastWeek = new Date();
         lastWeek.setDate(lastWeek.getDate() - 14);
         result = await this.postService.getBestPosts(lastWeek, pageNum);
-      } else {
+      } else if (filter === "recent") {
         result = await this.postService.getPosts(pageNum);
+      } else {
+        return res.status(422).send("Invalid filter");
       }
-      return res.send(result);
+      console.log(result[0]);
+      return res.send(this.serializer.serializePosts(PostsDto, result));
     } catch (error) {
       next(error);
     }

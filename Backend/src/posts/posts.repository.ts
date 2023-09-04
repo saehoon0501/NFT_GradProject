@@ -29,13 +29,18 @@ class MongoPostRepository {
             from: PostLikeModel.collection.name,
             localField: "_id",
             foreignField: "post_id",
+            pipeline: [
+              {
+                $match: { liked_num: { $gt: 0 } },
+              },
+            ],
             as: "likes",
           },
         },
-        { $unwind: "$likes" },
         { $sort: { "likes.liked_num": -1 } },
         { $skip: pageNum * 10 },
         { $limit: 10 },
+        ...this.enrichPostQuery(),
       ])
       .exec();
   }
@@ -54,47 +59,7 @@ class MongoPostRepository {
             as: "likes",
           },
         },
-        { $unwind: "$likes" },
-      ])
-      .exec();
-  }
-
-  enrichPosts(post: any) {
-    return post
-      .aggregate([
-        {
-          $lookup: {
-            from: UserModel.collection.name,
-            localField: "user",
-            foreignField: "_id",
-            as: "user",
-          },
-        },
-        {
-          $lookup: {
-            from: CommentModel.collection.name,
-            localField: "post_id",
-            foreignField: "_id",
-            as: "comments",
-          },
-        },
-        {
-          $project: {
-            _id: 1,
-            "user._id": 1,
-            "user.publicAddr": 1,
-            "user.profile.profile_pic": 1,
-            "user.profile.username": 1,
-            "user.profile.caption": 1,
-            "user.profile.points": 1,
-            title: 1,
-            text: 1,
-            likes: 1,
-            comments: 1,
-            createdAt: 1,
-          },
-        },
-        { $unwind: "$user" },
+        ...this.enrichPostQuery(),
       ])
       .exec();
   }
@@ -110,6 +75,39 @@ class MongoPostRepository {
 
   deletePost(post_id: string) {
     return PostModel.deleteOne({ _id: post_id }).exec();
+  }
+
+  private enrichPostQuery() {
+    return [
+      {
+        $lookup: {
+          from: UserModel.collection.name,
+          localField: "user",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      {
+        $lookup: {
+          from: CommentModel.collection.name,
+          localField: "_id",
+          foreignField: "post_id",
+          as: "comments",
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          "user._id": 1,
+          "user.profile_pic": 1,
+          "user.username": 1,
+          title: 1,
+          text: 1,
+          likes: 1,
+          comments: 1,
+        },
+      },
+    ];
   }
 }
 

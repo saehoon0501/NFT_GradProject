@@ -15,6 +15,7 @@ import "./users/users.controller";
 import "./posts/posts.repository";
 import "./posts/likes.repository";
 import "./posts/comments.repository";
+import "./posts/posts.serializer";
 import "./posts/posts.service";
 import "./posts/posts.controller";
 const bodyParser = require("body-parser");
