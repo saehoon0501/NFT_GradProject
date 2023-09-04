@@ -1,70 +1,68 @@
 import Container from "typedi";
 import { User, UserModel } from "./model/UserEntity";
 import { PostModel } from "../posts/model/PostEntity";
-import { PostComment, PostCommentModel } from "../posts/model/CommentEntity";
+import { Comment, CommentModel } from "../posts/model/CommentEntity";
 import { Model } from "mongoose";
 import { Post } from "../posts/model/PostEntity";
+const mongoose = require("mongoose");
 
 interface IUserRepository {
   findByPublicAddress: (publicAddress: string) => Promise<User>;
   findById: (userId: string) => Promise<User>;
   updateUser: (
-    publicAddress: string,
+    user_id: string,
     {
-      caption,
-      profileName,
+      description,
+      username,
       profile_pic,
     }: {
-      caption: string;
-      profileName: string;
+      description: string;
+      username: string;
       profile_pic: string;
     }
   ) => Promise<any>;
-  getUserPosts: (publicAddress: string) => Promise<Post[]>;
-  getUserComments: (publicAddress: string) => Promise<PostComment[]>;
+  getUserPosts: (user_id: string) => Promise<Post[]>;
+  getUserComments: (user_id: string) => Promise<Comment[]>;
 }
 
 class MongoUserRepository implements IUserRepository {
   constructor(private repository: Model<User>) {}
   async findByPublicAddress(publicAddress: string) {
     const result = (await this.repository
-      .findOne({ publicAddr: `${publicAddress}` })
+      .findOne({ public_address: `${publicAddress}` })
       .exec()) as User;
     return result;
   }
 
   async findById(userId: string) {
     const result = (await this.repository
-      .findById({ _id: `${userId}` })
+      .findById({ _id: userId })
       .exec()) as User;
     return result;
   }
 
   async updateUser(
-    publicAddress: string,
+    user_id: string,
     {
-      caption,
-      profileName,
+      description,
+      username,
       profile_pic,
     }: {
-      caption: string;
-      profileName: string;
+      description: string;
+      username: string;
       profile_pic: string;
     }
   ) {
     const result = await this.repository
       .updateOne(
         {
-          $and: [
-            { publicAddr: `${publicAddress}` },
-            { "ownerOfNFT.NFT_URL": `${profile_pic}` },
-          ],
+          $and: [{ _id: user_id }, { "owner_of_nft.nft_url": profile_pic }],
         },
         {
           $set: {
-            "profile.username": `${profileName}`,
-            "profile.caption": `${caption}`,
-            "profile.profile_pic": `${profile_pic}`,
+            username,
+            description,
+            profile_pic,
           },
         }
       )
@@ -72,9 +70,10 @@ class MongoUserRepository implements IUserRepository {
     return result;
   }
 
-  async getUserPosts(publicAddress: string) {
+  async getUserPosts(user_id: string) {
+    console.log(user_id);
     const result = (await UserModel.aggregate([
-      { $match: { publicAddr: publicAddress } },
+      { $match: { _id: mongoose.Types.ObjectId(user_id) } },
       {
         $lookup: {
           from: PostModel.collection.name,
@@ -85,22 +84,19 @@ class MongoUserRepository implements IUserRepository {
       },
       {
         $project: {
-          ownerOfNFT: 0,
-          profile: 0,
-          "posts.updatedAt": 0,
-          "posts.user": 0,
+          posts: 1,
         },
       },
     ])) as Post[];
     return result;
   }
 
-  async getUserComments(publicAddress: string) {
+  async getUserComments(user_id: string) {
     const result = (await UserModel.aggregate([
-      { $match: { publicAddr: publicAddress } },
+      { $match: { _id: mongoose.Types.ObjectId(user_id) } },
       {
         $lookup: {
-          from: PostCommentModel.collection.name,
+          from: CommentModel.collection.name,
           localField: "_id",
           foreignField: "user",
           as: "comments",
@@ -109,11 +105,11 @@ class MongoUserRepository implements IUserRepository {
       {
         $project: {
           "comments._id": 1,
-          "comments.caption": 1,
-          "comments.updatedAt": 1,
+          "comments.user": 1,
+          "comments.context": 1,
         },
       },
-    ])) as PostComment[];
+    ])) as Comment[];
     return result;
   }
 }

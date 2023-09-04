@@ -5,42 +5,37 @@ const DB = createConnection(DATABASE_URL as string);
 
 interface User {
   _id: string;
-  publicAddr: string;
-  ownerOfNFT: {
+  public_address: string;
+  owner_of_nft: {
     collection_id: string;
-    NFT_URL: string[];
+    nft_url: string[];
   }[];
-  profile: {
-    username: string;
-    caption: string;
-    points: number;
-    profile_pic: string;
-  };
+
+  username: string;
+  description: string;
+  points: number;
+  profile_pic: string;
+
   role: string;
 }
 
 const userSchema = new Schema<User>(
   {
-    publicAddr: {
+    public_address: {
       type: String,
       required: true,
       unique: true,
     },
-    ownerOfNFT: [
+    owner_of_nft: [
       {
         collection_id: { type: String },
-        NFT_URL: [String],
+        nft_url: [String],
       },
     ],
-    profile: {
-      type: {
-        username: { type: String, required: true },
-        caption: { type: String, required: true },
-        points: { type: Number },
-        profile_pic: { type: String, required: true },
-      },
-      required: true,
-    },
+    username: { type: String, required: true },
+    description: { type: String, required: true },
+    points: { type: Number },
+    profile_pic: { type: String, required: true },
     role: { type: String, required: true },
   },
   { strict: true }

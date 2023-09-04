@@ -4,17 +4,17 @@ import { IUserRepository } from "./users.repository";
 
 interface IUserService {
   getUser: (uniqueKey: string) => Promise<User>;
-  getUserPosts: (publicAddress: string) => any;
-  getUserComments: (publicAddress: string) => any;
+  getUserPosts: (user_id: string) => any;
+  getUserComments: (user_id: string) => any;
   updateUser: (
-    publicAddress: string,
+    user_id: string,
     {
-      caption,
-      profileName,
+      description,
+      username,
       profile_pic,
     }: {
-      caption: string;
-      profileName: string;
+      description: string;
+      username: string;
       profile_pic: string;
     }
   ) => any;
@@ -30,29 +30,29 @@ class UserSerivce implements IUserService {
     return this.userRepo.findById(uniqueKey);
   }
 
-  getUserPosts(publicAddress: string) {
-    return this.userRepo.getUserPosts(publicAddress);
+  getUserPosts(user_id: string) {
+    return this.userRepo.getUserPosts(user_id);
   }
 
-  getUserComments(publicAddress: string) {
-    return this.userRepo.getUserComments(publicAddress);
+  getUserComments(user_id: string) {
+    return this.userRepo.getUserComments(user_id);
   }
 
   updateUser(
-    publicAddress: string,
+    user_id: string,
     {
-      caption,
-      profileName,
+      description,
+      username,
       profile_pic,
     }: {
-      caption: string;
-      profileName: string;
+      description: string;
+      username: string;
       profile_pic: string;
     }
   ) {
-    return this.userRepo.updateUser(publicAddress, {
-      caption,
-      profileName,
+    return this.userRepo.updateUser(user_id, {
+      description,
+      username,
       profile_pic,
     });
   }

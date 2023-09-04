@@ -2,10 +2,10 @@ import { IsString, IsUrl } from "class-validator";
 
 export class UpdateUserDto {
   @IsString()
-  caption: string;
+  description: string;
 
   @IsString()
-  profileName: string;
+  username: string;
 
   @IsUrl()
   profile_pic: string;
