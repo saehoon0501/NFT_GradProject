@@ -1,6 +1,7 @@
 import { Model } from "mongoose";
 import { Container } from "typedi";
 import { Comment, CommentModel } from "./model/CommentEntity";
+const mongoose = require("mongoose");
 
 interface ICommentRepository {
   createPostComment: (
@@ -37,7 +38,30 @@ class MongoCommentRepository implements ICommentRepository {
   }
 
   async getPostComments(post_id: string) {
-    return await this.repository.find({ post_id }).exec();
+    return await this.repository
+      .aggregate([
+        {
+          $match: { post_id: mongoose.Types.ObjectId(post_id) },
+        },
+        {
+          $lookup: {
+            from: CommentModel.collection.name,
+            localField: "_id",
+            foreignField: "reply_id",
+            as: "reply",
+          },
+        },
+        {
+          $project: {
+            post_id: 0,
+            __v: 0,
+            "reply.post_id": 0,
+            "reply.reply_id": 0,
+            "reply.__v": 0,
+          },
+        },
+      ])
+      .exec();
   }
 
   async getReplyComments(reply_id: string) {
@@ -46,7 +70,11 @@ class MongoCommentRepository implements ICommentRepository {
 
   async updateComment(comment_id: string, context: string) {
     return await this.repository
-      .updateOne({ _id: comment_id }, { $set: { context } })
+      .updateOne(
+        { _id: comment_id },
+        { $set: { context } },
+        { $inc: { __v: 1 } }
+      )
       .exec();
   }
 

@@ -24,7 +24,7 @@ import { PostLikePostDto } from "./dtos/post-replyComment.dto copy";
 import { Post } from "./model/PostEntity";
 import { GetSearchDto } from "./dtos/get-getSearch.dto";
 import { GetSendPostDto } from "./dtos/get-sendPost.dto";
-import { PostsDto } from "./dtos/posts.dto";
+
 const QuillDeltaToHtmlConverter =
   require("quill-delta-to-html").QuillDeltaToHtmlConverter;
 
@@ -54,8 +54,8 @@ class PostController {
       } else {
         return res.status(422).send("Invalid filter");
       }
-      console.log(result[0]);
-      return res.send(this.serializer.serializePosts(PostsDto, result));
+
+      return res.send(this.serializer.serializePosts(result));
     } catch (error) {
       next(error);
     }
@@ -77,8 +77,8 @@ class PostController {
         title,
         text: content,
       });
-
-      return res.send(result);
+      console.log(result);
+      return res.send(this.serializer.serializeCreatePost(result));
     } catch (error) {
       next(error);
     }
@@ -96,12 +96,10 @@ class PostController {
       );
 
       const result = await this.postService.deletePost(post_id);
-      console.log(result);
-      if (result.deletedCount === 0) {
-        return res.status(500).send("post deletion failed");
-      }
 
-      return res.send("post deleted");
+      console.log(result);
+
+      return res.send(this.serializer.serializeDelete(result));
     } catch (error) {
       next(error);
     }
@@ -119,7 +117,7 @@ class PostController {
 
       const result = await this.postService.getComments(post_id);
 
-      return res.send(result);
+      return res.send(this.serializer.serializePostComments(result));
     } catch (error) {
       next(error);
     }

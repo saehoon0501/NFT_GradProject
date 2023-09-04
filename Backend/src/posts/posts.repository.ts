@@ -37,6 +37,7 @@ class MongoPostRepository {
             as: "likes",
           },
         },
+        { $match: { "likes.liked_num": { $exists: true } } },
         { $sort: { "likes.liked_num": -1 } },
         { $skip: pageNum * 10 },
         { $limit: 10 },

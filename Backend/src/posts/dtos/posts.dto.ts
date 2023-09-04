@@ -20,7 +20,6 @@ export class PostsDto {
 
   @Transform(({ obj }) => {
     const like = obj.likes[0];
-    console.log(obj.user[0]._id, like.liked_user);
     return {
       liked_num: like.liked_num,
       liked_user: like.liked_user.some((user) => user.equals(obj.user[0]._id)),

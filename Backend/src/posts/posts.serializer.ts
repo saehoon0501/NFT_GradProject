@@ -1,22 +1,30 @@
 import Container from "typedi";
-import { Post } from "./model";
-import { plainToInstance } from "class-transformer";
+import { Serializer } from "../serializer/serializer";
+import { PostsDto } from "./dtos/posts.dto";
+import { PostCreateDto } from "./dtos/postCreateResult.dto";
+import { CommentsDto } from "./dtos/comments.dto";
 
-interface ClassConstructor {
-  new (...args: any[]): object;
+abstract class PostSerializer extends Serializer {
+  abstract serializePosts(data: object[]): object[];
+  abstract serializeCreatePost(data: object): object;
+  abstract serializeDelete(data: object): boolean;
+  abstract serializePostComments(data: object[]): object;
+  abstract serializeCreateComment(data: object): object;
 }
 
-interface PostSerializer {
-  serializePosts: (dto: ClassConstructor, data: object[]) => object;
-}
+class MongoPostSerializer extends PostSerializer {
+  serializeDelete(data: object): boolean {
+    throw new Error("Method not implemented.");
+  }
+  serializePostComments(data: object[]): object {
+    return this.serializeItems(CommentsDto, data);
+  }
+  serializePosts(data: object[]): object[] {
+    return this.serializeItems(PostsDto, data);
+  }
 
-class MongoPostSerializer implements PostSerializer {
-  serializePosts(dto: ClassConstructor, data: object[]) {
-    return data.map((post) =>
-      plainToInstance(dto, post, {
-        excludeExtraneousValues: true,
-      })
-    );
+  serializeCreatePost(data: object): object {
+    return this.serializeItem(PostCreateDto, data);
   }
 }
 

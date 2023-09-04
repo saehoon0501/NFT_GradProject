@@ -1,33 +1,36 @@
-import { plainToInstance } from "class-transformer";
 import Container from "typedi";
-
-interface ClassConstructor {
-  new (...args: any[]): object;
-}
+import { Serializer } from "../serializer/serializer";
+import { UserDto } from "./dtos/user.dto";
+import { PostDto } from "./dtos/posts.dto";
+import { ProfileDto } from "./dtos/profile.dto";
+import { CommentDto } from "./dtos/comments.dto";
 
 class UpdatedResult {
   matchedCount: number;
 }
 
-abstract class UserSerializer {
-  serializeUser: (dto: ClassConstructor, data: object) => object;
-  serializeUserItems: (dto: ClassConstructor, data: object) => object;
-  serializeUserUpdate: (data: UpdatedResult) => boolean;
+abstract class UserSerializer extends Serializer {
+  abstract serializeUser(data: object): object;
+  abstract serializeProfile(data: object): object;
+  abstract serializeUserPosts(data: object[]): object;
+  abstract serializeUserComments(data: object[]): object;
+  abstract serializeUserUpdate(data: UpdatedResult): boolean;
 }
 
-class MongoUserSerializer implements UserSerializer {
-  serializeUser(dto: ClassConstructor, data: object) {
-    return plainToInstance(dto, data, {
-      excludeExtraneousValues: true,
-    });
+class MongoUserSerializer extends UserSerializer {
+  serializeUser(data: object) {
+    return this.serializeItem(UserDto, data);
+  }
+  serializeProfile(data: object): object {
+    return this.serializeItem(ProfileDto, data);
   }
 
-  serializeUserItems(dto: ClassConstructor, data: object) {
-    return this.getItems(data).map((post: object) => {
-      return plainToInstance(dto, post, {
-        excludeExtraneousValues: true,
-      });
-    });
+  serializeUserPosts(data: object[]) {
+    return this.serializeItems(PostDto, data[0].posts);
+  }
+
+  serializeUserComments(data: object[]) {
+    return this.serializeItems(CommentDto, data[0].comments);
   }
 
   serializeUserUpdate(data: UpdatedResult) {
@@ -35,15 +38,6 @@ class MongoUserSerializer implements UserSerializer {
       return true;
     }
     return false;
-  }
-
-  private getItems(data: object) {
-    if (data[0].posts) {
-      return data[0].posts;
-    } else if (data[0].comments) {
-      return data[0].comments;
-    }
-    return [];
   }
 }
 

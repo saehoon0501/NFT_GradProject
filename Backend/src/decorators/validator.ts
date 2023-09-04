@@ -16,7 +16,7 @@ function validatorFactory<T>(
 
       const [req, res] = arguments;
       const plain = req[source];
-      console.log(plain);
+
       const result = await validate(plainToInstance(model, plain), {
         validationError: { target: false },
       });

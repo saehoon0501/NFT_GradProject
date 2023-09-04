@@ -9,10 +9,6 @@ import { PostAuthDto } from "./dtos/post-auth.dto";
 import { UpdateUserDto } from "./dtos/update-user.dto";
 import { GetUserDto } from "./dtos/get-user.dto";
 import { UserSerializer } from "./users.serializer";
-import { UserDto } from "./dtos/user.dto";
-import { ProfileDto } from "./dtos/profile.dto";
-import { PostDto } from "./dtos/posts.dto";
-import { CommentDto } from "./dtos/comments.dto";
 
 @controller("/users")
 @Service()
@@ -52,7 +48,7 @@ class UsersController {
         throw new Error("user cannot be found");
       }
 
-      return res.json(this.serializer.serializeUser(UserDto, user));
+      return res.json(this.serializer.serializeUser(user));
     } catch (err) {
       console.log("유저 정보 sndProfile: User.findOne Error", err);
       next(err);
@@ -67,8 +63,8 @@ class UsersController {
     );
 
     if (!result) res.status(400).send("User cannot be found");
-    console.log(result[0].posts);
-    return res.send(this.serializer.serializeUserItems(PostDto, result));
+
+    return res.send(this.serializer.serializeUserPosts(result));
   }
 
   @get("/comments")
@@ -80,7 +76,7 @@ class UsersController {
 
     if (!result) throw new Error("user cannot be updated");
 
-    return res.send(this.serializer.serializeUserItems(CommentDto, result));
+    return res.send(this.serializer.serializeUserComments(result));
   }
 
   @get("/:user_id")
@@ -94,7 +90,7 @@ class UsersController {
         return res.send("user cannot be found");
       }
 
-      return res.json(this.serializer.serializeUser(ProfileDto, user));
+      return res.json(this.serializer.serializeProfile(user));
     } catch (err) {
       console.log("유저 정보 sndProfile: User.findOne Error", err);
       next(err);
