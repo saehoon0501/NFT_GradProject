@@ -10,9 +10,17 @@ abstract class PostSerializer extends Serializer {
   abstract serializeDelete(data: object): boolean;
   abstract serializePostComments(data: object[]): object;
   abstract serializeCreateComment(data: object): object;
+  abstract serializeUpdate(data: object): boolean;
+}
+
+class UpdatedResult {
+  matchedCount: number;
 }
 
 class MongoPostSerializer extends PostSerializer {
+  serializeCreateComment(data: object): object {
+    throw new Error("Method not implemented.");
+  }
   serializeDelete(data: object): boolean {
     throw new Error("Method not implemented.");
   }
@@ -25,6 +33,13 @@ class MongoPostSerializer extends PostSerializer {
 
   serializeCreatePost(data: object): object {
     return this.serializeItem(PostCreateDto, data);
+  }
+
+  serializeUpdate(data: UpdatedResult) {
+    if (data.matchedCount == 0) {
+      return true;
+    }
+    return false;
   }
 }
 

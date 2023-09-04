@@ -140,7 +140,7 @@ class PostController {
         context
       );
 
-      return res.send(result);
+      return res.send(this.serializer.serializeCreateComment(result));
     } catch (error) {
       next(error);
     }
@@ -163,7 +163,7 @@ class PostController {
         context
       );
 
-      return res.send(result);
+      return res.send(this.serializer.serializeCreateComment(result));
     } catch (error) {
       next(error);
     }
@@ -181,10 +181,10 @@ class PostController {
       context = this.postService.sanitize(context);
 
       const result = await this.postService.updateComment(comment_id, context);
-      if (result.matchedCount === 0) {
+      if (this.serializer.serializeUpdate(result)) {
         return res.status(401).send("user cannot be updated");
       }
-      return res.send("comment updated");
+      return res.send("updated");
     } catch (error) {
       next(error);
     }
@@ -200,7 +200,7 @@ class PostController {
         req.params.post_id
       );
 
-      if (result.matchedCount === 0) {
+      if (this.serializer.serializeUpdate(result)) {
         return res.status(401).send("like cannot be updated");
       }
       return res.send("like updated");
@@ -219,7 +219,7 @@ class PostController {
         req.params.post_id
       );
 
-      if (result.matchedCount === 0) {
+      if (this.serializer.serializeUpdate(result)) {
         return res.status(401).send("like cannot be updated");
       }
       return res.send("like updated");
@@ -238,7 +238,7 @@ class PostController {
         req.params.comment_id
       );
 
-      if (result.matchedCount === 0) {
+      if (this.serializer.serializeUpdate(result)) {
         return res.status(401).send("like cannot be updated");
       }
       return res.send("like updated");
@@ -257,7 +257,7 @@ class PostController {
         req.params.comment_id
       );
 
-      if (result.matchedCount === 0) {
+      if (this.serializer.serializeUpdate(result)) {
         return res.status(401).send("like cannot be updated");
       }
 
