@@ -6,4 +6,4 @@ Backend/src/config.ts
 Backend/build
 .env
 .vscode/settings.json
-Backend/src/config/dev.ts
+Backend/src/config
