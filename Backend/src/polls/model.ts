@@ -1,7 +1,7 @@
 import { Schema, createConnection } from "mongoose";
-import { DATABASE_URL } from "../config/dev";
+// import { DATABASE_URL } from "../config/dev";
 
-const pollDb = createConnection(DATABASE_URL as string);
+// const pollDb = createConnection(DATABASE_URL as string);
 
 interface Poll {
   _id: Schema.Types.ObjectId;
@@ -34,6 +34,6 @@ let pollSchema = new Schema(
   },
   { timestamps: true, strict: true }
 );
-const PollModel = pollDb.model("poll", pollSchema);
+// const PollModel = pollDb.model("poll", pollSchema);
 
-export { Poll, PollModel };
+export { Poll };

@@ -1,7 +1,6 @@
 import { Schema, createConnection, Types } from "mongoose";
-import { DATABASE_URL } from "../../config/dev";
-
-const DB = createConnection(DATABASE_URL as string);
+const keys = require("../../config/keys");
+const DB = createConnection(keys.DATABASE_URL as string);
 
 interface User {
   _id: string;

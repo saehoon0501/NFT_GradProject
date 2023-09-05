@@ -2,7 +2,6 @@ import express from "express";
 import cors from "cors";
 import { AppRouter } from "./AppRouter";
 import { initSocket } from "./socket";
-import { PORT } from "./config/dev";
 import "./users/model/UserEntity";
 import "./posts/model/CommentEntity";
 import "./posts/model/LikeEntity";
@@ -17,10 +16,12 @@ import "./posts/repositories/posts.repository";
 import "./posts/posts.serializer";
 import "./posts/posts.service";
 import "./posts/posts.controller";
+import "./cache/cache";
+import { redisClient } from "./cache/cache";
 const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 
-const app = express(); // express module on
+const app = express();
 
 app.use(cors());
 app.use(express.static("../public"));
@@ -33,7 +34,8 @@ app.use((err, req, res, next) => {
   res.send({ error: err.message });
 });
 
-const server = app.listen(PORT || 4000, () => {
-  console.log("running server on", PORT);
+const server = app.listen(process.env.PORT || 4000, async () => {
+  await redisClient.connect();
+  console.log("running server on", process.env.PORT || 4000);
 }); // port 4000인 server 실행
 initSocket(server, 3000);
