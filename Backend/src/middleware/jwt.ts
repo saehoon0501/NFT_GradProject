@@ -2,9 +2,9 @@ import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "../config/dev";
 
 const verify = (req, res, next) => {
-  const token = req.headers.authorization;
+  const token = req.cookies.token;
   try {
-    res.locals.decoded = jwt.verify(token.split(" ")[1], JWT_SECRET as string);
+    res.locals.decoded = jwt.verify(token, JWT_SECRET as string);
   } catch (err: any) {
     if (err.message === "jwt expired") {
       console.log("expired token");

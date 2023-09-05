@@ -15,7 +15,7 @@ interface jwtInput {
 interface IAuthService {
   generateNonce: () => string;
   verifySignature: (input: jwtInput) => Promise<User | undefined>;
-  generateJwt: (publicAddress: string) => { accessToken };
+  generateJwt: (publicAddress: string, role: string) => object;
 }
 
 class AuthService implements IAuthService {
@@ -41,13 +41,15 @@ class AuthService implements IAuthService {
     return user;
   }
 
-  generateJwt(user_id: string) {
-    return {
-      accessToken: jwt.sign({ user_id }, JWT_SECRET, {
+  generateJwt(user_id: string, role: string) {
+    return jwt.sign(
+      { user_id, admin: role === "admin" ? "true" : "false" },
+      JWT_SECRET,
+      {
         algorithm: JWT_ALGO,
         expiresIn: JWT_EXPIRE,
-      }),
-    };
+      }
+    );
   }
 }
 

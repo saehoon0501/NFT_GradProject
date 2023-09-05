@@ -19,12 +19,12 @@ class UsersController {
     @Inject("UserSerializer") private serializer: UserSerializer
   ) {}
 
-  @get("/auth")
+  @get("/login")
   sendNonce(req: Request, res: Response) {
     res.send(this.authService.generateNonce());
   }
 
-  @post("/auth")
+  @post("/login")
   @bodyValidator(PostAuthDto)
   async sendJwt(req: Request, res: Response) {
     const result = await this.authService.verifySignature(req.body);
@@ -34,9 +34,9 @@ class UsersController {
       return;
     }
 
-    const jwt = this.authService.generateJwt(result._id);
-
-    return res.send(jwt);
+    const jwt = this.authService.generateJwt(result._id, result.role);
+    res.cookie("token", jwt, { httpOnly: true });
+    return res.json({ token: jwt });
   }
 
   @get("/")

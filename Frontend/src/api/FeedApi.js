@@ -4,17 +4,6 @@ const feedApi = axios.create({
   baseURL: "http://localhost:4000/api/post",
 });
 
-feedApi.interceptors.request.use((config) => {
-  const token = window.localStorage.getItem("accessToken");
-  if (!token) {
-    return config;
-  }
-  config.headers = {
-    Authorization: `Bearer ${token}`,
-  };
-  return config;
-});
-
 export const getPost = async (pageNum) => {
   const response = await feedApi.get(`?pageNum=${pageNum}`);
   return response.data;

@@ -76,7 +76,7 @@ export const NFTLogin = () => {
   const handleAuthenticate = async ({ publicAddress, signature, msg }) => {
     try {
       const result = await axios
-        .post(`${baseURL}/api/users/auth`, {
+        .post(`/api/users/login`, {
           publicAddress: `${publicAddress}`,
           signature: `${signature}`,
           msg: `${msg}`,
@@ -88,7 +88,8 @@ export const NFTLogin = () => {
       console.log(JSON.stringify(result));
 
       if (result != null) {
-        localStorage.setItem("accessToken", result.accessToken);
+        // setJwt()
+        // localStorage.setItem("accessToken", result.accessToken);
         setIsAuth(true);
         navigate("/home");
       } else {
@@ -105,7 +106,7 @@ export const NFTLogin = () => {
       return;
     }
 
-    axios.get(`${baseURL}/api/users/auth`).then(
+    axios.get(`/api/users/login`).then(
       (res) => {
         const nonce = res.data;
         handleSignMessage(selectedAccount, nonce).then(

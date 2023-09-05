@@ -1,9 +1,9 @@
 import { Container, Service } from "typedi";
 import { Comment } from "./model/CommentEntity";
 import { Post } from "./model/PostEntity";
-import { IPostRepository } from "./posts.repository";
-import { ILikeRepository } from "./likes.repository";
-import { ICommentRepository } from "./comments.repository";
+import { IPostRepository } from "./repositories/posts.repository";
+import { ILikeRepository } from "./repositories/likes.repository";
+import { ICommentRepository } from "./repositories/comments.repository";
 import { CommentLike, PostLike } from "./model/LikeEntity";
 import { User } from "../users/model/UserEntity";
 
