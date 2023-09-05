@@ -9,7 +9,8 @@ import { Comment } from "./model/CommentEntity";
 
 interface IPostRepository {
   getBestPosts(lastWeek: Date, pageNum: number): Promise<any[]>; // 최근 일주일 동안 좋아요 수가 많은 순서대로 Post 10개를 가져온다.
-  getPosts(pageNum: number): Promise<any[]>; // 최근 추가된 순서대로 Post 10개를 가져온다.
+  getRecentPosts(pageNum: number): Promise<any[]>; // 최근 추가된 순서대로 Post 10개를 가져온다.
+  getPost(post_id: Post["_id"]): Promise<Post>;
   getSearch(keyword: string): Promise<Post[]>; // 검색한 문자열에 일치하는 제목 또는 내용의 post들을 가져온다.
   createPost(
     {
@@ -22,16 +23,16 @@ interface IPostRepository {
       text: Post["text"];
     },
     likeRepository: ILikeRepository
-  ): Promise<Post>;
+  ): object;
   deletePost(
     user_id: string,
     post_id: string,
     likeRepository: ILikeRepository,
     commentRepository: ICommentRepository
-  ): any;
+  ): object;
 }
 
-class MongoPostRepository {
+class MongoPostRepository implements IPostRepository {
   constructor(private repository: Model<Post>) {}
 
   getBestPosts(lastWeek: Date, pageNum: number) {
@@ -60,7 +61,7 @@ class MongoPostRepository {
       .exec();
   }
 
-  getPosts(pageNum: number) {
+  getRecentPosts(pageNum: number) {
     return this.repository
       .aggregate([
         { $sort: { _id: -1 } },
@@ -79,6 +80,10 @@ class MongoPostRepository {
       .exec();
   }
 
+  async getPost(post_id: Post["_id"]) {
+    return (await this.repository.findById(post_id).exec()) as Post;
+  }
+
   async createPost({ user, title, text }, likeRepository: ILikeRepository) {
     const session = await DB.startSession();
     try {
@@ -91,7 +96,10 @@ class MongoPostRepository {
         await post.save({ session });
         await likeRepository.createPostLike(post._id, session);
       });
-      return "post created";
+
+      return {
+        result: "OK",
+      };
     } catch (err) {
       throw new Error(`${err}`);
     } finally {
@@ -127,7 +135,7 @@ class MongoPostRepository {
           await this.repository.deleteOne({ _id: post_id }).session(session);
         });
 
-        return "post deleted";
+        return { result: "OK" };
       }
       throw new Error("post not deleted");
     } catch (err) {
@@ -174,7 +182,6 @@ class MongoPostRepository {
     return PostModel.aggregate([
       {
         $search: {
-          index: "contentIndex",
           compound: {
             must: [
               {
@@ -191,37 +198,15 @@ class MongoPostRepository {
       { $limit: 10 },
       {
         $lookup: {
-          from: "users",
-          localField: "user",
-          foreignField: "_id",
-          as: "user",
-        },
-      },
-      { $unwind: "$user" },
-      {
-        $lookup: {
           from: "post_likes",
-          localField: "likes",
-          foreignField: "_id",
+          localField: "_id",
+          foreignField: "post_id",
           as: "likes",
         },
       },
       { $unwind: "$likes" },
-      {
-        $project: {
-          _id: 1,
-          "user._id": 1,
-          "user.profile.username": 1,
-          "user.profile.profile_pic": 1,
-          createdAt: 1,
-          title: 1,
-          text: 1,
-          comments: 1,
-          likes: 1,
-          score: { $meta: "searchScore" },
-        },
-      },
-    ]);
+      ...this.enrichPostQuery(),
+    ]).exec();
   }
 }
 

@@ -1,6 +1,6 @@
 import { Expose, Transform } from "class-transformer";
 
-export class PostsDto {
+export class SearchDto {
   @Transform(({ obj }) => obj._id)
   @Expose()
   post_id: string;
@@ -22,7 +22,7 @@ export class PostsDto {
   text: string;
 
   @Transform(({ obj }) => {
-    const like = obj.likes[0];
+    const like = obj.likes;
     return {
       liked_num: like.liked_num,
       liked_user: like.liked_user.some((user) => user.equals(obj.user[0]._id)),

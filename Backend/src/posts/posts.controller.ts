@@ -33,7 +33,6 @@ const QuillDeltaToHtmlConverter =
 class PostController {
   constructor(
     @Inject("PostService") private postService: IPostService,
-    @Inject("UserService") private userService: IUserService,
     @Inject("PostSerializer") private serializer: PostSerializer
   ) {}
 
@@ -50,7 +49,7 @@ class PostController {
         lastWeek.setDate(lastWeek.getDate() - 14);
         result = await this.postService.getBestPosts(lastWeek, pageNum);
       } else if (filter === "recent") {
-        result = await this.postService.getPosts(pageNum);
+        result = await this.postService.getRecentPosts(pageNum);
       } else {
         return res.status(422).send("Invalid filter");
       }
@@ -77,7 +76,7 @@ class PostController {
         title,
         text: content,
       });
-      console.log(result);
+
       return res.send(this.serializer.serializeCreatePost(result));
     } catch (error) {
       next(error);
@@ -95,7 +94,7 @@ class PostController {
         res.locals.decoded.user_id,
         post_id
       );
-      console.log(result);
+
       return res.send(this.serializer.serializeDelete(result));
     } catch (error) {
       next(error);
@@ -108,9 +107,6 @@ class PostController {
   async getComments(req: Request, res: Response, next: NextFunction) {
     try {
       const post_id = req.params.post_id;
-      if (post_id === undefined) {
-        return res.status(422).send("post_id is needed");
-      }
 
       const result = await this.postService.getComments(post_id);
 
@@ -129,6 +125,11 @@ class PostController {
       let { context } = req.body;
       const post_id = req.params.post_id;
 
+      const post = await this.postService.getPost(post_id);
+      if (!post) {
+        return res.status(422).send("post does not exist");
+      }
+
       context = this.postService.sanitize(context);
 
       const result = await this.postService.createPostComment(
@@ -136,7 +137,7 @@ class PostController {
         post_id,
         context
       );
-      console.log(result);
+
       return res.send(this.serializer.serializeCreateComment(result));
     } catch (error) {
       next(error);
@@ -151,6 +152,10 @@ class PostController {
     try {
       let { context } = req.body;
       const comment_id = req.params.comment_id;
+      const comment = await this.postService.getComment(comment_id);
+      if (!comment) {
+        return res.status(422).send("comment does not exist");
+      }
 
       context = this.postService.sanitize(context);
 
@@ -255,7 +260,7 @@ class PostController {
       );
 
       if (this.serializer.serializeUpdate(result)) {
-        return res.status(401).send("like cannot be updated");
+        return res.status(422).send("like cannot be updated");
       }
 
       return res.send("user info updated");
@@ -273,11 +278,8 @@ class PostController {
         req.query.keyword as string
       );
 
-      if (!result) {
-        return res.status(401).send("Not Found");
-      }
-
-      return res.send(result);
+      console.log(result);
+      return res.send(this.serializer.serializeSearch(result));
     } catch (error) {
       next(error);
     }

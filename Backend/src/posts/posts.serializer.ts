@@ -3,14 +3,18 @@ import { Serializer } from "../serializer/serializer";
 import { PostsDto } from "./dtos/posts.dto";
 import { PostCreateDto } from "./dtos/postCreateResult.dto";
 import { CommentsDto } from "./dtos/comments.dto";
+import { DeleteDto } from "./dtos/postDeleteResult.dto";
+import { CommentCreateDto } from "./dtos/commentCreateResult.dto";
+import { SearchDto } from "./dtos/searchResult.dto";
 
 abstract class PostSerializer extends Serializer {
   abstract serializePosts(data: object[]): object[];
   abstract serializeCreatePost(data: object): object;
-  abstract serializeDelete(data: object): boolean;
+  abstract serializeDelete(data: object): object;
   abstract serializePostComments(data: object[]): object;
   abstract serializeCreateComment(data: object): object;
   abstract serializeUpdate(data: object): boolean;
+  abstract serializeSearch(data: object[]): object;
 }
 
 class UpdatedResult {
@@ -18,11 +22,15 @@ class UpdatedResult {
 }
 
 class MongoPostSerializer extends PostSerializer {
-  serializeCreateComment(data: object): object {
-    throw new Error("Method not implemented.");
+  serializeSearch(data: object[]): object {
+    return this.serializeItems(SearchDto, data);
   }
-  serializeDelete(data: object): boolean {
-    throw new Error("Method not implemented.");
+  serializeCreateComment(data: object): object {
+    return this.serializeItem(CommentCreateDto, data);
+  }
+
+  serializeDelete(data: object): object {
+    return this.serializeItem(DeleteDto, data);
   }
   serializePostComments(data: object[]): object {
     return this.serializeItems(CommentsDto, data);

@@ -9,14 +9,15 @@ import { User } from "../users/model/UserEntity";
 
 interface IPostService {
   getBestPosts: (lastWeek: Date, pageNum: number) => Promise<Post[]>;
-  getPosts: (pageNum: number) => Promise<Post[]>;
+  getRecentPosts: (pageNum: number) => Promise<Post[]>;
+  getPost: (post_id: Post["_id"]) => Promise<Post>;
   sanitize: (post_title: string) => string;
   createPost: (aPost: {
     user: Post["_id"];
     title: Post["title"];
     text: Post["text"];
-  }) => Promise<Post>;
-  deletePost(user_id: Post["user"], post_id: Post["_id"]): Promise<any>;
+  }) => object;
+  deletePost(user_id: Post["user"], post_id: Post["_id"]): object;
   createPostComment: (
     user_id: string,
     post_id: string,
@@ -28,6 +29,7 @@ interface IPostService {
     context: string
   ) => Promise<Comment>;
   getComments: (post_id: Post["_id"]) => Promise<Comment[]>;
+  getComment: (comment_id: Comment["_id"]) => Promise<Comment>;
   updateComment: (
     comment_id: Comment["_id"],
     context: Comment["context"]
@@ -58,11 +60,19 @@ class PostService implements IPostService {
     private likeRepository: ILikeRepository,
     private commentRepository: ICommentRepository
   ) {}
+
+  getComment(comment_id: any) {
+    return this.commentRepository.getComment(comment_id);
+  }
+
   getBestPosts(lastWeek: Date, pageNum: number) {
     return this.postRepository.getBestPosts(lastWeek, pageNum);
   }
-  getPosts(pageNum: number) {
-    return this.postRepository.getPosts(pageNum);
+  getRecentPosts(pageNum: number) {
+    return this.postRepository.getRecentPosts(pageNum);
+  }
+  getPost(post_id: Post["_id"]) {
+    return this.postRepository.getPost(post_id);
   }
 
   sanitize(post_title: string) {
@@ -76,7 +86,6 @@ class PostService implements IPostService {
     return result;
   }
 
-  //한 Transaction 내 작업 필요
   async createPost(aPost: {
     user: Post["_id"];
     title: Post["title"];
@@ -89,7 +98,6 @@ class PostService implements IPostService {
     return result;
   }
 
-  //한 Transaction 내 작업 필요
   async deletePost(user_id: Post["user"], post_id: Post["_id"]) {
     return await this.postRepository.deletePost(
       user_id,

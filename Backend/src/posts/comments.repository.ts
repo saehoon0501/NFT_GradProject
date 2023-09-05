@@ -8,6 +8,7 @@ interface getPostComments extends Comment {
 }
 
 interface ICommentRepository {
+  getComment(comment_id: Comment["_id"]): Promise<Comment>;
   createPostComment: (
     user_id: string,
     post_id: string,
@@ -28,6 +29,9 @@ interface ICommentRepository {
 
 class MongoCommentRepository implements ICommentRepository {
   constructor(private repository: Model<Comment>) {}
+  async getComment(comment_id: string): Promise<Comment> {
+    return (await this.repository.findById(comment_id).exec()) as Comment;
+  }
 
   async createPostComment(user: string, post_id: string, context: string) {
     return await new this.repository({
@@ -38,7 +42,6 @@ class MongoCommentRepository implements ICommentRepository {
   }
 
   async createReplyComment(user: string, reply_id: string, context: string) {
-    console.log({ user, reply_id, context });
     return await new this.repository({ user, reply_id, context }).save();
   }
 

@@ -6,6 +6,7 @@ interface ClassConstructor {
 
 abstract class Serializer {
   serializeItems(dto: ClassConstructor, data: object[]) {
+    console.log(data);
     return data.map((post) =>
       plainToInstance(dto, post, {
         excludeExtraneousValues: true,
