@@ -1,5 +1,5 @@
 import Container from "typedi";
-import { Model, ObjectId, UpdateQuery } from "mongoose";
+import { ClientSession, Model, ObjectId, UpdateQuery } from "mongoose";
 import {
   CommentLike,
   CommentLikeModel,
@@ -7,6 +7,7 @@ import {
   PostLikeModel,
 } from "./model/LikeEntity";
 import { Types } from "mongoose";
+import { Comment } from "./model/CommentEntity";
 
 interface ILikeRepository {
   getPostLike: (post_id: string) => Promise<PostLike>;
@@ -15,12 +16,15 @@ interface ILikeRepository {
   incrementCommentLike: (user_id: string, comment_id: string) => Promise<any>;
   decrementPostLike: (user_id: string, like_id: string) => Promise<any>;
   decrementCommentLike: (user_id: string, like_id: string) => Promise<any>;
-  createPostLike: (post_id: PostLike["post_id"]) => Promise<PostLike>;
+  createPostLike: (
+    post_id: PostLike["post_id"],
+    session?: any
+  ) => Promise<PostLike>;
   createCommentLike: (
     comment_id: CommentLike["comment_id"]
   ) => Promise<CommentLike>;
-  deletePostLike: (post_id: PostLike["post_id"]) => Promise<any>;
-  deleteCommentLike: (comment_id: CommentLike["comment_id"]) => Promise<any>;
+  deletePostLike: (post_id: PostLike["post_id"], session?: any) => Promise<any>;
+  deleteCommentLikes: (comments: Comment[], session: any) => Promise<any>[];
 }
 
 class MongoLikeRepository implements ILikeRepository {
@@ -97,20 +101,29 @@ class MongoLikeRepository implements ILikeRepository {
       .exec();
   }
 
-  async createPostLike(post_id: PostLike["post_id"]) {
-    return new this.postLikeRepository({ post_id }).save();
+  async createPostLike(post_id: PostLike["post_id"], session: ClientSession) {
+    return new this.postLikeRepository({ post_id }).save({ session });
   }
 
   async createCommentLike(comment_id: CommentLike["comment_id"]) {
     return new this.commentLikeRepository({ comment_id }).save();
   }
 
-  async deletePostLike(post_id: PostLike["post_id"]) {
-    return await this.postLikeRepository.deleteOne({ post_id }).exec();
+  async deletePostLike(post_id: PostLike["post_id"], session: ClientSession) {
+    return await this.postLikeRepository
+      .deleteOne({ post_id })
+      .session(session)
+      .exec();
   }
 
-  async deleteCommentLike(comment_id: CommentLike["comment_id"]) {
-    return await this.commentLikeRepository.deleteOne({ comment_id }).exec();
+  deleteCommentLikes(comments: Comment[], session: ClientSession) {
+    return comments.map(
+      async (comment) =>
+        await this.commentLikeRepository
+          .deleteOne({ comment_id: comment._id })
+          .session(session)
+          .exec()
+    );
   }
 }
 

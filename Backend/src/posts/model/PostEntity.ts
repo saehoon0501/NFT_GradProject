@@ -2,8 +2,8 @@ import { Schema, createConnection } from "mongoose";
 import { DB } from "../../users/model/UserEntity";
 
 interface Post {
-  _id: string;
-  user: string;
+  _id: any;
+  user: any;
   title: string;
   text?: string;
   createdAt: Date;

@@ -16,7 +16,7 @@ interface IPostService {
     title: Post["title"];
     text: Post["text"];
   }) => Promise<Post>;
-  deletePost: (post_id: Post["_id"]) => Promise<any>;
+  deletePost(user_id: Post["user"], post_id: Post["_id"]): Promise<any>;
   createPostComment: (
     user_id: string,
     post_id: string,
@@ -82,20 +82,21 @@ class PostService implements IPostService {
     title: Post["title"];
     text: Post["text"];
   }) {
-    const post = await this.postRepository.createPost(aPost);
-    const result = await this.likeRepository.createPostLike(post.id);
-
-    if (!result) {
-    }
-
-    return post;
+    const result = await this.postRepository.createPost(
+      aPost,
+      this.likeRepository
+    );
+    return result;
   }
 
   //한 Transaction 내 작업 필요
-  async deletePost(post_id: Post["_id"]) {
-    await this.likeRepository.deletePostLike(post_id);
-    await this.commentRepository.deletePostComments(post_id);
-    return await this.postRepository.deletePost(post_id);
+  async deletePost(user_id: Post["user"], post_id: Post["_id"]) {
+    return await this.postRepository.deletePost(
+      user_id,
+      post_id,
+      this.likeRepository,
+      this.commentRepository
+    );
   }
 
   async createPostComment(user_id: string, post_id: string, context: string) {

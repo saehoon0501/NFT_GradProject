@@ -91,14 +91,11 @@ class PostController {
     try {
       const post_id = req.params.post_id;
 
-      const user = await this.userService.getUser(
-        res.locals.decoded.publicAddress
+      const result = await this.postService.deletePost(
+        res.locals.decoded.user_id,
+        post_id
       );
-
-      const result = await this.postService.deletePost(post_id);
-
       console.log(result);
-
       return res.send(this.serializer.serializeDelete(result));
     } catch (error) {
       next(error);
@@ -139,7 +136,7 @@ class PostController {
         post_id,
         context
       );
-
+      console.log(result);
       return res.send(this.serializer.serializeCreateComment(result));
     } catch (error) {
       next(error);

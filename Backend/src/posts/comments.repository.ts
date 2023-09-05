@@ -1,7 +1,11 @@
-import { Model } from "mongoose";
+import { ClientSession, Model } from "mongoose";
 import { Container } from "typedi";
 import { Comment, CommentModel } from "./model/CommentEntity";
 const mongoose = require("mongoose");
+
+interface getPostComments extends Comment {
+  reply: Comment[];
+}
 
 interface ICommentRepository {
   createPostComment: (
@@ -14,11 +18,12 @@ interface ICommentRepository {
     reply_id: string,
     context: string
   ) => Promise<Comment>;
-  getPostComments: (post_id: string) => Promise<Comment[]>;
+  getPostComments: (post_id: string) => Promise<getPostComments[]>;
   getReplyComments: (reply_id: string) => Promise<Comment[]>; // comment를 id를 통해서 가져옴
   updateComment: (comment_id: string, context: string) => Promise<any>;
   deleteComment: (comment_id: string) => Promise<any>; // comment 데이터를 삭제하고 관련된 User와 Post에 반영
-  deletePostComments: (post_id: string) => Promise<any>;
+  deletePostComments: (post_id: string, session?: any) => Promise<any>;
+  deleteCommentReplies(comments: Comment[], session?: any): Promise<any>[];
 }
 
 class MongoCommentRepository implements ICommentRepository {
@@ -38,7 +43,7 @@ class MongoCommentRepository implements ICommentRepository {
   }
 
   async getPostComments(post_id: string) {
-    return await this.repository
+    return this.repository
       .aggregate([
         {
           $match: { post_id: mongoose.Types.ObjectId(post_id) },
@@ -82,8 +87,18 @@ class MongoCommentRepository implements ICommentRepository {
     return await this.repository.deleteOne({ comment_id }).exec();
   }
 
-  async deletePostComments(post_id: string) {
-    return await this.repository.deleteMany({ post_id }).exec();
+  deletePostComments(post_id: string, session: ClientSession) {
+    return this.repository.deleteMany({ post_id }).session(session).exec();
+  }
+
+  deleteCommentReplies(comments: Comment[], session: ClientSession) {
+    return comments.map(
+      async (comment) =>
+        await this.repository
+          .deleteMany({ reply_id: comment._id })
+          .session(session)
+          .exec()
+    );
   }
 }
 
