@@ -34,8 +34,8 @@ const userSchema = new Schema<User>(
     ],
     username: { type: String, required: true },
     description: { type: String, required: true },
-    points: { type: Number },
-    profile_pic: { type: String, required: true },
+    points: { type: Number, default: 0 },
+    profile_pic: { type: String },
     role: { type: String, required: true },
   },
   { strict: true }

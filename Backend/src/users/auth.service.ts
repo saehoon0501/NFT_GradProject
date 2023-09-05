@@ -14,31 +14,36 @@ interface jwtInput {
 
 interface IAuthService {
   generateNonce: () => string;
-  verifySignature: (input: jwtInput) => Promise<User | undefined>;
+  verifySignature: (input: jwtInput) => boolean;
   generateJwt: (publicAddress: string, role: string) => object;
+  getUser(publicAddress: string): Promise<User>;
+  createUser(publicAddress: string): Promise<User>;
 }
 
 class AuthService implements IAuthService {
-  constructor(private userRepo: IUserRepository) {}
+  constructor(private repository: IUserRepository) {}
 
   generateNonce() {
     const randomBytes = ethers.BigNumber.from(ethers.utils.randomBytes(32));
     return randomBytes._hex;
   }
 
-  async verifySignature(input: jwtInput) {
+  getUser(publicAddress: string): Promise<User> {
+    return this.repository.findByPublicAddress(publicAddress);
+  }
+
+  createUser(publicAddress: string): Promise<User> {
+    return this.repository.createUser(publicAddress);
+  }
+
+  verifySignature(input: jwtInput) {
     const { publicAddress, signature, msg } = input;
-    const user = await this.userRepo.findByPublicAddress(publicAddress);
+    const signedAddress = ethers.utils.verifyMessage(msg, signature);
 
-    if (!user) {
-      return undefined;
+    if (signedAddress.toLowerCase() !== publicAddress) {
+      return false;
     }
-    const signedAddr = ethers.utils.verifyMessage(msg, signature);
-
-    if (signedAddr.toLowerCase() !== publicAddress) {
-      return undefined;
-    }
-    return user;
+    return true;
   }
 
   generateJwt(user_id: string, role: string) {

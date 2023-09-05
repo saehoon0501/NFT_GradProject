@@ -26,17 +26,31 @@ class UsersController {
 
   @post("/login")
   @bodyValidator(PostAuthDto)
-  async sendJwt(req: Request, res: Response) {
-    const result = await this.authService.verifySignature(req.body);
-
-    if (!result) {
+  async issueJwt(req: Request, res: Response) {
+    if (!this.authService.verifySignature(req.body)) {
       res.send({ error: "Invalid signature" });
       return;
     }
+    let user = await this.authService.getUser(req.body.publicAddress);
 
-    const jwt = this.authService.generateJwt(result._id, result.role);
-    res.cookie("token", jwt, { httpOnly: true });
+    if (!user) {
+      user = await this.authService.createUser(req.body.publicAddress);
+    }
+
+    const ONEDAY = 8.64e7;
+    const jwt = this.authService.generateJwt(user._id, user.role);
+    res.cookie("token", jwt, {
+      expires: new Date(Date.now() + ONEDAY),
+      httpOnly: true,
+    });
     return res.json({ token: jwt });
+  }
+
+  @post("/logout")
+  @use(verify)
+  invalidateJwt(req: Request, res: Response) {
+    //Redis에 해당 Jwt를 expire 시점으로 TTL하여 revoke하도록 구현
+    res.clearCookie("token").send("token cleared");
   }
 
   @get("/")

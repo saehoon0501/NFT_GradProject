@@ -23,6 +23,7 @@ interface IUserRepository {
   ) => Promise<any>;
   getUserPosts: (user_id: string) => Promise<Post[]>;
   getUserComments: (user_id: string) => Promise<Comment[]>;
+  createUser(publicAddress: string): Promise<User>;
 }
 
 class MongoUserRepository implements IUserRepository {
@@ -68,6 +69,17 @@ class MongoUserRepository implements IUserRepository {
       )
       .exec();
     return result;
+  }
+
+  async createUser(publicAddress: string): Promise<User> {
+    return await new this.repository({
+      public_address: publicAddress,
+      username: `user${publicAddress.slice(0, 10)}`,
+      description: "Welcome!",
+      profile_pic: " ",
+      role: "user",
+      owner_of_nft: [],
+    }).save();
   }
 
   async getUserPosts(user_id: string) {
