@@ -1,8 +1,6 @@
 import { Request, RequestHandler } from "express";
-import { ParamsDictionary } from "express-serve-static-core";
 import multer, { DiskStorageOptions, StorageEngine, Field } from "multer";
 import path from "path";
-import { ParsedQs } from "qs";
 
 abstract class IUploadService {
   protected storage: StorageEngine;
@@ -10,15 +8,19 @@ abstract class IUploadService {
   abstract uploadMultipleFiles(files: ReadonlyArray<Field>): RequestHandler;
 }
 
-class uploadService extends IUploadService {
+class UploadService extends IUploadService {
   constructor() {
     super();
     this.storage = multer.diskStorage(this.getDiskStorageOptions());
     this.uploader = multer(this.getMulterOptions());
   }
 
-  uploadMultipleFiles(files: ReadonlyArray<Field>): RequestHandler {
-    return this.uploader.fields(files);
+  uploadMultipleFiles(): RequestHandler {
+    return this.uploader.fields(this.getFormFormat());
+  }
+
+  private getFormFormat(): ReadonlyArray<Field> {
+    return [{ name: "Image", maxCount: 3 }];
   }
 
   private getMulterOptions(): multer.Options {
