@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Model } from "mongoose";
 import { createClient } from "redis";
 const keys = require("../config/keys");
 
@@ -16,9 +16,18 @@ declare module "mongoose" {
     useCache: boolean;
     hashKey: string;
   }
+  interface Aggregate<R> {
+    cache(options: { key?: string; collection: Model<any> }): Aggregate<any>;
+    useCache: boolean;
+    hashKey: string;
+    collection: Model<any>;
+  }
 }
 
-mongoose.Query.prototype.cache = function (options = {}) {
+mongoose.Query.prototype.cache = function (options: {
+  key?: string;
+  collection: Model<any>;
+}) {
   this.useCache = true;
   this.hashKey = JSON.stringify(options.key || "default");
 
@@ -36,7 +45,6 @@ mongoose.Query.prototype.exec = async function () {
   );
 
   const cacheValue = await redisClient.hGet(this.hashKey, key);
-
   if (cacheValue) {
     const doc = JSON.parse(cacheValue);
     return Array.isArray(doc)
@@ -45,9 +53,49 @@ mongoose.Query.prototype.exec = async function () {
   }
 
   const result = await exec.apply(this);
-  //lua로 작성하여 atomic하게 만들자.
-  redisClient.hSet(this.hashKey, key, JSON.stringify(result));
-  redisClient.expire(key, 9000);
+
+  redisClient.hSet(this.hashKey, key, JSON.stringify(result)).then(() => {
+    redisClient.expire(this.hashKey, 90);
+  });
+
+  return result;
+};
+
+const aggreagateExec = mongoose.Aggregate.prototype.exec;
+
+mongoose.Aggregate.prototype.cache = function (options: {
+  key?: string;
+  collection: Model<any>;
+}) {
+  this.useCache = true;
+  this.hashKey = JSON.stringify(options.key || "default");
+  this.collection = options.collection;
+
+  return this;
+};
+
+mongoose.Aggregate.prototype.exec = async function () {
+  if (!this.useCache) {
+    return aggreagateExec.apply(this);
+  }
+  const key = JSON.stringify(
+    Object.assign({}, this.pipeline(), {
+      collection: this.collection,
+    })
+  );
+
+  const cacheValue = await redisClient.hGet(this.hashKey, key);
+  console.log("cachedValue", cacheValue);
+  if (cacheValue) {
+    const doc = JSON.parse(cacheValue);
+    return Array.isArray(doc) ? doc.map((d) => d) : doc;
+  }
+
+  const result = await aggreagateExec.apply(this);
+
+  redisClient.hSet(this.hashKey, key, JSON.stringify(result)).then(() => {
+    redisClient.expire(this.hashKey, 90);
+  });
 
   return result;
 };

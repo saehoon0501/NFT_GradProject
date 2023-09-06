@@ -7,6 +7,6 @@ export class UpdateUserDto {
   @IsString()
   username: string;
 
-  @IsUrl()
+  @IsString()
   profile_pic: string;
 }

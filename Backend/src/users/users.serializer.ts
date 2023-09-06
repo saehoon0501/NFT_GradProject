@@ -26,11 +26,11 @@ class MongoUserSerializer extends UserSerializer {
   }
 
   serializeUserPosts(data: object[]) {
-    return this.serializeItems(PostDto, data[0].posts);
+    return this.serializeItems(PostDto, data);
   }
 
   serializeUserComments(data: object[]) {
-    return this.serializeItems(CommentDto, data[0].comments);
+    return this.serializeItems(CommentDto, data);
   }
 
   serializeUserUpdate(data: UpdatedResult) {

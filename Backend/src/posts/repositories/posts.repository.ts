@@ -58,6 +58,7 @@ class MongoPostRepository implements IPostRepository {
         { $limit: 10 },
         ...this.enrichPostQuery(),
       ])
+      .cache({ key: `BestPosts${pageNum}`, collection: this.repository })
       .exec();
   }
 
@@ -77,6 +78,7 @@ class MongoPostRepository implements IPostRepository {
         },
         ...this.enrichPostQuery(),
       ])
+      .cache({ key: `RecentPosts${pageNum}`, collection: this.repository })
       .exec();
   }
 
@@ -164,6 +166,10 @@ class MongoPostRepository implements IPostRepository {
         },
       },
       {
+        $unwind: "$user",
+      },
+      { $unwind: "$likes" },
+      {
         $project: {
           _id: 1,
           "user._id": 1,
@@ -206,7 +212,9 @@ class MongoPostRepository implements IPostRepository {
       },
       { $unwind: "$likes" },
       ...this.enrichPostQuery(),
-    ]).exec();
+    ])
+      .cache({ key: keyword, collection: this.repository })
+      .exec();
   }
 }
 

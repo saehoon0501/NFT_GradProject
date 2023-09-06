@@ -4,6 +4,7 @@ import { Container } from "typedi";
 import { IUserRepository } from "./users.repository";
 import { Signature } from "ethers";
 import { User } from "./model/UserEntity";
+import { redisClient } from "../cache/cache";
 const keys = require("../config/keys");
 
 interface jwtInput {
@@ -18,10 +19,17 @@ interface IAuthService {
   generateJwt: (publicAddress: string, role: string) => object;
   getUser(publicAddress: string): Promise<User>;
   createUser(publicAddress: string): Promise<User>;
+  addToBlackList(token: string, expire: number): void;
 }
 
 class AuthService implements IAuthService {
   constructor(private repository: IUserRepository) {}
+  addToBlackList(token: string, expire: number): void {
+    const CURRENT = Math.floor(Date.now() / 1000);
+    redisClient.setNX(token, "1").then(() => {
+      redisClient.expire(token, expire - CURRENT);
+    });
+  }
 
   generateNonce() {
     const randomBytes = ethers.BigNumber.from(ethers.utils.randomBytes(32));

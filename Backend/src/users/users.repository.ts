@@ -38,6 +38,7 @@ class MongoUserRepository implements IUserRepository {
   async findById(userId: string) {
     const result = (await this.repository
       .findById({ _id: userId })
+      .cache({ key: userId })
       .exec()) as User;
     return result;
   }
@@ -57,7 +58,7 @@ class MongoUserRepository implements IUserRepository {
     const result = await this.repository
       .updateOne(
         {
-          $and: [{ _id: user_id }, { "owner_of_nft.nft_url": profile_pic }],
+          $and: [{ _id: user_id }],
         },
         {
           $set: {
@@ -83,7 +84,6 @@ class MongoUserRepository implements IUserRepository {
   }
 
   async getUserPosts(user_id: string) {
-    console.log(user_id);
     const result = (await UserModel.aggregate([
       { $match: { _id: mongoose.Types.ObjectId(user_id) } },
       {
@@ -94,6 +94,7 @@ class MongoUserRepository implements IUserRepository {
           as: "posts",
         },
       },
+      { $unwind: "$posts" },
       {
         $project: {
           posts: 1,
@@ -114,6 +115,7 @@ class MongoUserRepository implements IUserRepository {
           as: "comments",
         },
       },
+      { $unwind: "$comments" },
       {
         $project: {
           "comments._id": 1,

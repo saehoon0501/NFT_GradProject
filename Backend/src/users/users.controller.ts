@@ -49,7 +49,7 @@ class UsersController {
   @post("/logout")
   @use(verify)
   invalidateJwt(req: Request, res: Response) {
-    //Redis에 해당 Jwt를 expire 시점으로 TTL하여 revoke하도록 구현
+    this.authService.addToBlackList(req.cookies.token, res.locals.decoded.exp);
     res.clearCookie("token").send("token cleared");
   }
 
@@ -119,7 +119,7 @@ class UsersController {
       res.locals.decoded.user_id,
       req.body
     );
-
+    console.log(result);
     if (this.serializer.serializeUserUpdate(result)) {
       return res.status(400).send("user cannot be updated");
     }

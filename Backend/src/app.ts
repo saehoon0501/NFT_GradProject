@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import { AppRouter } from "./AppRouter";
 import { initSocket } from "./socket";
+import { redisClient } from "./cache/cache";
 import "./users/model/UserEntity";
 import "./posts/model/CommentEntity";
 import "./posts/model/LikeEntity";
@@ -17,7 +18,6 @@ import "./posts/posts.serializer";
 import "./posts/posts.service";
 import "./posts/posts.controller";
 import "./cache/cache";
-import { redisClient } from "./cache/cache";
 const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 

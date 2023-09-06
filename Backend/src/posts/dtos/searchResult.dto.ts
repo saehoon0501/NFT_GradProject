@@ -7,9 +7,9 @@ export class SearchDto {
 
   @Transform(({ obj }) => {
     return {
-      _id: obj.user[0]._id,
-      username: obj.user[0].username,
-      profile_pic: obj.user[0].profile_pic,
+      _id: obj.user._id,
+      username: obj.user.username,
+      profile_pic: obj.user.profile_pic,
     };
   })
   @Expose()
@@ -23,9 +23,15 @@ export class SearchDto {
 
   @Transform(({ obj }) => {
     const like = obj.likes;
+
     return {
       liked_num: like.liked_num,
-      liked_user: like.liked_user.some((user) => user.equals(obj.user[0]._id)),
+      liked_user: like.liked_user.some((user) => {
+        if (typeof user === "object") {
+          return user.equals(obj.user._id);
+        }
+        return user === obj.user._id;
+      }),
     };
   })
   @Expose()
