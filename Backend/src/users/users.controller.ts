@@ -50,7 +50,7 @@ class UsersController {
   @use(verify)
   invalidateJwt(req: Request, res: Response) {
     this.authService.addToBlackList(req.cookies.token, res.locals.decoded.exp);
-    res.clearCookie("token").send("token cleared");
+    res.clearCookie("token").send({ result: "OK" });
   }
 
   @get("/")

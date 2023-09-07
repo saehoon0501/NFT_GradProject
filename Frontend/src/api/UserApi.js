@@ -51,3 +51,9 @@ export const certainUserPost = async (userId) => {
   const data = await response.data;
   return data;
 };
+
+export const logoutUser = async () => {
+  const response = await userApi.post(`/logout`);
+  const data = await response.data;
+  return data;
+};

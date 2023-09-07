@@ -5,7 +5,7 @@ import { useQueryClient, useQuery } from "react-query";
 
 import "./Header.css";
 
-import { getUser } from "../../api/UserApi";
+import { getUser, logoutUser } from "../../api/UserApi";
 import { isLoginState, isWritingPost, socketState } from "../../store";
 
 import Logo from "../../assets/logo.png";
@@ -47,6 +47,7 @@ export const Header = ({ socketValue }) => {
   const [isAuth, setIsAuth] = useRecoilState(isLoginState);
   const [isOpen, setIsOpen] = useRecoilState(isWritingPost);
 
+  const [forceRender, setforceRender] = useState(0);
   const [showAlarm, setShowAlarm] = useState(false);
   const [keyword, setKeyWord] = useState("");
   const navigate = useNavigate();
@@ -67,10 +68,13 @@ export const Header = ({ socketValue }) => {
     queryFn: ({ signal }) => getUser(signal),
     retry: false,
     onError: () => {
-      queryClient.setQueriesData("user", notLoginUser);
+      // queryClient.setQueriesData("user", notLoginUser);
+      setIsAuth(false);
+      setforceRender((forceRender) => forceRender + 1);
     },
     onSuccess: (data) => {
       setIsAuth(true);
+      setforceRender((forceRender) => forceRender + 1);
     },
   });
 
@@ -84,6 +88,14 @@ export const Header = ({ socketValue }) => {
 
   const onClickLoginButton = () => {
     navigate("/login");
+  };
+
+  const onClickLogoutButton = async () => {
+    const result = await logoutUser();
+    if (result.result === "OK") {
+      setIsAuth(false);
+    }
+    setforceRender((forceRender) => forceRender + 1);
   };
 
   const onClickCreatePost = () => {
@@ -156,6 +168,12 @@ export const Header = ({ socketValue }) => {
               alt="profile picture"
               className="header_profileBtn"
             />
+            <div
+              className="header_login"
+              style={{ padding: "10px 10px", fontSize: "10px" }}
+            >
+              <button onClick={onClickLogoutButton}>logout</button>
+            </div>
           </>
         ) : (
           <div className="header_login">

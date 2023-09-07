@@ -42,14 +42,18 @@ export const Main = ({ socketValue }) => {
 
   const [showPopUp, setShowPopUp] = useRecoilState(showPopUpState);
   const [isOpen, setIsOpen] = useRecoilState(isWritingPost);
+  const [isAuth, setIsAuth] = useRecoilState(isLoginState);
 
   const currentPopUp = useRecoilValue(currentPopUpState);
   const currentPostTitle = useRecoilValue(currentPostTitleState);
   const currentPostText = useRecoilValue(currentPostTextState);
   const currentPostId = useRecoilValue(currentPostIdState);
-  const setIsAuth = useSetRecoilState(isLoginState);
 
-  const userQuery = useQuery("user");
+  const userQuery = useQuery({
+    queryKey: ["user", 1],
+    queryFn: ({ signal }) => getUser(signal),
+    retry: false,
+  });
 
   // {
   //     onSuccess: (data) => {
@@ -208,9 +212,9 @@ export const Main = ({ socketValue }) => {
               <Feed
                 key={post._id + index}
                 post_id={post._id}
-                user_id={userQuery.data._id}
+                user_id={userQuery.data ? userQuery.data._id : " "}
                 postUser={post.user}
-                user_role={userQuery.data.role}
+                user_role={userQuery.data ? userQuery.data.role : " "}
                 caption={post.text}
                 title={post.title}
                 comments={post.comments}
@@ -226,9 +230,9 @@ export const Main = ({ socketValue }) => {
               <Feed
                 key={post._id + index}
                 post_id={post.post_id}
-                user_id={userQuery.data._id}
+                user_id={userQuery.data ? userQuery.data._id : " "}
                 postUser={post.user}
-                user_role={userQuery.data.role}
+                user_role={userQuery.data ? userQuery.data.role : " "}
                 caption={post.text}
                 title={post.title}
                 comments={post.comments}
