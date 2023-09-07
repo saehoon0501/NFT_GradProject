@@ -8,7 +8,6 @@ export const getUser = async (signal) => {
   const response = await userApi.get("", {
     signal,
   });
-  console.log(response.data);
   return response.data;
 };
 

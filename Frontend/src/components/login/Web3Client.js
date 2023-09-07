@@ -91,7 +91,7 @@ export const NFTLogin = () => {
         // setJwt()
         // localStorage.setItem("accessToken", result.accessToken);
         setIsAuth(true);
-        navigate("/home");
+        navigate("/");
       } else {
         window.alert("Login Failed Try Again");
       }

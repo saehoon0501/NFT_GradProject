@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
-import { useQuery } from "react-query";
+import { useQueryClient, useQuery } from "react-query";
 
 import "./Header.css";
 
@@ -52,12 +52,38 @@ export const Header = ({ socketValue }) => {
   const navigate = useNavigate();
   const { data: user } = useQuery("user", ({ signal }) => getUser(signal));
 
+  const queryClient = useQueryClient();
+  const notLoginUser = {
+    _id: "",
+    role: "user",
+    description: "",
+    points: 0,
+    profile_pic: "",
+    username: "",
+  };
+
+  const userQuery = useQuery({
+    queryKey: ["user", 1],
+    queryFn: ({ signal }) => getUser(signal),
+    retry: false,
+    onError: () => {
+      queryClient.setQueriesData("user", notLoginUser);
+    },
+    onSuccess: (data) => {
+      setIsAuth(true);
+    },
+  });
+
   const showProfile = () => {
     navigate("/profile");
   };
 
   const showSns = () => {
     navigate("/");
+  };
+
+  const onClickLoginButton = () => {
+    navigate("/login");
   };
 
   const onClickCreatePost = () => {
@@ -96,56 +122,63 @@ export const Header = ({ socketValue }) => {
     socketValue?.on("getNotification", (arg) => {
       console.log(arg);
     });
+    console.log(isAuth);
   }, [socketValue]);
 
   return (
-    <>
-      {!isAuth && (
-        <div className="header_wrapper">
-          <img
-            className="header_homeBtn"
-            src={Logo}
-            alt="NCC logo"
-            onClick={showSns}
+    <div style={{ width: "100%", borderBottom: "1px solid lightgray" }}>
+      <div className="header_wrapper">
+        <img
+          className="header_homeBtn"
+          src={Logo}
+          alt="NCC logo"
+          onClick={showSns}
+        />
+        <div className="header_searchBar_wrapper">
+          <input
+            value={keyword}
+            type="text"
+            onChange={onChangeSearch}
+            onKeyUp={handleEnter}
           />
-          <div className="header_searchBar_wrapper">
-            <input
-              value={keyword}
-              type="text"
-              onChange={onChangeSearch}
-              onKeyUp={handleEnter}
-            />
-            <button onClick={onClickSearch}>🔍</button>
-          </div>
-          <div className="header_menus">
-            <button onClick={onClickCreatePost}>➕</button>
-            <button onClick={onClickMyComments}>📝</button>
-            <button onClick={onClickToggleAlarm}>🔔</button>
-          </div>
-          <img
-            onClick={showProfile}
-            className="header_profileBtn"
-            src={user?.profile_pic}
-            alt="profile picture"
-          />
-          {showAlarm && (
-            <div className="alarm_menu_wrapper">
-              <div className="alarm_menu_header">
-                <h3>알람 목록</h3>
-                <button onClick={onClickToggleAlarm}>X</button>
-              </div>
-              <div className="alarm_contents">
-                {[].map((alarm) => (
-                  <div className="alarm_content">
-                    <img src={alarm.imgUrl} alt={`${alarm.name}`} />
-                    <p>{`${alarm.name}님이 ${alarm.postName}를 좋아합니다.`}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+          <button onClick={onClickSearch}>🔍</button>
         </div>
-      )}
-    </>
+        {isAuth ? (
+          <>
+            <div className="header_menus">
+              <button onClick={onClickCreatePost}>➕</button>
+              <button onClick={onClickMyComments}>📝</button>
+              <button onClick={onClickToggleAlarm}>🔔</button>
+            </div>
+            <img
+              onClick={showProfile}
+              src={user?.profile_pic}
+              alt="profile picture"
+              className="header_profileBtn"
+            />
+          </>
+        ) : (
+          <div className="header_login">
+            <button onClick={onClickLoginButton}>login</button>
+          </div>
+        )}
+        {showAlarm && (
+          <div className="alarm_menu_wrapper">
+            <div className="alarm_menu_header">
+              <h3>알람 목록</h3>
+              <button onClick={onClickToggleAlarm}>X</button>
+            </div>
+            <div className="alarm_contents">
+              {[].map((alarm) => (
+                <div className="alarm_content">
+                  <img src={alarm.imgUrl} alt={`${alarm.name}`} />
+                  <p>{`${alarm.name}님이 ${alarm.postName}를 좋아합니다.`}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
   );
 };

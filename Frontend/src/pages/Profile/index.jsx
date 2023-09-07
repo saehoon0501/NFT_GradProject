@@ -28,8 +28,9 @@ export const Profile = () => {
   useEffect(() => {
     async function fetchData() {
       if (user) {
-        const data = await certainUserPost(user._id);
-        setPostData(data[0].posts);
+        console.log(user);
+        const data = await certainUserPost(user.id);
+        setPostData(data);
       }
     }
     fetchData();
@@ -43,20 +44,15 @@ export const Profile = () => {
     <div className="profile-container">
       <div className="profile-wrapper">
         <ProfileChangeImage user={user} />
-        <ProfilePic userProfile={user?.profile} />
-        <ProfileCaption userProfile={user?.profile} refetch={refetch} />
+        <ProfilePic user={user} />
+        <ProfileCaption user={user} refetch={refetch} />
       </div>
       <div className="profile-post-wrapper">
-        <span className="profile-post-title">게시물</span>
+        <span className="profile-post-title">게시물: {postData.length}</span>
         <div className="profile-post">
           {postData &&
             postData.map((post, index) => (
-              <ProfilePost
-                key={index}
-                title={post.title}
-                postId={post._id}
-                commentCount={post.comments.length}
-              />
+              <ProfilePost key={index} post={post} />
             ))}
         </div>
       </div>

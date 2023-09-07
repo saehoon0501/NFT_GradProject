@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useQuery } from "react-query";
+import { useQuery, useQueryClient } from "react-query";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import "./style.css";
 
@@ -32,7 +32,6 @@ import { getVote } from "../../api/VoteApi";
 
 export const Main = ({ socketValue }) => {
   const [isBest, setIsBest] = useState(false);
-  const [isUserDataSend, setIsUserDataSend] = useState(false);
   const [loginUsers, setLoginUsers] = useState([]);
   const [title, setTitle] = useState("");
   const [currentVoteContent, setCurrentVoteContent] = useRecoilState(
@@ -50,18 +49,21 @@ export const Main = ({ socketValue }) => {
   const currentPostId = useRecoilValue(currentPostIdState);
   const setIsAuth = useSetRecoilState(isLoginState);
 
-  const navigate = useNavigate();
+  const userQuery = useQuery("user");
 
-  const userQuery = useQuery("user", ({ signal }) => getUser(signal), {
-    onSuccess: (data) => {
-      // socketValue.emit("newUser", {
-      //   publicAddr: data.publicAddr,
-      //   username: data.profile.username,
-      //   profile_pic: data.profile.profile_pic,
-      // });
-      setIsUserDataSend(true);
-    },
-  });
+  // {
+  //     onSuccess: (data) => {
+  // socketValue.emit("newUser", {
+  //   publicAddr: data.publicAddr,
+  //   username: data.profile.username,
+  //   profile_pic: data.profile.profile_pic,
+  // });
+  //     setIsUserDataSend(true);
+  //   },
+  //   onError: () => {
+  //     queryClient.setQueriesData("user", notLoginUser);
+  //   },
+  // }
 
   const { refetch: refetchPosts, isLoading: isPostLoading } = useQuery(
     "posts",
@@ -85,14 +87,6 @@ export const Main = ({ socketValue }) => {
   );
 
   // const { data: voteData } = useQuery("votes", getVote);
-
-  if (userQuery.isError) {
-    navigate("/login");
-  }
-
-  useEffect(() => {
-    setIsAuth(false);
-  }, []);
 
   useEffect(() => {
     if (socketValue) {

@@ -96,8 +96,28 @@ class MongoUserRepository implements IUserRepository {
       },
       { $unwind: "$posts" },
       {
+        $lookup: {
+          from: "post_likes",
+          localField: "posts._id",
+          foreignField: "post_id",
+          as: "likes",
+        },
+      },
+      { $unwind: "$likes" },
+      {
+        $lookup: {
+          from: "comments",
+          localField: "posts._id",
+          foreignField: "post_id",
+          as: "comments",
+        },
+      },
+      { $unwind: "$likes" },
+      {
         $project: {
           posts: 1,
+          likes: 1,
+          comments: 1,
         },
       },
     ])) as Post[];

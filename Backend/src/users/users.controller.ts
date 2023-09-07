@@ -61,7 +61,7 @@ class UsersController {
       if (!user) {
         throw new Error("user cannot be found");
       }
-
+      console.log(user);
       return res.json(this.serializer.serializeUser(user));
     } catch (err) {
       console.log("유저 정보 sndProfile: User.findOne Error", err);
@@ -81,15 +81,19 @@ class UsersController {
     return res.send(this.serializer.serializeUserPosts(result));
   }
 
-  @get(":user_id/posts")
+  @get("/:user_id/posts")
   @use(verify)
   @paramsValidator(GetUserDto)
-  async sendCertainUserPosts(req: Request, res: Response) {
-    const result = await this.userService.getUserPosts(req.params.user_id);
+  async sendCertainUserPosts(req: Request, res: Response, next: NextFunction) {
+    try {
+      const result = await this.userService.getUserPosts(req.params.user_id);
 
-    if (!result) res.status(400).send("User cannot be found");
+      if (!result) res.status(400).send("User cannot be found");
 
-    return res.send(this.serializer.serializeUserPosts(result));
+      return res.send(this.serializer.serializeUserPosts(result));
+    } catch (err) {
+      next();
+    }
   }
 
   @get("/comments")

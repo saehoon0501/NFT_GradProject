@@ -8,7 +8,6 @@
   justify-content: space-between;
   align-items: center;
   object-fit: contain;
-  border-bottom: 1px solid lightgray;
   max-width: 1120px;
   margin: 0 auto;
   padding: 0 40px;
@@ -51,6 +50,25 @@
 .header_menus {
   display: flex;
   gap: 5px;
+}
+
+.header_login {
+  display: flex;
+  gap: 5px;
+}
+
+.header_login button {
+  font-weight: 500;
+  font-size: 20px;
+  color: #fff;
+  border: 4px;
+  padding: 10px 18px;
+  background-color: #ffa500;
+  border-radius: 4px;
+}
+
+.header_login button:hover {
+  background-color: lightgray;
 }
 
 .header_menus button {

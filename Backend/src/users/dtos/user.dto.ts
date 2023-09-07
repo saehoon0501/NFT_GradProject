@@ -11,7 +11,7 @@ export class UserDto {
   description: string;
 
   @Expose()
-  points: string;
+  points: number;
 
   @Expose()
   profile_pic: number;

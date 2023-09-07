@@ -26,7 +26,7 @@ export const ProfileChangeImage = ({ user }) => {
     ]);
   };
 
-  const ownedNFTs = user.ownerOfNFT[0].NFT_URL.map((NFT, index) => (
+  const ownedNFTs = user.nft_urls.map((NFT, index) => (
     <div className="profile-info clickable-img" style={{ margin: "0 3%" }}>
       <img
         src={`${NFT}`}
@@ -51,7 +51,7 @@ export const ProfileChangeImage = ({ user }) => {
           <h3 className="modal-title">프로필 사진 NFT 선택 </h3>
         </div>
         <div className="modal-nfts-imgs">
-          {user.ownerOfNFT[0].NFT_URL.map((NFT, index) => (
+          {user.nft_urls.map((NFT, index) => (
             <div
               key={index}
               className="profile-info clickable-img"

@@ -6,9 +6,9 @@ import { updateUser } from "../../api/UserApi";
 import { CANCEL_EDIT_PROFILE, PROCEED_EDIT_PROFILE } from "../../utils";
 import { useNavigate } from "react-router-dom";
 
-export const ProfileCaption = ({ userProfile, isOwner = true, refetch }) => {
-  const [intro, setIntro] = useState(`${userProfile.caption}`);
-  const [profileName, setProfileName] = useState(`${userProfile.username}`);
+export const ProfileCaption = ({ user, isOwner = true, refetch }) => {
+  const [intro, setIntro] = useState(`${user.description}`);
+  const [profileName, setProfileName] = useState(`${user.username}`);
   const [editProfile, setEditProfile] = useState(true);
   const [showPopUp, setShowPopUp] = useState(false);
   const [currentPopUp, setCurrentPopUp] = useState("");
@@ -56,7 +56,7 @@ export const ProfileCaption = ({ userProfile, isOwner = true, refetch }) => {
       case PROCEED_EDIT_PROFILE:
         nameRef.current = profileName;
         introRef.current = intro;
-        await updateUser(intro, profileName, userProfile.profile_pic);
+        await updateUser(intro, profileName, user.profile_pic);
         refetch();
         setEditProfile(true);
         return;
@@ -88,19 +88,18 @@ export const ProfileCaption = ({ userProfile, isOwner = true, refetch }) => {
                 >
                   프로필 편집
                 </button>
-                <button
+                {/* <button
                   className="profile-caption-btn"
                   onClick={onClickNFTSetting}
                 >
                   광고판 설정
-                </button>
+                </button> */}
               </>
             )}
           </div>
-          <span className="profile-intro">{userProfile.caption}</span>
+          <span className="profile-intro">{user.description}</span>
           <div className="profile-text">
-            <h3>게시물 {userProfile.post_ids.length}</h3>
-            <h3 style={{ color: "blue" }}>RGB {userProfile.points}</h3>
+            <h3 style={{ color: "black" }}>points: {user.points}</h3>
           </div>
         </div>
       ) : (
