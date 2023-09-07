@@ -27,9 +27,9 @@ export class PostsDto {
       liked_num: like.liked_num,
       liked_user: like.liked_user.some((user) => {
         if (typeof user === "object") {
-          return user.equals(obj.user._id);
+          return user.equals(obj.requester);
         }
-        return user === obj.user._id;
+        return user === obj.requester;
       }),
     };
   })

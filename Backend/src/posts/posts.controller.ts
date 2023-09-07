@@ -13,7 +13,7 @@ import { Request, Response, NextFunction } from "express";
 import { IPostService } from "./posts.service";
 import { Service, Inject } from "typedi";
 import { IUserService } from "../users/users.service";
-import { verify } from "../middleware/jwt";
+import { verify } from "../middleware/verify";
 import { PostRequestDto } from "./dtos/post-post.dto";
 import { PostSerializer } from "./posts.serializer";
 import { CreatePostRequestDto } from "./dtos/create-post.dto";
@@ -24,6 +24,7 @@ import { PostLikePostDto } from "./dtos/post-replyComment.dto copy";
 import { Post } from "./model/PostEntity";
 import { GetSearchDto } from "./dtos/get-getSearch.dto";
 import { GetSendPostDto } from "./dtos/get-sendPost.dto";
+import { getUserId } from "../middleware/getUserId";
 
 const QuillDeltaToHtmlConverter =
   require("quill-delta-to-html").QuillDeltaToHtmlConverter;
@@ -38,6 +39,7 @@ class PostController {
 
   @get("/")
   @queryValidator(GetSendPostDto)
+  @use(getUserId)
   async sendPost(req: Request, res: Response, next: NextFunction) {
     try {
       const filter = req.query.filter;
@@ -53,8 +55,10 @@ class PostController {
       } else {
         return res.status(422).send("Invalid filter");
       }
-
-      return res.send(this.serializer.serializePosts(result));
+      console.log(res.locals.decoded.user_id);
+      return res.send(
+        this.serializer.serializePosts(result, res.locals.decoded.user_id)
+      );
     } catch (error) {
       next(error);
     }
@@ -103,14 +107,19 @@ class PostController {
 
   @get("/:post_id/comments")
   @paramsValidator(PostRequestDto)
-  @use(verify)
+  @use(getUserId)
   async getComments(req: Request, res: Response, next: NextFunction) {
     try {
       const post_id = req.params.post_id;
 
       const result = await this.postService.getComments(post_id);
 
-      return res.send(this.serializer.serializePostComments(result));
+      return res.send(
+        this.serializer.serializePostComments(
+          result,
+          res.locals.decoded.user_id
+        )
+      );
     } catch (error) {
       next(error);
     }

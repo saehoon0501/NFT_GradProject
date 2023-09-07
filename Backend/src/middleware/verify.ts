@@ -1,8 +1,9 @@
 import jwt from "jsonwebtoken";
 import { redisClient } from "../cache/cache";
+import { NextFunction, Request, Response } from "express";
 const keys = require("../config/keys");
 
-const verify = async (req, res, next) => {
+const verify = async (req: Request, res: Response, next: NextFunction) => {
   const token = req.cookies.token;
   if (!token || (await redisClient.get(token))) {
     return res.status(401).send("TOKEN_EXPIRED");

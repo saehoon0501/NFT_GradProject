@@ -53,21 +53,38 @@ class MongoCommentRepository implements ICommentRepository {
         },
         {
           $lookup: {
-            from: CommentModel.collection.name,
+            from: "comments",
             localField: "_id",
             foreignField: "reply_id",
             as: "reply",
           },
         },
         {
-          $project: {
-            post_id: 0,
-            __v: 0,
-            "reply.post_id": 0,
-            "reply.reply_id": 0,
-            "reply.__v": 0,
+          $lookup: {
+            from: "comment_likes",
+            localField: "_id",
+            foreignField: "comment_id",
+            as: "like",
           },
         },
+        { $unwind: "$like" },
+        {
+          $lookup: {
+            from: "comment_likes",
+            localField: "reply._id",
+            foreignField: "comment_id",
+            as: "reply_like",
+          },
+        },
+        // {
+        //   $project: {
+        //     post_id: 0,
+        //     __v: 0,
+        //     "reply.post_id": 0,
+        //     "reply.reply_id": 0,
+        //     "reply.__v": 0,
+        //   },
+        // },
       ])
       .exec();
   }

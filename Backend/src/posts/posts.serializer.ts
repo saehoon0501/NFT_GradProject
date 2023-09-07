@@ -8,10 +8,10 @@ import { CommentCreateDto } from "./dtos/commentCreateResult.dto";
 import { SearchDto } from "./dtos/searchResult.dto";
 
 abstract class PostSerializer extends Serializer {
-  abstract serializePosts(data: object[]): object[];
+  abstract serializePosts(data: any[], user_id: string): object[];
   abstract serializeCreatePost(data: object): object;
   abstract serializeDelete(data: object): object;
-  abstract serializePostComments(data: object[]): object;
+  abstract serializePostComments(data: any[], user_id: string): object;
   abstract serializeCreateComment(data: object): object;
   abstract serializeUpdate(data: object): boolean;
   abstract serializeSearch(data: object[]): object;
@@ -32,11 +32,24 @@ class MongoPostSerializer extends PostSerializer {
   serializeDelete(data: object): object {
     return this.serializeItem(DeleteDto, data);
   }
-  serializePostComments(data: object[]): object {
-    return this.serializeItems(CommentsDto, data);
+  serializePostComments(data: any[], user_id: string): object {
+    return this.serializeItems(
+      CommentsDto,
+      data.map((comment) => {
+        comment.requester = user_id;
+        console.log(comment);
+        return comment;
+      })
+    );
   }
-  serializePosts(data: object[]): object[] {
-    return this.serializeItems(PostsDto, data);
+  serializePosts(data: any[], user_id: string): object[] {
+    return this.serializeItems(
+      PostsDto,
+      data.map((post) => {
+        post.requester = user_id;
+        return post;
+      })
+    );
   }
 
   serializeCreatePost(data: object): object {

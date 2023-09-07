@@ -1,7 +1,7 @@
 import { bodyValidator, controller, paramsValidator } from "../decorators";
 import { get, use, post, patch } from "../decorators";
 import { Request, Response, NextFunction } from "express";
-import { verify } from "../middleware/jwt";
+import { verify } from "../middleware/verify";
 import { IAuthService } from "./auth.service";
 import { Inject, Service } from "typedi";
 import { IUserService } from "./users.service";
