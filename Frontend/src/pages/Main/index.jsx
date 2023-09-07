@@ -231,7 +231,7 @@ export const Main = ({ socketValue }) => {
             {currentPosts?.map((post, index) => (
               <Feed
                 key={post._id + index}
-                post_id={post._id}
+                post_id={post.post_id}
                 user_id={userQuery.data._id}
                 postUser={post.user}
                 user_role={userQuery.data.role}

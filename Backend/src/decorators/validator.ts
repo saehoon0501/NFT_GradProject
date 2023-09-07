@@ -16,11 +16,11 @@ function validatorFactory<T>(
 
       const [req, res] = arguments;
       const plain = req[source];
-      console.log(plain.post_text);
+      console.log("VALIDATOR:", plain.post_text);
       const result = await validate(plainToInstance(model, plain), {
         validationError: { target: true },
       });
-      console.log(result);
+      console.log("Validator Result:", result);
       if (result.length > 0) {
         return res.status(422).send(result);
       }

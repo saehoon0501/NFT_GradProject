@@ -215,12 +215,13 @@ class PostController {
   @paramsValidator(PostLikePostDto)
   @use(verify)
   async unLikePost(req: Request, res: Response, next: NextFunction) {
+    console.log(req.params);
     try {
       const result = await this.postService.unlikePost(
         res.locals.decoded.user_id,
         req.params.post_id
       );
-
+      console.log(result);
       if (this.serializer.serializeUpdate(result)) {
         return res.status(401).send("like cannot be updated");
       }

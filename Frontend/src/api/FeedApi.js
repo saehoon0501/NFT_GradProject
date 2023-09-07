@@ -23,17 +23,14 @@ export const addPost = async (post_title, post_text) => {
   return response;
 };
 
-export const likePost = async (post_id, likes) => {
-  const response = await feedApi.post(`/like`, {
-    likes,
-  });
+export const likePost = async (post_id) => {
+  const response = await feedApi.post(`${post_id}/likes`);
   return response;
 };
 
-export const dislikePost = async (post_id, likes) => {
-  const response = await feedApi.patch(`/unlike`, {
-    likes,
-  });
+export const dislikePost = async (post_id) => {
+  const response = await feedApi.patch(`${post_id}/likes`);
+  console.log(response);
   return response;
 };
 
@@ -43,24 +40,24 @@ export const delPost = async (post_id) => {
 };
 
 export const addComment = async ({ post_id, value }) => {
-  const response = await feedApi.post(`/comment/${post_id}`, {
+  const response = await feedApi.post(`/${post_id}/comments`, {
     context: value,
   });
   return response;
 };
 
 export const getComment = async (post_id) => {
-  const response = await feedApi.get(`/comment/${post_id}`);
+  const response = await feedApi.get(`/${post_id}/comments`);
   return response.data;
 };
 
 export const likeComment = async (comment_id) => {
-  const response = await feedApi.post(`/comment/like/${comment_id}`, {});
+  const response = await feedApi.post(`/comments/${comment_id}/likes`, {});
   return response;
 };
 
 export const delComment = async (comment_id, post_id) => {
-  const response = await feedApi.delete(`/comment/${comment_id}`, {
+  const response = await feedApi.delete(`/comments/${comment_id}`, {
     data: {
       post_id,
     },
@@ -69,12 +66,12 @@ export const delComment = async (comment_id, post_id) => {
 };
 
 export const likeReply = async (comment_id) => {
-  const response = await feedApi.post(`/comment/like/${comment_id}`, {});
+  const response = await feedApi.post(`/comments/likes/${comment_id}`, {});
   return response;
 };
 
 export const addReply = async (comment_id, context) => {
-  const response = await feedApi.post(`/comment/reply/${comment_id}`, {
+  const response = await feedApi.post(`/comments/reply/${comment_id}`, {
     context,
   });
 
@@ -82,7 +79,7 @@ export const addReply = async (comment_id, context) => {
 };
 
 export const modifyReply = async (comment_id, context, commentIndex) => {
-  const response = await feedApi.patch(`/comment/${comment_id}`, {
+  const response = await feedApi.patch(`/comments/${comment_id}`, {
     context,
     commentIndex,
   });
@@ -90,7 +87,7 @@ export const modifyReply = async (comment_id, context, commentIndex) => {
 };
 
 export const delReply = async (comment_id, reply_id) => {
-  const response = await feedApi.delete(`/comment/reply/${comment_id}`, {
+  const response = await feedApi.delete(`/comments/reply/${comment_id}`, {
     data: {
       reply_id,
     },

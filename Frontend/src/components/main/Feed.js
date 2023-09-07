@@ -46,12 +46,10 @@ const Feed = ({
 
   const handleLike = async () => {
     if (!like.liked) {
-      likePost(post_id, likes)
+      likePost(post_id)
         .then((res) => {
-          console.log(res.data);
-          likes = res.data;
-          if (likes.liked_user) {
-            setLike({ liked: true, liked_num: likes.likes.liked_num });
+          if (res.data === "like updated") {
+            setLike({ liked: true, liked_num: like.liked_num + 1 });
           }
           // socketValue.emit("sendNotification", {
           //   sender: user_publicAddr,
@@ -61,9 +59,10 @@ const Feed = ({
         })
         .catch((err) => console.log(err));
     } else {
-      dislikePost(post_id, likes).then((res) => {
-        likes = res.data;
-        setLike({ liked: false, liked_num: likes.likes.liked_num });
+      dislikePost(post_id).then((res) => {
+        if (res.data === "like updated") {
+          setLike({ liked: false, liked_num: like.liked_num - 1 });
+        }
       });
     }
   };
@@ -129,7 +128,7 @@ const Feed = ({
       </div>
       <div className="feed_menu">
         <div className="feed_menu_comments" onClick={handleClick}>
-          <h4>댓글 {comments?.length}개</h4>
+          <h4>댓글 {comments}개</h4>
           <div
             className="clickable"
             style={{ position: "relative", margin: "-3px 5px 0 5px" }}
