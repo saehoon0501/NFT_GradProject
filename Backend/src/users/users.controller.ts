@@ -81,6 +81,17 @@ class UsersController {
     return res.send(this.serializer.serializeUserPosts(result));
   }
 
+  @get(":user_id/posts")
+  @use(verify)
+  @paramsValidator(GetUserDto)
+  async sendCertainUserPosts(req: Request, res: Response) {
+    const result = await this.userService.getUserPosts(req.params.user_id);
+
+    if (!result) res.status(400).send("User cannot be found");
+
+    return res.send(this.serializer.serializeUserPosts(result));
+  }
+
   @get("/comments")
   @use(verify)
   async sendUserComments(req: Request, res: Response) {

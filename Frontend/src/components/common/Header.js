@@ -125,7 +125,7 @@ export const Header = ({ socketValue }) => {
           <img
             onClick={showProfile}
             className="header_profileBtn"
-            src={user?.profile.profile_pic}
+            src={user?.profile_pic}
             alt="profile picture"
           />
           {showAlarm && (

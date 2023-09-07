@@ -8,13 +8,14 @@ export const getUser = async (signal) => {
   const response = await userApi.get("", {
     signal,
   });
+  console.log(response.data);
   return response.data;
 };
 
 export const updateUser = async (caption, profileName, profile_pic) => {
   const response = await userApi.patch("", {
-    caption: caption,
-    profileName: profileName,
+    description: caption,
+    username: profileName,
     profile_pic: profile_pic,
   });
   return response;
@@ -22,9 +23,9 @@ export const updateUser = async (caption, profileName, profile_pic) => {
 
 export const updateProfilePic = async ([caption, profileName, profile_pic]) => {
   const response = await userApi.patch("", {
-    caption,
-    profileName,
-    profile_pic,
+    description: caption,
+    username: profileName,
+    profile_pic: profile_pic,
   });
   return response;
 };
@@ -41,13 +42,13 @@ export const getUserComments = async (caption, profileName) => {
 };
 
 export const certainUser = async (userId) => {
-  const response = await userApi.get(`?userId=${userId}`);
+  const response = await userApi.get(`/${userId}`);
   const data = await response.data;
   return data;
 };
 
-export const certainUserPost = async (postId) => {
-  const response = await userApi.get(`/posts?publicAddress=${postId}`);
+export const certainUserPost = async (userId) => {
+  const response = await userApi.get(`${userId}/posts`);
   const data = await response.data;
   return data;
 };

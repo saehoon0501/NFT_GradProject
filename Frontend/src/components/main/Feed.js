@@ -18,23 +18,19 @@ import { DELETE, elapsedTimePeriod } from "../../utils";
 
 const Feed = ({
   post_id,
-  writer_profile,
   user_id,
+  postUser,
   user_role,
   caption,
   title,
-  likes,
   comments,
+  likes,
   socketValue,
-  user_publicAddr,
-  writer_publicAddr,
   createdAt,
-  postingId,
-  likedUsers,
 }) => {
   const [like, setLike] = useState({
     liked: false,
-    liked_num: likes.liked_user.length,
+    liked_num: likes.liked_num,
   });
   const [showPopUp, setShowPopUp] = useRecoilState(showPopUpState);
   const [currentPopUp, setCurrentPopUp] = useRecoilState(currentPopUpState);
@@ -43,14 +39,9 @@ const Feed = ({
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (likedUsers.includes(user_id)) {
+    if (likes.liked_user) {
       setLike((prev) => ({ ...prev, liked: true }));
     }
-
-    // console.log(caption, writer_profile.post_ids.includes(post_id));
-    // if (isOwner === false && writer_profile.post_ids.includes(post_id)) {
-    //   setIsOwner(true);
-    // }
   }, []);
 
   const handleLike = async () => {
@@ -59,20 +50,20 @@ const Feed = ({
         .then((res) => {
           console.log(res.data);
           likes = res.data;
-          if (likes.liked_user.includes(user_id)) {
-            setLike({ liked: true, liked_num: likes.liked_user.length });
+          if (likes.liked_user) {
+            setLike({ liked: true, liked_num: likes.likes.liked_num });
           }
-          socketValue.emit("sendNotification", {
-            sender: user_publicAddr,
-            receiver: writer_publicAddr,
-            type: "like",
-          });
+          // socketValue.emit("sendNotification", {
+          //   sender: user_publicAddr,
+          //   receiver: writer_publicAddr,
+          //   type: "like",
+          // });
         })
         .catch((err) => console.log(err));
     } else {
       dislikePost(post_id, likes).then((res) => {
         likes = res.data;
-        setLike({ liked: false, liked_num: likes.liked_user.length });
+        setLike({ liked: false, liked_num: likes.likes.liked_num });
       });
     }
   };
@@ -81,8 +72,7 @@ const Feed = ({
     navigate(`/post/${post_id}`, {
       state: {
         post_id,
-        writer_profile,
-        user_id,
+        postUser,
         caption,
         title,
         likes,
@@ -99,10 +89,10 @@ const Feed = ({
   };
 
   const onClickUserImage = () => {
-    if (user_id === postingId) {
+    if (user_id === postUser._id) {
       return navigate("/profile");
     }
-    navigate(`/profile/${postingId}`);
+    navigate(`/profile/${postUser._id}`);
   };
 
   return (
@@ -111,32 +101,32 @@ const Feed = ({
         <div className="feed_user_info">
           <img
             className="feed_user_img"
-            src={writer_profile.profile_pic}
+            src={postUser.profile_pic}
             alt="profile picture"
             onClick={onClickUserImage}
           />
           <div className="feed_name_and_title">
-            <h3>{writer_profile.username}</h3>
+            <h3>{postUser.username}</h3>
             <h2>{title}</h2>
           </div>
         </div>
         <div>
           <span className="feed_date">{elapsedTimePeriod(createdAt)}</span>
-          {((user_id === postingId) || (user_role == "admin")) && (
+          {(user_id === postUser._id || user_role === "admin") && (
             <button className="feed_delete_btn" onClick={handleDelete}>
               ✕
             </button>
           )}
         </div>
-      </div>      
-        {/* Content */}
-        <div
-          onClick={handleClick}
-          className="ql-editor feed_click"
-          style={{ padding: "10px 10px 10px 10px", minHeight: "60px" }}
-        >
-          {parse(caption)}
-        </div>              
+      </div>
+      {/* Content */}
+      <div
+        onClick={handleClick}
+        className="ql-editor feed_click"
+        style={{ padding: "10px 10px 10px 10px", minHeight: "60px" }}
+      >
+        {parse(caption)}
+      </div>
       <div className="feed_menu">
         <div className="feed_menu_comments" onClick={handleClick}>
           <h4>댓글 {comments?.length}개</h4>

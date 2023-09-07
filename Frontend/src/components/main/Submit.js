@@ -25,7 +25,7 @@ const uploadURL = (file) => {
 
     data.append("file", file);
 
-    const result = axios.post(`${baseURL}/api/uploads`, data, {
+    const result = axios.post(`api/uploads`, data, {
       headers: {
         "Content-Type": "multipart/form-data",
         Authorization: `Bearer ${token}`,
@@ -102,7 +102,7 @@ export const Submit = ({ user, title, setTitle, setIsBest }) => {
     setShowPopUp(true);
     setCurrentPopUp(WRITE_FEED);
     setCurrentPostTitle(title);
-    setCurrentPostText(quill.current.getEditor().getContents());    
+    setCurrentPostText(quill.current.getEditor().getContents());
   };
 
   const onChangeTitle = (e) => {
@@ -114,7 +114,7 @@ export const Submit = ({ user, title, setTitle, setIsBest }) => {
       <div className="submit_header">
         <div className="submit_profilePic">
           <img
-            src={user?.profile.profile_pic}
+            src={user?.profile_pic}
             alt="profile picture"
             style={{ width: "45px", height: "45px", borderRadius: "10px" }}
           />

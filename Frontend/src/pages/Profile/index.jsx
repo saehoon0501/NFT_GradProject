@@ -28,13 +28,12 @@ export const Profile = () => {
   useEffect(() => {
     async function fetchData() {
       if (user) {
-        const data = await certainUserPost(user.publicAddr);
+        const data = await certainUserPost(user._id);
         setPostData(data[0].posts);
       }
     }
     fetchData();
   }, [user]);
-
 
   if (isLoading) {
     return <Loading />;

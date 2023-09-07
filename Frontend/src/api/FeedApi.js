@@ -1,11 +1,12 @@
 import axios from "axios";
 
 const feedApi = axios.create({
-  baseURL: "http://localhost:4000/api/post",
+  baseURL: "api/posts",
 });
 
 export const getPost = async (pageNum) => {
-  const response = await feedApi.get(`?pageNum=${pageNum}`);
+  const response = await feedApi.get(`?filter=recent&pageNum=${pageNum}`);
+  console.log(response.data);
   return response.data;
 };
 

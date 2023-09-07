@@ -37,7 +37,6 @@ class PostController {
   ) {}
 
   @get("/")
-  @use(verify)
   @queryValidator(GetSendPostDto)
   async sendPost(req: Request, res: Response, next: NextFunction) {
     try {
@@ -62,8 +61,8 @@ class PostController {
   }
 
   @post("/")
-  @use(verify)
   @bodyValidator(CreatePostRequestDto)
+  @use(verify)
   async createPost(req: Request, res: Response, next: NextFunction) {
     try {
       let { post_title, post_text } = req.body;
@@ -85,8 +84,8 @@ class PostController {
   }
 
   @del("/:post_id")
-  @use(verify)
   @paramsValidator(PostRequestDto)
+  @use(verify)
   async delPost(req: Request, res: Response, next: NextFunction) {
     try {
       const post_id = req.params.post_id;
@@ -103,8 +102,8 @@ class PostController {
   }
 
   @get("/:post_id/comments")
-  @use(verify)
   @paramsValidator(PostRequestDto)
+  @use(verify)
   async getComments(req: Request, res: Response, next: NextFunction) {
     try {
       const post_id = req.params.post_id;
@@ -118,9 +117,9 @@ class PostController {
   }
 
   @post("/:post_id/comments")
-  @use(verify)
   @bodyValidator(PostCommentBodyDto)
   @paramsValidator(PostCommentParamDto)
+  @use(verify)
   async addComment(req: Request, res: Response, next: NextFunction) {
     try {
       let { context } = req.body;
@@ -146,9 +145,9 @@ class PostController {
   }
 
   @post("/comments/:comment_id")
-  @use(verify)
   @bodyValidator(PostCommentBodyDto)
   @paramsValidator(PostReplyCommentDto)
+  @use(verify)
   async addReply(req: Request, res: Response, next: NextFunction) {
     try {
       let { context } = req.body;
@@ -173,9 +172,9 @@ class PostController {
   }
 
   @patch("/comments/:comment_id")
-  @use(verify)
   @bodyValidator(PostCommentBodyDto)
   @paramsValidator(PostReplyCommentDto)
+  @use(verify)
   async updateComment(req: Request, res: Response, next: NextFunction) {
     try {
       let { context } = req.body;
@@ -194,8 +193,8 @@ class PostController {
   }
 
   @post("/:post_id/likes")
-  @use(verify)
   @paramsValidator(PostLikePostDto)
+  @use(verify)
   async likePost(req: Request, res: Response, next: NextFunction) {
     try {
       const result = await this.postService.likePost(
@@ -213,8 +212,8 @@ class PostController {
   }
 
   @patch("/:post_id/likes")
-  @use(verify)
   @paramsValidator(PostLikePostDto)
+  @use(verify)
   async unLikePost(req: Request, res: Response, next: NextFunction) {
     try {
       const result = await this.postService.unlikePost(
@@ -232,8 +231,8 @@ class PostController {
   }
 
   @post("/comments/:comment_id/likes")
-  @use(verify)
   @paramsValidator(PostReplyCommentDto)
+  @use(verify)
   async likeComment(req: Request, res: Response, next: NextFunction) {
     try {
       const result = await this.postService.likeComment(
@@ -251,8 +250,8 @@ class PostController {
   }
 
   @patch("/comments/:comment_id/likes")
-  @use(verify)
   @paramsValidator(PostReplyCommentDto)
+  @use(verify)
   async unlikeComment(req: Request, res: Response, next: NextFunction) {
     try {
       const result = await this.postService.unlikeComment(
@@ -271,8 +270,8 @@ class PostController {
   }
 
   @get("/search")
-  @use(verify)
   @queryValidator(GetSearchDto)
+  @use(verify)
   async getSearch(req: Request, res: Response, next: NextFunction) {
     try {
       const result = await this.postService.getSearch(

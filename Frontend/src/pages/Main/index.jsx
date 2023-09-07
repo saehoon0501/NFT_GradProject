@@ -54,14 +54,15 @@ export const Main = ({ socketValue }) => {
 
   const userQuery = useQuery("user", ({ signal }) => getUser(signal), {
     onSuccess: (data) => {
-      socketValue.emit("newUser", {
-        publicAddr: data.publicAddr,
-        username: data.profile.username,
-        profile_pic: data.profile.profile_pic,
-      });
+      // socketValue.emit("newUser", {
+      //   publicAddr: data.publicAddr,
+      //   username: data.profile.username,
+      //   profile_pic: data.profile.profile_pic,
+      // });
       setIsUserDataSend(true);
     },
   });
+
   const { refetch: refetchPosts, isLoading: isPostLoading } = useQuery(
     "posts",
     () => getPost(currentPostCount),
@@ -83,7 +84,7 @@ export const Main = ({ socketValue }) => {
     }
   );
 
-  const { data: voteData } = useQuery("votes", getVote);
+  // const { data: voteData } = useQuery("votes", getVote);
 
   if (userQuery.isError) {
     navigate("/login");
@@ -175,11 +176,11 @@ export const Main = ({ socketValue }) => {
   return (
     <div className="main_wrapper">
       <LoginUser users={loginUsers} />
-      <VoteList
+      {/* <VoteList
         setCurrentVoteContent={setCurrentVoteContent}
         userData={userQuery.data}
         data={voteData}
-      />
+      /> */}
       <Submit
         user={userQuery.data}
         title={title}
@@ -213,19 +214,15 @@ export const Main = ({ socketValue }) => {
               <Feed
                 key={post._id + index}
                 post_id={post._id}
-                writer_profile={post.user.profile}
                 user_id={userQuery.data._id}
+                postUser={post.user}
                 user_role={userQuery.data.role}
                 caption={post.text}
                 title={post.title}
                 comments={post.comments}
-                likes={post.likes}
+                likes={post.like}
                 socketValue={socketValue}
-                user_publicAddr={userQuery.data.publicAddr}
-                writer_publicAddr={post.user.publicAddr}
                 createdAt={post.createdAt}
-                postingId={post.user._id}
-                likedUsers={post.likes.liked_user}
               />
             ))}
           </>
@@ -235,19 +232,15 @@ export const Main = ({ socketValue }) => {
               <Feed
                 key={post._id + index}
                 post_id={post._id}
-                writer_profile={post.user.profile}
                 user_id={userQuery.data._id}
+                postUser={post.user}
                 user_role={userQuery.data.role}
                 caption={post.text}
                 title={post.title}
                 comments={post.comments}
-                likes={post.likes}
+                likes={post.like}
                 socketValue={socketValue}
-                user_publicAddr={userQuery.data.publicAddr}
-                writer_publicAddr={post.user.publicAddr}
                 createdAt={post.createdAt}
-                postingId={post.user._id}
-                likedUsers={post.likes.liked_user}
               />
             ))}
           </>
