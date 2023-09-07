@@ -53,6 +53,15 @@ class MongoCommentRepository implements ICommentRepository {
         },
         {
           $lookup: {
+            from: "users",
+            localField: "user",
+            foreignField: "_id",
+            as: "user",
+          },
+        },
+        { $unwind: "$user" },
+        {
+          $lookup: {
             from: "comments",
             localField: "_id",
             foreignField: "reply_id",
@@ -76,15 +85,21 @@ class MongoCommentRepository implements ICommentRepository {
             as: "reply_like",
           },
         },
-        // {
-        //   $project: {
-        //     post_id: 0,
-        //     __v: 0,
-        //     "reply.post_id": 0,
-        //     "reply.reply_id": 0,
-        //     "reply.__v": 0,
-        //   },
-        // },
+        {
+          $project: {
+            post_id: 0,
+            __v: 0,
+            "reply.post_id": 0,
+            "reply.reply_id": 0,
+            "reply.__v": 0,
+            "user._id": 0,
+            "user.public_address": 0,
+            "user.onwer_of_nft": 0,
+            "user.points": 0,
+            "user.role": 0,
+            "user.owner_of_nft": 0,
+          },
+        },
       ])
       .exec();
   }

@@ -18,24 +18,17 @@ export class CommentsDto {
   @Expose()
   createdAt: Date;
 
-  @Transform(({ obj }) => {
-    const dateOne = new Date(obj.createdAt);
-    const dateTwo = new Date(obj.updatedAt);
-    return dateOne.getTime() !== dateTwo.getTime() ? true : false;
-  })
+  @Transform(({ obj }) => obj.updatedAt)
   @Expose()
-  updated: boolean;
+  updatedAt: Date;
 
   @Transform(({ obj }) =>
     obj.reply.map((item) => {
-      const dateOne = new Date(item.createdAt);
-      const dateTwo = new Date(item.updatedAt);
       return {
         _id: item._id,
         user: item.user,
         context: item.context,
-        createdAt: new Date(item.createdAt).toLocaleString(),
-        updated: dateOne.getTime() !== dateTwo.getTime() ? true : false,
+        updatedAt: item.updatedAt,
       };
     })
   )
@@ -56,7 +49,7 @@ export class CommentsDto {
 
   @Transform(({ obj }) => obj.like.liked_num)
   @Expose()
-  like_num: number;
+  liked_num: number;
 
   @Transform(({ obj }) =>
     obj.reply_like.map((like) => {
@@ -72,5 +65,5 @@ export class CommentsDto {
     })
   )
   @Expose()
-  reply_like: object[];
+  reply_likes: object[];
 }

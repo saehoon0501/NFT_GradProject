@@ -55,7 +55,7 @@ class PostController {
       } else {
         return res.status(422).send("Invalid filter");
       }
-      console.log(res.locals.decoded.user_id);
+
       return res.send(
         this.serializer.serializePosts(result, res.locals.decoded.user_id)
       );
