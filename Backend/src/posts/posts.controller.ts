@@ -37,6 +37,7 @@ class PostController {
   ) {}
 
   @get("/")
+  @use(verify)
   @queryValidator(GetSendPostDto)
   async sendPost(req: Request, res: Response, next: NextFunction) {
     try {

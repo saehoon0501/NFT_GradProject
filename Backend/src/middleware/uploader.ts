@@ -1,16 +1,14 @@
 import { Request, RequestHandler } from "express";
-import multer, { DiskStorageOptions, StorageEngine, Field } from "multer";
+import multer, { DiskStorageOptions } from "multer";
 import path from "path";
 
 const storage = multer.diskStorage(getDiskStorageOptions());
 const uploader = multer(getMulterOptions());
 
 function uploadMultipleFiles(): RequestHandler {
-  return uploader.fields(getFormFormat());
-}
-
-function getFormFormat(): ReadonlyArray<Field> {
-  return [{ name: "Image", maxCount: 3 }];
+  const filename = "image";
+  const maxCount = 3;
+  return uploader.array(filename, maxCount);
 }
 
 function getMulterOptions(): multer.Options {
@@ -23,7 +21,9 @@ function getMulterOptions(): multer.Options {
 function getDiskStorageOptions(): DiskStorageOptions {
   return {
     destination(req: Request, file, callback) {
-      callback(null, "../public/uploads"); //파일 저장 위치
+      callback(null, "public/uploads"); //파일 저장 위치
+      console.log(file);
+      console.log(req);
     },
     // 저장할 이미지의 파일명
     filename(req, file, callback) {

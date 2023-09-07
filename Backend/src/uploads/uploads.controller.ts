@@ -10,18 +10,26 @@ import { uploadMultipleFiles } from "../middleware/uploader";
 class UploadController {
   constructor(@Inject("UploadService") private uploadService: IUploadService) {}
 
-  @post("")
+  @post("/")
+  @use(uploadMultipleFiles())
   @use(verify)
-  @use(uploadMultipleFiles)
-  // @use(this.uploadService.uploadMultipleFiles)
   uploadFiles(req: Request, res: Response, next: NextFunction) {
+    console.log(req.files);
+    if (!req.files || req.files.length === 0) {
+      return res.status(422).send("file does not exits");
+    }
+    const imageFileKey = "Image";
+    // Promise.all(
+    //   this.uploadService.uploadToS3(
+    //     imageFileKey,
+    //     req.files as Express.Multer.File[]
+    //   )
+    // ).then((res) =>{
+    //   console.log(res);
+    // }
+    //   this.uploadService.clearUploadedFiles(req.files as Express.Multer.File[])
+    // );
+
     return res.send({ result: "OK" });
   }
-
-  // public static returnURL = (req, res, next): void => {
-  //   if (req.file.filename === undefined) next(new Error("File Not Found"));
-
-  //   const IMG_URL = `http://localhost:4000/uploads/${req.file.filename}`;
-  //   res.send(IMG_URL);
-  // };
 }

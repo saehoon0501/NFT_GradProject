@@ -9,8 +9,6 @@ const verify = async (req, res, next) => {
   }
   try {
     res.locals.decoded = jwt.verify(token, keys.JWT_SECRET as string);
-    console.log(res.locals.decoded);
-    console.log(JSON.stringify(res.locals.decoded));
   } catch (err: any) {
     if (err.message === "jwt expired") {
       console.log("expired token");

@@ -1,84 +1,65 @@
-import { Request, RequestHandler } from "express";
-import multer, { DiskStorageOptions, StorageEngine, Field } from "multer";
-import path from "path";
+import S3 from "aws-sdk/clients/s3";
+const keys = require("../config/keys");
+import { unlink, createReadStream } from "node:fs";
+import Container from "typedi";
 
-abstract class IUploadService {
-  protected storage: StorageEngine;
-  protected uploader: multer.Multer;
-  abstract uploadMultipleFiles(files: ReadonlyArray<Field>): RequestHandler;
+interface IUploadService {
+  uploadToS3(fileKey: string, files: Express.Multer.File[]): Promise<any>[];
+  clearUploadedFiles(files: Express.Multer.File[]): void;
 }
 
-class UploadService extends IUploadService {
+class UploadService implements IUploadService {
+  s3: S3;
+  uploadFilePromises: [];
+
   constructor() {
-    super();
-    this.storage = multer.diskStorage(this.getDiskStorageOptions());
-    this.uploader = multer(this.getMulterOptions());
-  }
-
-  uploadMultipleFiles(): RequestHandler {
-    return this.uploader.fields(this.getFormFormat());
-  }
-
-  private getFormFormat(): ReadonlyArray<Field> {
-    return [{ name: "Image", maxCount: 3 }];
-  }
-
-  private getMulterOptions(): multer.Options {
-    return {
-      storage: this.storage,
-      fileFilter: this.fileFilter,
-    };
-  }
-
-  private getDiskStorageOptions(): DiskStorageOptions {
-    return {
-      destination(req: Request, file, callback) {
-        callback(null, "../public/uploads"); //파일 저장 위치
+    this.s3 = new S3({
+      credentials: {
+        accessKeyId: keys.accessKeyId,
+        secretAccessKey: keys.secretAccessKey,
       },
-      // 저장할 이미지의 파일명
-      filename(req, file, callback) {
-        const ext = path.extname(file.originalname); // 파일의 확장자
-        // 파일명이 절대 겹치지 않도록 해줘야한다.
-        // 파일이름 + 현재시간밀리초 + 파일확장자명
-        callback(
-          null,
-          path.basename(file.originalname, ext) + Date.now() + ext
-        );
-      },
-    };
+      region: "ap-northeast-2",
+    });
+    this.uploadFilePromises = [];
   }
 
-  private fileFilter(req, file, callback: Function) {
-    if (
-      this.checkFileType(file) &&
-      this.checkFileSize(req.headers["content-length"])
-    ) {
-      callback(null, true);
-    } else {
-      callback(new Error("Only can upload jpg/jpeg/png/gif"));
-    }
+  uploadToS3(fileKey: string, files: Express.Multer.File[]) {
+    return files.map((file) => this.createUploadPromise(fileKey, file));
   }
 
-  private checkFileType(file) {
-    if (
-      file.mimetype === "image/jpg" ||
-      file.mimetype === "image/jpeg" ||
-      file.mimetype === "image/png" ||
-      file.mimetype === "image/gif"
-    )
-      return true;
-
-    return false;
+  clearUploadedFiles(files: Express.Multer.File[]) {
+    files.forEach((file) =>
+      unlink(file.path, (err) => {
+        if (err) throw err;
+        console.log("path/file.txt was deleted");
+      })
+    );
   }
 
-  private checkFileSize(fileSize: number) {
-    const MAXFILESIZE = 30 * 1024 * 1024;
-    //Magic number 수정
-    if (fileSize <= MAXFILESIZE) {
-      return true;
-    }
-    return false;
+  private createUploadPromise(key: string, file: Express.Multer.File) {
+    return new Promise(async (resolve, reject) => {
+      const params = {
+        Bucket: "my-bucket-byun",
+        Key: key,
+        ACL: "public-read",
+        Body: createReadStream(file.path),
+        ContentType: file.mimetype,
+      };
+
+      await this.s3.upload(
+        params,
+        function (err: Error, data: S3.ManagedUpload.SendData) {
+          if (err) {
+            reject(err);
+          }
+          console.log(`File uploaded successfully at ${data.Location}`);
+          resolve(data.Location);
+        }
+      );
+    });
   }
 }
+
+Container.set("UploadService", new UploadService());
 
 export { IUploadService };

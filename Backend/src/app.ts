@@ -17,10 +17,11 @@ import "./posts/repositories/posts.repository";
 import "./posts/posts.serializer";
 import "./posts/posts.service";
 import "./posts/posts.controller";
+import "./uploads/uploads.service";
+import "./uploads/uploads.controller";
 import "./cache/cache";
 const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
-
 const app = express();
 
 app.use(cors());

@@ -32,6 +32,7 @@
   },
   "keywords": [],
   "devDependencies": {
+    "@aws-sdk/types": "^3.398.0",
     "@types/express": "^4.17.17",
     "@types/jest": "^29.5.4",
     "@types/multer": "^1.4.7",
