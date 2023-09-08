@@ -179,12 +179,14 @@ export const Main = ({ socketValue }) => {
         userData={userQuery.data}
         data={voteData}
       /> */}
-      <Submit
-        user={userQuery.data}
-        title={title}
-        setTitle={setTitle}
-        setIsBest={setIsBest}
-      />
+      {isAuth && (
+        <Submit
+          user={userQuery.data}
+          title={title}
+          setTitle={setTitle}
+          setIsBest={setIsBest}
+        />
+      )}
       <div className="main_icons_wrapper">
         <div
           className={

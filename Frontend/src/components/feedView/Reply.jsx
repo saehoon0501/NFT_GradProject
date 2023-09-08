@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { addReply, delReply, likeReply, modifyReply } from "../../api/FeedApi";
+import { addReply, likeComment, unLikeComment } from "../../api/FeedApi";
+import { certainUser } from "../../api/UserApi";
 import commentImg from "../../assets/comment.png";
 import like_before from "../../assets/like-before.png";
 import like_after from "../../assets/like-after.png";
@@ -13,16 +14,15 @@ export const Reply = ({
   writer,
   caption,
   liked_user,
-  refetchComments,
-  commentIndex,
-  index,
+  liked_num,
   reply_id,
+  refetchComments,
   updatedAt,
   isModified,
 }) => {
   const [like, setLike] = useState({
     liked: false,
-    liked_user: liked_user,
+    liked_num: liked_num,
   });
   const [value, setValue] = useState("");
   const [toReply, setToReply] = useState({
@@ -30,6 +30,7 @@ export const Reply = ({
     modify: false,
   });
   const [isOwner, setIsOwner] = useState(false);
+  const [user, setUser] = useState({});
 
   const textareaRef = useRef(null);
 
@@ -42,21 +43,33 @@ export const Reply = ({
       )}px`;
     }
 
-    if (writer._id === user_id) {
+    if (writer === user_id) {
       setIsOwner(true);
     }
 
-    if (liked_user.includes(user_id)) {
+    if (liked_user) {
       setLike((prev) => ({ ...prev, liked: true }));
     }
+
+    async function fetchUser() {
+      const user = await certainUser(writer);
+      setUser(user);
+    }
+    fetchUser();
   }, [value, toReply]);
 
   const handleLike = () => {
     if (!like.liked) {
-      likeReply(reply_id, commentIndex, index).then((res) => {
-        console.log(res.data.length);
-        if (res.data.includes(user_id)) {
-          setLike({ liked: true, liked_user: res.data });
+      likeComment(reply_id).then((res) => {
+        console.log(res.data.result);
+        if (res.data.result === "OK") {
+          setLike({ liked: true, liked_num: like.liked_num + 1 });
+        }
+      });
+    } else {
+      unLikeComment(reply_id).then((res) => {
+        if (res.data.result === "OK") {
+          setLike({ liked: false, liked_num: like.liked_num - 1 });
         }
       });
     }
@@ -67,21 +80,6 @@ export const Reply = ({
     setToReply({ reply: !toReply.reply, modify: toReply.modify });
     refetchComments();
     setValue("");
-  };
-
-  const handleModify = async () => {
-    await modifyReply(reply_id, value, index);
-    setToReply({ reply: !toReply.reply, modify: toReply.modify });
-    refetchComments();
-    setValue("");
-  };
-
-  const handleDelete = async () => {
-    console.log(comment_id, reply_id);
-    await delReply(comment_id, reply_id).then((res) => {
-      console.log(res.data);
-    });
-    refetchComments();
   };
 
   const onClickReply = () => {
@@ -99,40 +97,38 @@ export const Reply = ({
       <div className="reply_wrapper">
         <img
           className="comment-page-profile-img"
-          src={writer.profile.profile_pic}
+          src={user.profile_pic}
           alt="comment_profilePic"
         />
         <div>
           <h5>
-            {writer?.profile.username} · {elapsedTimePeriod(updatedAt)}{" "}
+            {user?.username} · {elapsedTimePeriod(updatedAt)}{" "}
             {isModified > 0 && "*수정됨"}
           </h5>
           <p className="comment_context">{caption}</p>
           <div className="comment_page_menus">
-            <div className="comment_page_button" onClick={onClickReply}>
+            {/* <div className="comment_page_button" onClick={onClickReply}>
               <img src={commentImg} />
               <h5>Reply</h5>
-            </div>
+            </div> */}
             <div className="comment_page_button">
               {like.liked ? (
                 <img src={like_after} onClick={handleLike} />
               ) : (
                 <img src={like_before} onClick={handleLike} />
               )}
-              <h5>
-                {like.liked_user === undefined ? 0 : like.liked_user.length}개
-              </h5>
+              <h5>{like.liked_num}개</h5>
             </div>
-            {isOwner && (
+            {/* {isOwner && (
               <div className="comment_page_button">
                 <h5 onClick={onClickModify}>수정</h5>
                 <h5 onClick={handleDelete}>삭제</h5>
               </div>
-            )}
+            )} */}
           </div>
         </div>
       </div>
-      {toReply.reply && (
+      {/* {toReply.reply && (
         <div className="modify_comment">
           {toReply.modify ? <h4>답글 수정</h4> : <h4>답글 달기</h4>}
           <textarea
@@ -144,14 +140,11 @@ export const Reply = ({
             }}
             placeholder="매너있는 댓글 작성 부탁드립니다."
           />
-          <button
-            onClick={toReply.modify ? handleModify : handleReply}
-            className="modify_btn"
-          >
+          <button onClick={handleReply} className="modify_btn">
             완료
           </button>
         </div>
-      )}
+      )} */}
     </div>
   );
 };

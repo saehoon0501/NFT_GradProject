@@ -36,7 +36,7 @@ function App() {
           <Route exact path="/profile" element={<Profile />} />
           <Route exact path="/profile/:user_id" element={<User />} />
           <Route exact path="/search/:keyword" element={<Search />} />
-          <Route exact path="/post/:postId" element={<FeedView />} />
+          <Route exact path="/:postId" element={<FeedView />} />
           <Route exact path="/comments" element={<MyComments />} />
           <Route exact path="/vote/create" element={<CreateVote />} />
           <Route exact path="/vote/:id" element={<Vote />} />

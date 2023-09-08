@@ -13,7 +13,7 @@ import {
   likePost,
   dislikePost,
   addComment,
-  getComment,
+  getComments,
 } from "../../api/FeedApi";
 import { Comment } from "../../components/feedView/Comment";
 import { Loading } from "../../components/common/Loading";
@@ -25,18 +25,20 @@ export const FeedView = () => {
   const { postId } = useParams();
 
   const { state } = useLocation();
-  const { writer_profile, user_id, caption, title, createdAt } = state;
+  const { postUser, user_id, caption, title, createdAt } = state;
   let { likes } = state;
 
   const [value, setValue] = useState("");
   const [like, setLike] = useState({
     liked: false,
-    liked_user: likes.liked_user,
+    liked_num: likes.liked_num,
   });
 
   const { isLoading, data, refetch } = useQuery(
     ["comments", postId],
-    () => getComment(postId),
+    () => {
+      return getComments(postId);
+    },
     {
       onSuccess: () => {
         console.log(data);
@@ -47,9 +49,9 @@ export const FeedView = () => {
   const textareaRef = useRef(null);
 
   useEffect(() => {
-    if (like.liked_user.includes(user_id) && like.liked === false) {
-      setLike((prev) => ({ ...prev, liked: true }));
-    }
+    // if (likes.liked_user) {
+    //   setLike((prev) => ({ ...prev, liked: true }));
+    // }
 
     if (textareaRef.current) {
       textareaRef.current.style.height = "inherit";
@@ -64,24 +66,24 @@ export const FeedView = () => {
 
   const handleLike = async () => {
     if (!like.liked) {
-      likePost(postId, likes)
+      likePost(postId)
         .then((res) => {
-          likes = res.data;
-          if (likes.liked_user.includes(user_id)) {
-            setLike({ liked: true, liked_user: likes.liked_user });
+          if (res.data === "like updated") {
+            setLike({ liked: true, liked_num: like.liked_num + 1 });
           }
         })
         .catch((err) => console.log(err));
     } else {
-      dislikePost(postId, likes).then((res) => {
-        likes = res.data;
-        setLike({ liked: false, liked_user: likes.liked_user });
+      dislikePost(postId).then((res) => {
+        if (res.data === "like updated") {
+          setLike({ liked: false, liked_num: like.liked_num - 1 });
+        }
       });
     }
   };
 
   const onClickWriteComment = async () => {
-    await addComment({ post_id: postId, value });
+    await addComment(postId, value);
     refetch();
     setValue("");
   };
@@ -112,19 +114,17 @@ export const FeedView = () => {
     return <Loading />;
   }
 
-  console.log(data);
-
   return (
     <div className="feedview-wrapper">
       <div className="feedview-content">
         <div className="feedview-header">
           <img
             className="feedview-header-img"
-            src={writer_profile.profile_pic}
+            src={postUser.profile_pic}
             alt="profile picture"
           />
           <div className="feedview-header-name">
-            <p>{writer_profile.username}</p>
+            <p>{postUser.username}</p>
             <h2>{title}</h2>
           </div>
           <span className="feedview-header-date">
@@ -140,7 +140,7 @@ export const FeedView = () => {
             <img src={comment} />
           </div>
           <div className="feedview-menu">
-            <h4>좋아요 {like.liked_user.length}개</h4>
+            <h4>좋아요 {like.liked_num}개</h4>
             {like.liked ? (
               <img src={like_after} onClick={handleLike} />
             ) : (
@@ -177,9 +177,10 @@ export const FeedView = () => {
             comment_id={comment._id}
             user_id={user_id}
             writer={comment.user}
-            caption={comment.caption}
+            caption={comment.context}
             liked_user={comment.liked_user}
-            replies={comment.replies}
+            liked_num={comment.liked_num}
+            replies={comment.reply}
             refetchComments={refetch}
             updatedAt={comment.updatedAt}
             postId={postId}

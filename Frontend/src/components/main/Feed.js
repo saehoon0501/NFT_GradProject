@@ -68,14 +68,13 @@ const Feed = ({
   };
 
   const handleClick = () => {
-    navigate(`/post/${post_id}`, {
+    navigate(`/${post_id}`, {
       state: {
-        post_id,
+        user_id,
         postUser,
         caption,
         title,
         likes,
-        comment_ids: comments,
         createdAt,
       },
     });

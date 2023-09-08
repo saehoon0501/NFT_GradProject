@@ -1,10 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import {
-  addReply,
-  delComment,
-  likeComment,
-  modifyReply,
-} from "../../api/FeedApi";
+import { addReply, likeComment, unLikeComment } from "../../api/FeedApi";
 import commentImg from "../../assets/comment.png";
 import like_before from "../../assets/like-before.png";
 import like_after from "../../assets/like-after.png";
@@ -16,7 +11,7 @@ import { elapsedTimePeriod } from "../../utils";
 export const Comment = ({
   user_id,
   comment_id,
-  index,
+  liked_num,
   writer,
   replies,
   caption,
@@ -24,10 +19,11 @@ export const Comment = ({
   refetchComments,
   updatedAt,
   postId,
+  reply_likes,
 }) => {
   const [like, setLike] = useState({
     liked: false,
-    liked_user: liked_user,
+    liked_num: liked_num,
   });
   const [toReply, setToReply] = useState({
     reply: false,
@@ -47,45 +43,37 @@ export const Comment = ({
       )}px`;
     }
 
-    if (writer._id === user_id) {
+    if (writer === user_id) {
       setIsOwner(true);
     }
 
-    if (liked_user.includes(user_id) && like.liked === false) {
+    if (liked_user) {
       setLike((prev) => ({ ...prev, liked: true }));
     }
+    console.log(liked_user);
   }, [value]);
 
   const handleLike = () => {
     if (!like.liked) {
-      likeComment(comment_id, index).then((res) => {
-        console.log(res.data.length);
-        if (res.data.includes(user_id)) {
-          setLike({ liked: true, liked_user: res.data });
+      likeComment(comment_id).then((res) => {
+        if (res.data.result === "OK") {
+          setLike({ liked: true, liked_num: like.liked_num + 1 });
+        }
+      });
+    } else {
+      unLikeComment(comment_id).then((res) => {
+        if (res.data.result === "OK") {
+          setLike({ liked: false, liked_num: like.liked_num - 1 });
         }
       });
     }
   };
 
   const handleReply = async () => {
-    await addReply(comment_id, value, index);
+    await addReply(comment_id, value);
     setToReply({ reply: !toReply.reply, modify: toReply.modify });
     refetchComments();
     setValue("");
-  };
-
-  const handleModify = async () => {
-    await modifyReply(comment_id, value, index);
-    setToReply({ reply: !toReply.reply, modify: toReply.modify });
-    refetchComments();
-    setValue("");
-  };
-
-  const handleDelete = () => {
-    delComment(comment_id, postId).then((res) => {
-      console.log(res.data);
-    });
-    refetchComments();
   };
 
   const onClickReply = () => {
@@ -98,19 +86,18 @@ export const Comment = ({
     setValue(caption);
   };
 
-  console.log(replies);
-
+  console.log("replies", replies);
   return (
     <div className="comment-wrapper">
       <div className="comment-page-wrapper">
         <img
           className="comment-page-profile-img"
-          src={writer?.profile.profile_pic}
+          src={writer?.profile_pic}
           alt="comment_profilePic"
         />
         <div>
           <h5>
-            {writer?.profile.username} · {elapsedTimePeriod(updatedAt)}
+            {writer?.username} · {elapsedTimePeriod(updatedAt)}
           </h5>
           <p className="comment_context">{caption}</p>
           <div className="comment_page_menus">
@@ -124,16 +111,14 @@ export const Comment = ({
               ) : (
                 <img src={like_before} onClick={handleLike} />
               )}
-              <h5>
-                {like.liked_user === undefined ? 0 : like.liked_user.length}개
-              </h5>
+              <h5>{like.liked_num}개</h5>
             </div>
-            {isOwner && (
+            {/* {isOwner && (
               <div className="comment_page_button">
                 <h5 onClick={onClickModify}>수정</h5>
                 <h5 onClick={handleDelete}>삭제</h5>
               </div>
-            )}
+            )} */}
           </div>
         </div>
       </div>
@@ -149,10 +134,7 @@ export const Comment = ({
             }}
             placeholder="매너있는 댓글 작성 부탁드립니다."
           />
-          <button
-            onClick={toReply.modify ? handleModify : handleReply}
-            className="modify_btn"
-          >
+          <button onClick={handleReply} className="modify_btn">
             완료
           </button>
         </div>
@@ -172,25 +154,26 @@ export const Comment = ({
       ) : (
         <div></div>
       )}
-      {replies[0].user &&
+      {replies[0] &&
         replies.map((replyItem, replyIndex) => {
-          return (
-            <Reply
-              key={replyIndex}
-              comment_id={comment_id}
-              comment_index={replyIndex}
-              user_id={user_id}
-              writer={replyItem.user}
-              caption={replyItem.caption}
-              liked_user={replyItem.liked_user}
-              refetchComments={refetchComments}
-              commentIndex={index}
-              index={replyIndex}
-              reply_id={replyItem._id}
-              updatedAt={replyItem.updatedAt}
-              isModified={replyItem.__v}
-            />
-          );
+          console.log(replyItem);
+          {
+            return (
+              <Reply
+                key={replyIndex}
+                comment_id={comment_id}
+                comment_index={replyIndex}
+                user_id={user_id}
+                writer={replyItem.user}
+                caption={replyItem.context}
+                liked_user={replyItem.like.liked_user}
+                liked_num={replyItem.like.liked_num}
+                refetchComments={refetchComments}
+                reply_id={replyItem._id}
+                updatedAt={replyItem.updatedAt}
+              />
+            );
+          }
         })}
     </div>
   );
