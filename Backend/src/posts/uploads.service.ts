@@ -69,8 +69,9 @@ class UploadService implements IUploadService {
           Body: createReadStream(file),
         };
 
-        this.s3.putObject(params, (data) => {
-          resolve("success");
+        this.s3.putObject(params, (err, data) => {
+          resolve(data);
+          if (err) return err;
         });
       });
     }
