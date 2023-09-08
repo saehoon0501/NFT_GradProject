@@ -20,7 +20,7 @@ interface ICommentRepository {
     context: string
   ) => Promise<Comment>;
   getPostComments: (post_id: string) => Promise<getPostComments[]>;
-  getReplyComments: (reply_id: string) => Promise<Comment[]>; // comment를 id를 통해서 가져옴
+  getReplies: (reply_id: string) => Promise<Comment[]>; // comment를 id를 통해서 가져옴
   updateComment: (comment_id: string, context: string) => Promise<any>;
   deleteComment: (comment_id: string) => Promise<any>; // comment 데이터를 삭제하고 관련된 User와 Post에 반영
   deletePostComments: (post_id: string, session?: any) => Promise<any>;
@@ -62,14 +62,6 @@ class MongoCommentRepository implements ICommentRepository {
         { $unwind: "$user" },
         {
           $lookup: {
-            from: "comments",
-            localField: "_id",
-            foreignField: "reply_id",
-            as: "reply",
-          },
-        },
-        {
-          $lookup: {
             from: "comment_likes",
             localField: "_id",
             foreignField: "comment_id",
@@ -79,6 +71,15 @@ class MongoCommentRepository implements ICommentRepository {
         { $unwind: "$like" },
         {
           $lookup: {
+            from: "comments",
+            localField: "_id",
+            foreignField: "reply_id",
+            as: "reply",
+          },
+        },
+        { $unwind: { path: "$reply", preserveNullAndEmptyArrays: true } },
+        {
+          $lookup: {
             from: "comment_likes",
             localField: "reply._id",
             foreignField: "comment_id",
@@ -86,26 +87,65 @@ class MongoCommentRepository implements ICommentRepository {
           },
         },
         {
+          $addFields: {
+            "reply.like": {
+              $arrayElemAt: ["$reply_like", 0],
+            },
+          },
+        },
+        {
+          $group: {
+            _id: "$_id",
+            user: { $first: "$user" },
+            context: { $first: "$context" },
+            createdAt: { $first: "$createdAt" },
+            updatedAt: { $first: "$updatedAt" },
+            like: { $first: "$like" },
+            reply: { $push: "$reply" },
+          },
+        },
+        {
           $project: {
             post_id: 0,
             __v: 0,
-            "reply.post_id": 0,
-            "reply.reply_id": 0,
-            "reply.__v": 0,
             "user._id": 0,
+            "user,__v": 0,
             "user.public_address": 0,
             "user.onwer_of_nft": 0,
             "user.points": 0,
             "user.role": 0,
             "user.owner_of_nft": 0,
+            "like._id": 0,
+            "like.comment_id": 0,
+            "like.__v": 0,
+            "reply.post_id": 0,
+            "reply.reply_id": 0,
+            "reply.__v": 0,
+            "reply.like._id": 0,
+            "reply.like.comment_id": 0,
+            "reply.like.__v": 0,
           },
         },
       ])
       .exec();
   }
 
-  async getReplyComments(reply_id: string) {
-    return await this.repository.find({ reply_id }).exec();
+  async getReplies(reply_id: string) {
+    return await this.repository
+      .aggregate([
+        {
+          $match: { reply_id: mongoose.Types.ObjectId(reply_id) },
+        },
+        {
+          $lookup: {
+            from: "comment_likes",
+            localField: "_id",
+            foreignField: "comment_id",
+            as: "reply_like",
+          },
+        },
+      ])
+      .exec();
   }
 
   async updateComment(comment_id: string, context: string) {

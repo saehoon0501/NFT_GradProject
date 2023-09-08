@@ -50,6 +50,7 @@ interface IPostService {
     user_id: User["_id"],
     post_id: PostLike["post_id"]
   ) => Promise<any>;
+  getReplies(reply_id: string): Promise<Comment[]>;
   getSearch: (keyword: string) => Promise<Post[]>;
 }
 
@@ -60,6 +61,9 @@ class PostService implements IPostService {
     private likeRepository: ILikeRepository,
     private commentRepository: ICommentRepository
   ) {}
+  getReplies(reply_id: string): Promise<Comment[]> {
+    return this.commentRepository.getReplies(reply_id);
+  }
 
   getComment(comment_id: any) {
     return this.commentRepository.getComment(comment_id);

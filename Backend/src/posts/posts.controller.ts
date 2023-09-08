@@ -153,6 +153,24 @@ class PostController {
     }
   }
 
+  @get("/comments/:comment_id")
+  @paramsValidator(PostReplyCommentDto)
+  @use(getUserId)
+  async getReplies(req: Request, res: Response, next: NextFunction) {
+    try {
+      const replies = await this.postService.getReplies(req.params.comment_id);
+      if (!replies) {
+        return res.status(422).send("comment does not exist");
+      }
+      console.log(replies);
+      return res.send(
+        this.serializer.serializeReplies(replies, res.locals.decoded.user_id)
+      );
+    } catch (error) {
+      next(error);
+    }
+  }
+
   @post("/comments/:comment_id")
   @bodyValidator(PostCommentBodyDto)
   @paramsValidator(PostReplyCommentDto)
@@ -224,13 +242,11 @@ class PostController {
   @paramsValidator(PostLikePostDto)
   @use(verify)
   async unLikePost(req: Request, res: Response, next: NextFunction) {
-    console.log(req.params);
     try {
       const result = await this.postService.unlikePost(
         res.locals.decoded.user_id,
         req.params.post_id
       );
-      console.log(result);
       if (this.serializer.serializeUpdate(result)) {
         return res.status(401).send("like cannot be updated");
       }
@@ -288,7 +304,6 @@ class PostController {
         req.query.keyword as string
       );
 
-      console.log(result);
       return res.send(this.serializer.serializeSearch(result));
     } catch (error) {
       next(error);
