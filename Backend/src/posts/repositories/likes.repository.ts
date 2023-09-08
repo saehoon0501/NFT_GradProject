@@ -94,7 +94,7 @@ class MongoLikeRepository implements ILikeRepository {
       .updateOne(
         { comment_id, liked_num: { $gt: 0 } },
         {
-          $pull: { liked_user: user_id } as UpdateQuery<PostLike>,
+          $pull: { liked_user: user_id } as UpdateQuery<CommentLike>,
           $inc: { liked_num: -1 },
         }
       )

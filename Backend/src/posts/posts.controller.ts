@@ -269,7 +269,7 @@ class PostController {
       if (this.serializer.serializeUpdate(result)) {
         return res.status(401).send("like cannot be updated");
       }
-      return res.send("like updated");
+      return res.send({ result: "OK" });
     } catch (error) {
       next(error);
     }
@@ -281,7 +281,7 @@ class PostController {
   async unlikeComment(req: Request, res: Response, next: NextFunction) {
     try {
       const result = await this.postService.unlikeComment(
-        res.locals.decoded.publicAddress,
+        res.locals.decoded.user_id,
         req.params.comment_id
       );
 
@@ -289,7 +289,7 @@ class PostController {
         return res.status(422).send("like cannot be updated");
       }
 
-      return res.send("user info updated");
+      return res.send({ result: "OK" });
     } catch (error) {
       next(error);
     }
