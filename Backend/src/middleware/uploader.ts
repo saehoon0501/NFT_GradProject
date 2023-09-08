@@ -5,10 +5,8 @@ import path from "path";
 const storage = multer.diskStorage(getDiskStorageOptions());
 const uploader = multer(getMulterOptions());
 
-function uploadMultipleFiles(): RequestHandler {
-  const filename = "image";
-  const maxCount = 3;
-  return uploader.array(filename, maxCount);
+function uploadSingleFile(): RequestHandler {
+  return uploader.single("file");
 }
 
 function getMulterOptions(): multer.Options {
@@ -21,7 +19,7 @@ function getMulterOptions(): multer.Options {
 function getDiskStorageOptions(): DiskStorageOptions {
   return {
     destination(req: Request, file, callback) {
-      callback(null, "public/uploads"); //파일 저장 위치
+      callback(null, "public/images"); //파일 저장 위치
       console.log(file);
       console.log(req);
     },
@@ -63,4 +61,4 @@ function checkFileSize(fileSize: number) {
   return false;
 }
 
-export { uploadMultipleFiles };
+export { uploadSingleFile };

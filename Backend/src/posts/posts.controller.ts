@@ -12,7 +12,7 @@ import {
 import { Request, Response, NextFunction } from "express";
 import { IPostService } from "./posts.service";
 import { Service, Inject } from "typedi";
-import { IUserService } from "../users/users.service";
+import { IUploadService } from "./uploads.service";
 import { verify } from "../middleware/verify";
 import { PostRequestDto } from "./dtos/post-post.dto";
 import { PostSerializer } from "./posts.serializer";
@@ -34,7 +34,8 @@ const QuillDeltaToHtmlConverter =
 class PostController {
   constructor(
     @Inject("PostService") private postService: IPostService,
-    @Inject("PostSerializer") private serializer: PostSerializer
+    @Inject("PostSerializer") private serializer: PostSerializer,
+    @Inject("UploadService") private uploadService: IUploadService
   ) {}
 
   @get("/")
@@ -72,13 +73,21 @@ class PostController {
       let { post_title, post_text } = req.body;
 
       const converter = new QuillDeltaToHtmlConverter(post_text.ops, {});
-      const content = converter.convert();
-
+      let content = converter.convert();
+      const filePaths = this.uploadService.getEmbeddedImage(content);
       const title = this.postService.sanitize(post_title);
+
+      if (filePaths.length > 0) {
+        await Promise.all(this.uploadService.uploadToS3(filePaths));
+        this.uploadService.clearUploadedFiles(filePaths);
+      }
+      content = this.uploadService.convertURL(content);
+      console.log(content);
       const result = await this.postService.createPost({
         user: res.locals.decoded.user_id,
         title,
         text: content,
+        // uploads: filePaths,
       });
 
       return res.send(this.serializer.serializeCreatePost(result));

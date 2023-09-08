@@ -17,21 +17,19 @@ import { CANCEL_FEED, WRITE_FEED } from "../../utils";
 
 const maxSize = 30 * 1000 * 1000;
 const token = window.localStorage.getItem("accessToken");
-const baseURL = "http://localhost:4000";
 
 const uploadURL = (file) => {
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     const data = new FormData();
 
     data.append("file", file);
 
-    const result = axios.post(`api/uploads`, data, {
+    const result = await axios.post(`api/uploads`, data, {
       headers: {
         "Content-Type": "multipart/form-data",
-        Authorization: `Bearer ${token}`,
       },
     });
-    if (result) resolve(result);
+    if (result) resolve(result.data);
     else reject(new Error("failed to get Image URL"));
   });
 };
@@ -71,7 +69,6 @@ export const Submit = ({ user, title, setTitle, setIsBest }) => {
 
             input.onchange = async () => {
               const file = input.files[0];
-              console.log(file.size);
               if (file.size > maxSize) {
                 alert("최대 크기 30MB만 가능");
                 return;
@@ -80,8 +77,8 @@ export const Submit = ({ user, title, setTitle, setIsBest }) => {
               const range = editor.getSelection();
 
               const url = await uploadURL(file);
-
-              editor.insertEmbed(range.index, "image", `${url.data}`);
+              console.log(url);
+              editor.insertEmbed(range.index, "image", `${url}`);
             };
           },
         },

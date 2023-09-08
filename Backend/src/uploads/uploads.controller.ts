@@ -1,9 +1,9 @@
 import { Inject, Service } from "typedi";
 import { controller, post, use } from "../decorators";
-import { IUploadService } from "./uploads.service";
+import { IUploadService } from "../posts/uploads.service";
 import { NextFunction, Response, Request } from "express";
 import { verify } from "../middleware/verify";
-import { uploadMultipleFiles } from "../middleware/uploader";
+import { uploadSingleFile } from "../middleware/uploader";
 
 @controller("/uploads")
 @Service()
@@ -11,25 +11,15 @@ class UploadController {
   constructor(@Inject("UploadService") private uploadService: IUploadService) {}
 
   @post("/")
-  @use(uploadMultipleFiles())
+  @use(uploadSingleFile())
   @use(verify)
-  uploadFiles(req: Request, res: Response, next: NextFunction) {
-    console.log(req.files);
-    if (!req.files || req.files.length === 0) {
+  uploadFile(req: Request, res: Response, next: NextFunction) {
+    console.log(req.file);
+    if (!req.file) {
       return res.status(422).send("file does not exits");
     }
-    const imageFileKey = "Image";
-    // Promise.all(
-    //   this.uploadService.uploadToS3(
-    //     imageFileKey,
-    //     req.files as Express.Multer.File[]
-    //   )
-    // ).then((res) =>{
-    //   console.log(res);
-    // }
-    //   this.uploadService.clearUploadedFiles(req.files as Express.Multer.File[])
-    // );
-
-    return res.send({ result: "OK" });
+    console.log(req.file);
+    const IMG_URL = `http://localhost:4000/images/${req.file.filename}`;
+    return res.send(IMG_URL);
   }
 }

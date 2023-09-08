@@ -61,10 +61,9 @@ class UsersController {
       if (!user) {
         throw new Error("user cannot be found");
       }
-      console.log(user);
+
       return res.json(this.serializer.serializeUser(user));
     } catch (err) {
-      console.log("유저 정보 sndProfile: User.findOne Error", err);
       next(err);
     }
   }
@@ -121,7 +120,6 @@ class UsersController {
 
       return res.json(this.serializer.serializeProfile(user));
     } catch (err) {
-      console.log("유저 정보 sndProfile: User.findOne Error", err);
       next(err);
     }
   }
@@ -134,7 +132,6 @@ class UsersController {
       res.locals.decoded.user_id,
       req.body
     );
-    console.log(result);
     if (this.serializer.serializeUserUpdate(result)) {
       return res.status(400).send("user cannot be updated");
     }
