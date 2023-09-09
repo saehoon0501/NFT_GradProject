@@ -36,7 +36,6 @@ app.use((err, req, res, next) => {
   res.status(err.status || 500);
   res.send({ error: err.message });
 });
-
 const server = app.listen(process.env.PORT || 4000, async () => {
   await redisClient.connect();
   console.log("running server on", process.env.PORT || 4000);
