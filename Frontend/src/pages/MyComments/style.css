@@ -21,10 +21,6 @@
   padding: 10px;
 }
 
-.myComments_comment_date_minimize {
-  display: none;
-}
-
 @media (max-width: 915px) {
   .myComments_comment_wrapper h3 {
     font-size: 14px;

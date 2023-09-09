@@ -101,7 +101,7 @@ class UsersController {
     const result = await this.userService.getUserComments(
       res.locals.decoded.user_id
     );
-
+    console.log(result);
     if (!result) throw new Error("user cannot be updated");
 
     return res.send(this.serializer.serializeUserComments(result));

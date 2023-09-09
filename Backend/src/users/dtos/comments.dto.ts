@@ -12,4 +12,8 @@ export class CommentDto {
   @Transform(({ obj }) => obj.comments.context)
   @Expose()
   context: string;
+
+  @Transform(({ obj }) => obj.comments.updatedAt)
+  @Expose()
+  updatedAt: Date;
 }

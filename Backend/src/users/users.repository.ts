@@ -141,6 +141,7 @@ class MongoUserRepository implements IUserRepository {
           "comments._id": 1,
           "comments.user": 1,
           "comments.context": 1,
+          "comments.updatedAt": 1,
         },
       },
     ])) as Comment[];

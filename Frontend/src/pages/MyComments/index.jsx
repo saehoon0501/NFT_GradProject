@@ -1,6 +1,7 @@
 import { useQuery } from "react-query";
 import { getUserComments } from "../../api/UserApi";
 import { Loading } from "../../components/common/Loading";
+import { elapsedTimePeriod } from "../../utils";
 
 import "./style.css";
 
@@ -17,15 +18,11 @@ export const MyComments = () => {
     <div className="myComments_wrapper">
       <h1>내가 작성한 댓글 목록</h1>
       <div className="myComments_comments_wrapper">
-        {data.comments?.map((comment, index) => (
+        {data.map((comment, index) => (
           <div className="myComments_comment_wrapper" key={index}>
-            <h3>작성한 댓글 : {comment.caption}</h3>
-            <h3 className="myComments_comment_date">
-              수정된 날짜 : {new Date(comment.updatedAt).toLocaleString()}
-            </h3>
+            <h3>작성한 댓글 : {comment.context}</h3>
             <h3 className="myComments_comment_date_minimize">
-              수정된 날짜 :
-              {new Date(comment.updatedAt).toLocaleString().slice(0, 11)}
+              {elapsedTimePeriod(comment.updatedAt)}
             </h3>
           </div>
         ))}

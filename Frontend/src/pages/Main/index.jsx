@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { useQuery, useQueryClient } from "react-query";
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { useQuery } from "react-query";
+import { useRecoilState, useRecoilValue } from "recoil";
 import "./style.css";
 
 import Feed from "../../components/main/Feed";
