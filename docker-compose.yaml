@@ -11,6 +11,9 @@ services:
     environment:
       - REDIS_HOST=$REDIS_HOST
       - REDIS_PORT=$REDIS_PORT
+      - MONGO_URI=$MONGO_URI
+      - AWS_ACCESS_KEY=$AWS_ACCESS_KEY
+      - AWS_SECRET_KEY=$AWS_SECRET_KEY
   nginx:
     image: "saehoon0501/ncc-nginx"
     mem_limit: 128m
