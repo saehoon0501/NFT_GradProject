@@ -45,7 +45,7 @@ const UserModel = DB.model("user", userSchema);
 type socketUser = {
   profile_pic: string;
   username: string;
-  publicAddr: string;
+  user_id: string;
   socketId: string;
 };
 

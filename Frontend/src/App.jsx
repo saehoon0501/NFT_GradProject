@@ -31,7 +31,7 @@ function App() {
     <Router>
       <Routes>
         <Route exact path="/login" element={<Login />} />
-        <Route element={<Layout />}>
+        <Route element={<Layout socketValue={socketValue} />}>
           <Route exact path="/" element={<Main socketValue={socketValue} />} />
           <Route exact path="/profile" element={<Profile />} />
           <Route exact path="/profile/:user_id" element={<User />} />

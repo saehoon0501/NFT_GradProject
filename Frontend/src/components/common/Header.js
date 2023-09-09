@@ -75,6 +75,11 @@ export const Header = ({ socketValue }) => {
     onSuccess: (data) => {
       setIsAuth(true);
       setforceRender((forceRender) => forceRender + 1);
+      socketValue.emit("newUser", {
+        user_id: data.id,
+        username: data.username,
+        profile_pic: data.profile_pic,
+      });
     },
   });
 

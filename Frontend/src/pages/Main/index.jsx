@@ -56,11 +56,7 @@ export const Main = ({ socketValue }) => {
 
   // {
   //     onSuccess: (data) => {
-  // socketValue.emit("newUser", {
-  //   publicAddr: data.publicAddr,
-  //   username: data.profile.username,
-  //   profile_pic: data.profile.profile_pic,
-  // });
+
   //     setIsUserDataSend(true);
   //   },
   //   onError: () => {

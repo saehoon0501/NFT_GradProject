@@ -11,34 +11,33 @@ const initSocket = (server, corsPort) => {
   });
   io.on("connection", initialize);
 
-  const namespace = io.of("/comment");
+  // const namespace = io.of("/comment");
 
-  namespace.on("connection", (socket) => {
-    socket.on("join", (post_id) => {
-      console.log(`someone just joined post: ${post_id}`);
-    });
+  // namespace.on("connection", (socket) => {
+  //   socket.on("join", (post_id) => {
+  //     console.log(`someone just joined post: ${post_id}`);
+  //   });
 
-    socket.on("disconnect", () => {
-      console.log("someone has left");
-    });
-  });
+  //   socket.on("disconnect", () => {
+  //     console.log("someone has left");
+  //   });
+  // });
 };
 
 //online user들 저장 및 업데이트
 let onlineUsers: socketUser[] = [];
 
-const deleteUser = (publicAddr) => {
-  onlineUsers = onlineUsers.filter((user) => user.publicAddr !== publicAddr);
+const deleteUser = (user_id) => {
+  onlineUsers = onlineUsers.filter((user) => user.user_id !== user_id);
 };
 
 const addNewUser = (user: socketUser): void => {
-  !onlineUsers.some(
-    (onlineUser) => onlineUser.publicAddr === user.publicAddr
-  ) && onlineUsers.push(user);
+  !onlineUsers.some((onlineUser) => onlineUser.user_id === user.user_id) &&
+    onlineUsers.push(user);
 };
 
-const getUser = (publicAddr: string): socketUser | undefined => {
-  let foundUser = onlineUsers.find((user) => user.publicAddr === publicAddr);
+const getUser = (user_id: string): socketUser | undefined => {
+  let foundUser = onlineUsers.find((user) => user.user_id === user_id);
 
   if (typeof foundUser === "undefined") {
     return undefined;
@@ -47,18 +46,13 @@ const getUser = (publicAddr: string): socketUser | undefined => {
 };
 
 const initialize = (socket) => {
-  console.log("socket connected: ", socket.data);
-
   socket.on("newUser", (newUser: socketUser) => {
-    console.log(newUser);
     newUser.socketId = socket.id;
     addNewUser(newUser);
-    console.log(onlineUsers);
     io.emit("onlineUsers", { onlineUsers });
   });
 
   socket.on("disconnect", () => {
-    console.log("disconnect");
     deleteUser(socket.id);
   });
 };
