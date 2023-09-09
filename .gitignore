@@ -7,3 +7,4 @@ Backend/build
 .env
 .vscode/settings.json
 Backend/src/config
+Frontend/build
