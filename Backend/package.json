@@ -6,7 +6,7 @@
   "scripts": {
     "start:build": "tsc -w",
     "start:run": "nodemon build/app.js",
-    "start": "node build/app.js"
+    "start": "NODE_ENV=prod node build/app.js"
   },
   "author": "",
   "license": "ISC",
