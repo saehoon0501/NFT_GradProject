@@ -29,6 +29,7 @@ jobs:
           aws_secret_key: ${{ secrets.AWS_SECRET_KEY }}
           application_name: ncc
           environment_name: Ncc-env
+          existing_bucket_name: elasticbeanstalk-ap-northeast-2-104625403644
           region: ap-northeast-2
           version_label: ${{ github.sha }}
           deployment_package: ./deploy.zip
