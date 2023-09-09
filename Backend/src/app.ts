@@ -40,4 +40,4 @@ const server = app.listen(process.env.PORT || 4000, async () => {
   await redisClient.connect();
   console.log("running server on", process.env.PORT || 4000);
 }); // port 4000인 server 실행
-// initSocket(server, 3000);
+initSocket(server, 3000);

@@ -4,4 +4,4 @@ WORKDIR /usr/app
 COPY ./package.json .
 RUN npm install
 COPY . /usr/app
-CMD ["node","./build/app.js"]
+CMD ["npm","run","start"]

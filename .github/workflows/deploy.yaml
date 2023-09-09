@@ -27,8 +27,8 @@ jobs:
         with:
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY }}
           aws_secret_key: ${{ secrets.AWS_SECRET_KEY }}
-          application_name: ncc
-          environment_name: Ncc-env
+          application_name: ncc2
+          environment_name: Ncc2-env
           existing_bucket_name: elasticbeanstalk-ap-northeast-2-104625403644
           region: ap-northeast-2
           version_label: ${{ github.sha }}
