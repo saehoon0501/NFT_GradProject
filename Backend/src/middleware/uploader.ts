@@ -25,7 +25,7 @@ function getDiskStorageOptions(): DiskStorageOptions {
     },
     // 저장할 이미지의 파일명
     filename(req, file, callback) {
-      const ext = path.extname(file.originalname); // 파일의 확장자
+      const ext = path.extname(file.originalname).toLocaleLowerCase(); // 파일의 확장자
       // 파일명이 절대 겹치지 않도록 해줘야한다.
       // 파일이름 + 현재시간밀리초 + 파일확장자명
       callback(null, path.basename(file.originalname, ext) + Date.now() + ext);
