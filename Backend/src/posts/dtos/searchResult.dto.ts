@@ -40,4 +40,7 @@ export class SearchDto {
   @Transform(({ obj }) => obj.comments.length)
   @Expose()
   comments: number;
+
+  @Expose()
+  createdAt: Date;
 }

@@ -26,28 +26,23 @@ export const Search = () => {
     return <Loading />;
   }
 
-  console.log(keyword);
-  console.log(posts);
-
   return (
     <div className="search_wrapper">
       <h1 className="search_title">검색한 키워드 : {keyword}</h1>
       <div>
-        {posts?.map((post) => (
+        {posts?.map((post, index) => (
           <Feed
-            key={post._id}
-            post_id={post._id}
-            writer_profile={post.user.profile}
-            user_id={userQuery.data._id}
+            key={post._id + index}
+            post_id={post.post_id}
+            user_id={userQuery.data ? userQuery.data._id : " "}
+            postUser={post.user}
+            user_role={userQuery.data ? userQuery.data.role : " "}
             caption={post.text}
             title={post.title}
             comments={post.comments}
-            likes={post.likes}
-            user_publicAddr={userQuery.data.publicAddr}
-            writer_publicAddr={post.user.publicAddr}
+            likes={post.like}
+            // socketValue={socketValue}
             createdAt={post.createdAt}
-            postingId={post.user._id}
-            likedUsers={post.likes.liked_user}
           />
         ))}
       </div>
