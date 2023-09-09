@@ -122,7 +122,7 @@ export const Header = ({ socketValue }) => {
       alert("검색어는 2글자 이상이어야 합니다.");
       return;
     }
-    navigate(`/search/${keyword}`);
+    navigate(`posts/search/${keyword}`);
   };
 
   const onChangeSearch = (event) => {

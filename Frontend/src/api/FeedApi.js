@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const feedApi = axios.create({
-  baseURL: "api/posts",
+  baseURL: "/api/posts",
 });
 
 export const getPost = async (pageNum) => {
@@ -73,5 +73,6 @@ export const addReply = async (comment_id, context) => {
 export const searchPost = async (keyword) => {
   const response = await feedApi.get(`/search?keyword=${keyword}`);
   const data = await response.data;
+  console.log(data);
   return data;
 };

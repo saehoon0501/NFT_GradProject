@@ -35,7 +35,7 @@ function App() {
           <Route exact path="/" element={<Main socketValue={socketValue} />} />
           <Route exact path="/profile" element={<Profile />} />
           <Route exact path="/profile/:user_id" element={<User />} />
-          <Route exact path="/search/:keyword" element={<Search />} />
+          <Route exact path="/posts/search/:keyword" element={<Search />} />
           <Route exact path="/:postId" element={<FeedView />} />
           <Route exact path="/comments" element={<MyComments />} />
           <Route exact path="/vote/create" element={<CreateVote />} />
