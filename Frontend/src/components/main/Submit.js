@@ -77,8 +77,11 @@ export const Submit = ({ user, title, setTitle, setIsBest }) => {
               const range = editor.getSelection();
 
               const url = await uploadURL(file);
-              console.log(url);
-              editor.insertEmbed(range.index, "image", `${url}`);
+              editor.insertEmbed(
+                range.index,
+                "image",
+                `http://localhost:4000/${url}`
+              );
             };
           },
         },

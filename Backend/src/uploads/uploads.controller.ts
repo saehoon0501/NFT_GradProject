@@ -14,12 +14,11 @@ class UploadController {
   @use(uploadSingleFile())
   @use(verify)
   uploadFile(req: Request, res: Response, next: NextFunction) {
-    console.log(req.file);
     if (!req.file) {
       return res.status(422).send("file does not exits");
     }
 
-    const IMG_URL = `http://localhost:4000/images/${req.file.filename}`;
+    const IMG_URL = `images/${req.file.filename}`;
     return res.send(IMG_URL);
   }
 }
