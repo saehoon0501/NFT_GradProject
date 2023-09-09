@@ -14,11 +14,9 @@ jobs:
 
       - run: docker build -t saehoon0501/ncc-client ./Frontend
       - run: docker build -t saehoon0501/ncc-nginx ./nginx
-      - run: docker build -t saehoon0501/ncc-server ./Backend
 
       - run: docker push saehoon0501/ncc-client
       - run: docker push saehoon0501/ncc-nginx
-      - run: docker push saehoon0501/ncc-server
 
       - name: Generate deployment package
         run: zip -r deploy.zip . -x '*.git*'
