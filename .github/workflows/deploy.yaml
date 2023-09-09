@@ -32,5 +32,5 @@ jobs:
           existing_bucket_name: elasticbeanstalk-ap-northeast-2-104625403644
           region: ap-northeast-2
           version_label: ${{ github.sha }}
-          deployment_package: ./complex/deploy.zip
+          deployment_package: ./deploy.zip
           wait_for_environment_recovery: 60
