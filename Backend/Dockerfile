@@ -3,5 +3,5 @@ RUN apk add g++ make py3-pip
 WORKDIR /usr/app
 COPY ./package.json .
 RUN npm install
-COPY . .
+COPY . /usr/app
 CMD ["node","./build/app.js"]
