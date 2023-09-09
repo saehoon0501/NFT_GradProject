@@ -11,7 +11,7 @@ import { RepliesDto } from "./dtos/replies.dto";
 abstract class PostSerializer extends Serializer {
   abstract serializePosts(data: any[], user_id: string): object[];
   abstract serializeCreatePost(data: object): object;
-  abstract serializeDelete(data: object): object;
+  abstract serializeDelete(data: unknown): object;
   abstract serializePostComments(data: any[], user_id: string): object;
   abstract serializeCreateComment(data: object): object;
   abstract serializeUpdate(data: object): boolean;

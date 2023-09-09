@@ -7,6 +7,7 @@ interface Post {
   title: string;
   text?: string;
   createdAt: Date;
+  uploads: string[];
 }
 
 const postSchema = new Schema(
@@ -24,6 +25,7 @@ const postSchema = new Schema(
       type: String,
       default: "",
     },
+    uploads: [{ type: String }],
   },
   { timestamps: true, strict: true }
 );

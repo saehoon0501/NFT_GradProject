@@ -16,8 +16,12 @@ interface IPostService {
     user: Post["_id"];
     title: Post["title"];
     text: Post["text"];
+    uploads: Post["uploads"];
   }) => object;
-  deletePost(user_id: Post["user"], post_id: Post["_id"]): object;
+  deletePost(
+    { user_id, isAdmin }: { user_id: Post["user"]; isAdmin: string },
+    post_id: Post["_id"]
+  ): Promise<Post>;
   createPostComment: (
     user_id: string,
     post_id: string,
@@ -94,6 +98,7 @@ class PostService implements IPostService {
     user: Post["_id"];
     title: Post["title"];
     text: Post["text"];
+    uploads: Post["uploads"];
   }) {
     const result = await this.postRepository.createPost(
       aPost,
@@ -102,9 +107,12 @@ class PostService implements IPostService {
     return result;
   }
 
-  async deletePost(user_id: Post["user"], post_id: Post["_id"]) {
+  async deletePost(
+    { user_id, isAdmin }: { user_id: Post["user"]; isAdmin: string },
+    post_id: Post["_id"]
+  ) {
     return await this.postRepository.deletePost(
-      user_id,
+      { user_id, isAdmin },
       post_id,
       this.likeRepository,
       this.commentRepository

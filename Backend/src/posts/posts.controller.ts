@@ -82,12 +82,12 @@ class PostController {
         this.uploadService.clearUploadedFiles(filePaths);
       }
       content = this.uploadService.convertURL(content);
-      console.log(content);
+
       const result = await this.postService.createPost({
         user: res.locals.decoded.user_id,
         title,
         text: content,
-        // uploads: filePaths,
+        uploads: filePaths,
       });
 
       return res.send(this.serializer.serializeCreatePost(result));
@@ -103,11 +103,14 @@ class PostController {
     try {
       const post_id = req.params.post_id;
 
-      const result = await this.postService.deletePost(
-        res.locals.decoded.user_id,
+      const deletedPost = await this.postService.deletePost(
+        {
+          user_id: res.locals.decoded.user_id,
+          isAdmin: res.locals.decoded.admin,
+        },
         post_id
       );
-
+      const result = await this.uploadService.deleteFromS3(deletedPost.uploads);
       return res.send(this.serializer.serializeDelete(result));
     } catch (error) {
       next(error);
@@ -171,7 +174,7 @@ class PostController {
       if (!replies) {
         return res.status(422).send("comment does not exist");
       }
-      console.log(replies);
+
       return res.send(
         this.serializer.serializeReplies(replies, res.locals.decoded.user_id)
       );

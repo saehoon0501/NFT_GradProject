@@ -1,11 +1,11 @@
 import { PostModel, Post } from "../model/PostEntity";
 import Container from "typedi";
-import mongoose, { HydratedDocument, Model } from "mongoose";
-import { PostLike, PostLikeModel } from "../model/LikeEntity";
+import { HydratedDocument, Model } from "mongoose";
 import { DB } from "../../users/model/UserEntity";
 import { ILikeRepository } from "./likes.repository";
 import { ICommentRepository } from "./comments.repository";
 import { Comment } from "../model/CommentEntity";
+import { User } from "../../users/model/UserEntity";
 
 interface IPostRepository {
   getBestPosts(lastWeek: Date, pageNum: number): Promise<any[]>; // 최근 일주일 동안 좋아요 수가 많은 순서대로 Post 10개를 가져온다.
@@ -17,19 +17,21 @@ interface IPostRepository {
       user,
       title,
       text,
+      uploads,
     }: {
       user: Post["_id"];
       title: Post["title"];
       text: Post["text"];
+      uploads: Post["uploads"];
     },
     likeRepository: ILikeRepository
   ): object;
   deletePost(
-    user_id: string,
+    { user_id, isAdmin }: { user_id: Post["user"]; isAdmin: string },
     post_id: string,
     likeRepository: ILikeRepository,
     commentRepository: ICommentRepository
-  ): object;
+  ): Promise<Post>;
 }
 
 class MongoPostRepository implements IPostRepository {
@@ -90,7 +92,20 @@ class MongoPostRepository implements IPostRepository {
     return (await this.repository.findById(post_id).exec()) as Post;
   }
 
-  async createPost({ user, title, text }, likeRepository: ILikeRepository) {
+  async createPost(
+    {
+      user,
+      title,
+      text,
+      uploads,
+    }: {
+      user: Post["_id"];
+      title: Post["title"];
+      text: Post["text"];
+      uploads: Post["uploads"];
+    },
+    likeRepository: ILikeRepository
+  ) {
     const session = await DB.startSession();
     try {
       await session.withTransaction(async () => {
@@ -98,6 +113,7 @@ class MongoPostRepository implements IPostRepository {
           user,
           title,
           text,
+          uploads,
         });
         await post.save({ session });
         await likeRepository.createPostLike(post._id, session);
@@ -114,7 +130,7 @@ class MongoPostRepository implements IPostRepository {
   }
 
   async deletePost(
-    user_id: string,
+    { user_id, isAdmin }: { user_id: Post["user"]; isAdmin: string },
     post_id: string,
     likeRepository: ILikeRepository,
     commentRepository: ICommentRepository
@@ -127,7 +143,7 @@ class MongoPostRepository implements IPostRepository {
         ...comments.map((comment) => comment.reply)
       );
 
-      if (post && post.user.equals(user_id)) {
+      if (post && (post.user.equals(user_id) || isAdmin === "true")) {
         await session.withTransaction(async () => {
           await Promise.all(likeRepository.deleteCommentLikes(reply, session));
           await Promise.all(
@@ -141,7 +157,7 @@ class MongoPostRepository implements IPostRepository {
           await this.repository.deleteOne({ _id: post_id }).session(session);
         });
 
-        return { result: "OK" };
+        return post;
       }
       throw new Error("post not deleted");
     } catch (err) {

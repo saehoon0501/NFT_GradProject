@@ -18,7 +18,7 @@ class UploadController {
     if (!req.file) {
       return res.status(422).send("file does not exits");
     }
-    console.log(req.file);
+
     const IMG_URL = `http://localhost:4000/images/${req.file.filename}`;
     return res.send(IMG_URL);
   }

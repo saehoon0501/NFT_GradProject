@@ -85,7 +85,7 @@ mongoose.Aggregate.prototype.exec = async function () {
   );
 
   const cacheValue = await redisClient.hGet(this.hashKey, key);
-  console.log("cachedValue", cacheValue);
+
   if (cacheValue) {
     const doc = JSON.parse(cacheValue);
     return Array.isArray(doc) ? doc.map((d) => d) : doc;

@@ -1,4 +1,4 @@
-import S3 from "aws-sdk/clients/s3";
+import S3, { DeleteObjectsRequest } from "aws-sdk/clients/s3";
 const keys = require("../config/keys");
 import { unlink, createReadStream, statSync } from "node:fs";
 import Container from "typedi";
@@ -8,6 +8,7 @@ interface IUploadService {
   clearUploadedFiles(files: string[]): void;
   getEmbeddedImage(content: string): string[];
   convertURL(content: string): string;
+  deleteFromS3(files: string[]): Promise<unknown>;
 }
 
 class UploadService implements IUploadService {
@@ -24,14 +25,14 @@ class UploadService implements IUploadService {
     });
     this.uploadFilePromises = [];
   }
+  deleteFromS3(files: string[]): Promise<unknown> {
+    return this.createDeletePromise(files);
+  }
   convertURL(content: string): string {
-    return content.replace(
-      /src\s*=\s*"(.+?\/images\/)/,
+    return content.replaceAll(
+      /src\s*=\s*"(.+?\/images\/)/g,
       'src="https://my-bucket-byun.s3.ap-northeast-2.amazonaws.com/public/images/'
     );
-  }
-  private getFileName(filepath: string): RegExpMatchArray | null {
-    return filepath.match(/.+[^(?:.png|.jpg|.jpeg|.gif)]/);
   }
 
   getEmbeddedImage(content: string): string[] {
@@ -43,8 +44,6 @@ class UploadService implements IUploadService {
 
   uploadToS3(files: string[]) {
     return files.map((file) => {
-      // const fileKey = this.getFileName(file)?.at(0);
-
       return this.createUploadPromise(file, file);
     });
   }
@@ -64,18 +63,37 @@ class UploadService implements IUploadService {
       return new Promise((resolve, reject) => {
         const params = {
           Bucket: "my-bucket-byun",
-          Key: key,
+          Key: decodeURIComponent(key.replace(/\+/g, " ")),
           ContentType: fileType,
           Body: createReadStream(file),
         };
 
         this.s3.putObject(params, (err, data) => {
-          resolve(data);
+          console.log(data);
           if (err) return err;
+          resolve(data);
         });
       });
     }
     return Promise.resolve();
+  }
+
+  private createDeletePromise(fileKeys: string[]) {
+    return new Promise((resolve, reject) => {
+      const params: DeleteObjectsRequest = {
+        Bucket: "my-bucket-byun",
+        Delete: {
+          Objects: fileKeys.map((filekey) => {
+            return { Key: filekey };
+          }),
+        },
+      };
+
+      this.s3.deleteObjects(params, (err, data) => {
+        if (err) reject(err);
+        resolve({ result: "OK" });
+      });
+    });
   }
 
   private getFileType(file: string) {
