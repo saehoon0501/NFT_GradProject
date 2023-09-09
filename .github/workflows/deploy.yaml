@@ -1,0 +1,36 @@
+name: deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: docker login -u ${{secrets.DOCKER_USERNAME }} -p ${{secrets.DOCKER_PASSWORD}}
+
+      - run: docker build -t saehoon0501/ncc-client ./Frontend
+      - run: docker build -t saehoon0501/ncc-nginx ./nginx
+      - run: docker build -t saehoon0501/ncc-server ./Backend
+
+      - run: docker push saehoon0501/ncc-client
+      - run: docker push saehoon0501/ncc-nginx
+      - run: docker push saehoon0501/ncc-server
+
+      - name: Generate deployment package
+        run: zip -r deploy.zip . -x '*.git*'
+      - name: Deploy to EB
+        uses: einaregilsson/beanstalk-deploy@v18
+        with:
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_KEY }}
+          application_name: ncc
+          environment_name: Ncc-env
+          existing_bucket_name: elasticbeanstalk-ap-northeast-2-104625403644
+          region: ap-northeast-2
+          version_label: ${{ github.sha }}
+          deployment_package: ./complex/deploy.zip
+          wait_for_environment_recovery: 60
