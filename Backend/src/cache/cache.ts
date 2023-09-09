@@ -55,7 +55,7 @@ mongoose.Query.prototype.exec = async function () {
   const result = await exec.apply(this);
 
   redisClient.hSet(this.hashKey, key, JSON.stringify(result)).then(() => {
-    redisClient.expire(this.hashKey, 90);
+    redisClient.expire(this.hashKey, 10);
   });
 
   return result;
@@ -94,7 +94,7 @@ mongoose.Aggregate.prototype.exec = async function () {
   const result = await aggreagateExec.apply(this);
 
   redisClient.hSet(this.hashKey, key, JSON.stringify(result)).then(() => {
-    redisClient.expire(this.hashKey, 90);
+    redisClient.expire(this.hashKey, 10);
   });
 
   return result;

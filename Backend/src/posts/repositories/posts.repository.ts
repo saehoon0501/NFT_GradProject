@@ -38,54 +38,50 @@ class MongoPostRepository implements IPostRepository {
   constructor(private repository: Model<Post>) {}
 
   getBestPosts(lastWeek: Date, pageNum: number) {
-    return (
-      this.repository
-        .aggregate([
-          { $match: { createdAt: { $gte: lastWeek } } },
-          {
-            $lookup: {
-              from: "post_likes",
-              localField: "_id",
-              foreignField: "post_id",
-              pipeline: [
-                {
-                  $match: { liked_num: { $gt: 0 } },
-                },
-              ],
-              as: "likes",
-            },
+    return this.repository
+      .aggregate([
+        { $match: { createdAt: { $gte: lastWeek } } },
+        {
+          $lookup: {
+            from: "post_likes",
+            localField: "_id",
+            foreignField: "post_id",
+            pipeline: [
+              {
+                $match: { liked_num: { $gt: 0 } },
+              },
+            ],
+            as: "likes",
           },
-          { $match: { "likes.liked_num": { $exists: true } } },
-          { $sort: { "likes.liked_num": -1 } },
-          { $skip: pageNum * 10 },
-          { $limit: 10 },
-          ...this.enrichPostQuery(),
-        ])
-        // .cache({ key: `BestPosts${pageNum}`, collection: this.repository })
-        .exec()
-    );
+        },
+        { $match: { "likes.liked_num": { $exists: true } } },
+        { $sort: { "likes.liked_num": -1 } },
+        { $skip: pageNum * 10 },
+        { $limit: 10 },
+        ...this.enrichPostQuery(),
+      ])
+      .cache({ key: `BestPosts${pageNum}`, collection: this.repository })
+      .exec();
   }
 
   getRecentPosts(pageNum: number) {
-    return (
-      this.repository
-        .aggregate([
-          { $sort: { _id: -1 } },
-          { $skip: pageNum * 10 },
-          { $limit: 10 },
-          {
-            $lookup: {
-              from: "post_likes",
-              localField: "_id",
-              foreignField: "post_id",
-              as: "likes",
-            },
+    return this.repository
+      .aggregate([
+        { $sort: { _id: -1 } },
+        { $skip: pageNum * 10 },
+        { $limit: 10 },
+        {
+          $lookup: {
+            from: "post_likes",
+            localField: "_id",
+            foreignField: "post_id",
+            as: "likes",
           },
-          ...this.enrichPostQuery(),
-        ])
-        // .cache({ key: `RecentPosts${pageNum}`, collection: this.repository })
-        .exec()
-    );
+        },
+        ...this.enrichPostQuery(),
+      ])
+      .cache({ key: `RecentPosts${pageNum}`, collection: this.repository })
+      .exec();
   }
 
   async getPost(post_id: Post["_id"]) {
