@@ -23,7 +23,7 @@ function App() {
 
   useEffect(() => {
     init();
-    const socket = io("/api/");
+    const socket = io();
     setSocketValue(socket);
   }, []);
 
