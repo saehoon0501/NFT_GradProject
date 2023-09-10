@@ -3,7 +3,7 @@ import { createClient } from "redis";
 const keys = require("../config/keys");
 
 const redisClient = createClient({
-  url: `${keys.redisHOST}:${keys.redisPORT}`,
+  url: `redis://${keys.redisHOST}:${keys.redisPORT}`,
 });
 
 const exec = mongoose.Query.prototype.exec;

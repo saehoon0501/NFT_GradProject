@@ -23,7 +23,7 @@ function App() {
 
   useEffect(() => {
     init();
-    const socket = io("http://localhost:4000");
+    const socket = io("/api/");
     setSocketValue(socket);
   }, []);
 
