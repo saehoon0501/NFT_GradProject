@@ -5,8 +5,8 @@
   "main": "app.js",
   "scripts": {
     "build": "tsc -w",
-    "start:dev": "nodemon dist/app.js",
-    "start": "NODE_ENV=prod node dist/app.js"
+    "start:dev": "NODE_ENV=dev nodemon dist/app.js",
+    "start": "node dist/app.js"
   },
   "author": "",
   "license": "ISC",
