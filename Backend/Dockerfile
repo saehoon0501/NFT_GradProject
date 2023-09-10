@@ -1,5 +1,4 @@
-FROM node:20-alpine
-RUN apk add g++ make py3-pip
+FROM --platform=linux/amd64 node:18
 WORKDIR /usr/app
 COPY ./package.json .
 RUN npm install    
