@@ -227,7 +227,7 @@ export const Main = ({ socketValue }) => {
               <Feed
                 key={post._id + index}
                 post_id={post.post_id}
-                user_id={userQuery.data ? userQuery.data._id : " "}
+                user_id={userQuery.data ? userQuery.data.id : " "}
                 postUser={post.user}
                 user_role={userQuery.data ? userQuery.data.role : " "}
                 caption={post.text}
