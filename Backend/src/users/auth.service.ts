@@ -9,7 +9,7 @@ const keys = require("../config/keys");
 
 interface jwtInput {
   publicAddress: string;
-  signature: Signature;
+  signature: string;
   msg: string;
 }
 
