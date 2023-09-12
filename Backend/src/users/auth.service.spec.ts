@@ -8,8 +8,6 @@ import "./auth.service";
 
 const authService: IAuthService = Container.get("AuthService");
 describe("Stubbing UserRepo", () => {
-  beforeEach(() => {});
-
   test("checking signature is valid", () => {
     const input = {
       publicAddress: "0xbe38d61731fb86d9a981f38f1bd73b106e80ce32",
