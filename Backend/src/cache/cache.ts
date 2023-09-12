@@ -1,6 +1,11 @@
 import mongoose, { Model } from "mongoose";
 import { createClient } from "redis";
+import { Container } from "typedi";
 const keys = require("../config/keys");
+
+interface ICacheRepository {
+  addToBlackList(token: string, expire: number): void;
+}
 
 const redisClient = createClient({
   url: `redis://${keys.redisHOST}:${keys.redisPORT}`,
@@ -100,4 +105,15 @@ mongoose.Aggregate.prototype.exec = async function () {
   return result;
 };
 
-export { redisClient };
+class CacheRepository implements ICacheRepository {
+  addToBlackList(token: string, expire: number): void {
+    const CURRENT = Math.floor(Date.now() / 1000);
+    redisClient.setNX(token, "1").then(() => {
+      redisClient.expire(token, expire - CURRENT);
+    });
+  }
+}
+
+Container.set("CacheRepository", new CacheRepository());
+
+export { redisClient, ICacheRepository };

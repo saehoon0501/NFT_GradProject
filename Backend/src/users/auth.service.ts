@@ -4,7 +4,7 @@ import { Container } from "typedi";
 import { IUserRepository } from "./users.repository";
 import { Signature } from "ethers";
 import { User } from "./model/UserEntity";
-import { redisClient } from "../cache/cache";
+import { ICacheRepository, redisClient } from "../cache/cache";
 const keys = require("../config/keys");
 
 interface jwtInput {
@@ -23,12 +23,12 @@ interface IAuthService {
 }
 
 class AuthService implements IAuthService {
-  constructor(private repository: IUserRepository) {}
+  constructor(
+    private repository: IUserRepository,
+    private cacheRepository: ICacheRepository
+  ) {}
   addToBlackList(token: string, expire: number): void {
-    const CURRENT = Math.floor(Date.now() / 1000);
-    redisClient.setNX(token, "1").then(() => {
-      redisClient.expire(token, expire - CURRENT);
-    });
+    this.cacheRepository.addToBlackList(token, expire);
   }
 
   generateNonce() {
@@ -66,6 +66,12 @@ class AuthService implements IAuthService {
   }
 }
 
-Container.set("AuthService", new AuthService(Container.get("UserRepository")));
+Container.set(
+  "AuthService",
+  new AuthService(
+    Container.get("UserRepository"),
+    Container.get("CacheRepository")
+  )
+);
 
 export { IAuthService };
