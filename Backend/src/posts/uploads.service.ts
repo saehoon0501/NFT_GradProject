@@ -1,7 +1,6 @@
-import S3, { DeleteObjectsRequest } from "aws-sdk/clients/s3";
-const keys = require("../config/keys");
 import { unlink, createReadStream, statSync } from "node:fs";
 import Container from "typedi";
+import { IUploadRepository } from "./repositories/uploads.repository";
 
 interface IUploadService {
   uploadToS3(files: string[]): (Promise<unknown> | undefined)[];
@@ -12,17 +11,9 @@ interface IUploadService {
 }
 
 class UploadService implements IUploadService {
-  s3: S3;
   uploadFilePromises: [];
 
-  constructor() {
-    this.s3 = new S3({
-      credentials: {
-        accessKeyId: keys.accessKeyId,
-        secretAccessKey: keys.secretAccessKey,
-      },
-      region: "ap-northeast-2",
-    });
+  constructor(private uploadRepository: IUploadRepository) {
     this.uploadFilePromises = [];
   }
   deleteFromS3(files: string[]): Promise<unknown> {
@@ -60,40 +51,27 @@ class UploadService implements IUploadService {
   private createUploadPromise(key: string, file: string) {
     const fileType = this.getFileType(file);
     if (fileType !== "invalid") {
-      return new Promise((resolve, reject) => {
-        const params = {
-          Bucket: "my-bucket-byun",
-          Key: decodeURIComponent(key.replace(/\+/g, " ")),
-          ContentType: fileType,
-          Body: createReadStream(file),
-        };
-
-        this.s3.putObject(params, (err, data) => {
-          console.log(data);
-          if (err) return err;
-          resolve(data);
-        });
-      });
+      const params = {
+        Bucket: "my-bucket-byun",
+        Key: decodeURIComponent(key.replace(/\+/g, " ")),
+        ContentType: fileType,
+        Body: createReadStream(file),
+      };
+      return this.uploadRepository.putObject(params);
     }
-    return Promise.resolve();
+    return Promise.reject();
   }
 
   private createDeletePromise(fileKeys: string[]) {
-    return new Promise((resolve, reject) => {
-      const params: DeleteObjectsRequest = {
-        Bucket: "my-bucket-byun",
-        Delete: {
-          Objects: fileKeys.map((filekey) => {
-            return { Key: filekey };
-          }),
-        },
-      };
-
-      this.s3.deleteObjects(params, (err, data) => {
-        if (err) reject(err);
-        resolve({ result: "OK" });
-      });
-    });
+    const params = {
+      Bucket: "my-bucket-byun",
+      Delete: {
+        Objects: fileKeys.map((filekey) => {
+          return { Key: filekey };
+        }),
+      },
+    };
+    return this.uploadRepository.deleteObjects(params);
   }
 
   private getFileType(file: string) {
@@ -105,6 +83,9 @@ class UploadService implements IUploadService {
   }
 }
 
-Container.set("UploadService", new UploadService());
+Container.set(
+  "UploadService",
+  new UploadService(Container.get("UploadRepository"))
+);
 
 export { IUploadService };

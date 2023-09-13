@@ -37,7 +37,7 @@ describe("Checking getUser based on parameter", () => {
     const mockedUserRepo = Container.get("UserRepository") as IUserRepository;
 
     expect(userService.getUser(user_id)).toStrictEqual({
-      _id: "64f73a25fa761dc3da613751",
+      _id: user_id,
       public_address: "public_address",
       owner_of_nft: [],
       username: "username",
@@ -55,7 +55,7 @@ describe("Checking getUser based on parameter", () => {
 
     expect(userService.getUser(public_address)).toStrictEqual({
       _id: "user_id",
-      public_address: "0x99bd9677C44c5D8bD813e187f72b1014d53e968B",
+      public_address: public_address,
       owner_of_nft: [],
       username: "username",
       description: "description",

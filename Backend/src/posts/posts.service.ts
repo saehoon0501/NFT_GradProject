@@ -85,7 +85,7 @@ class PostService implements IPostService {
 
   sanitize(post_title: string) {
     let result = post_title;
-    if (result == undefined || !/([^\s])/.test(result)) {
+    if (!/([^\s])/.test(result)) {
       return "Need any character";
     }
     result = result.replace(/^\s+/g, "");

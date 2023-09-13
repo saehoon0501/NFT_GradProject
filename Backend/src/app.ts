@@ -14,6 +14,7 @@ import "./users/users.controller";
 import "./posts/repositories/likes.repository";
 import "./posts/repositories/comments.repository";
 import "./posts/repositories/posts.repository";
+import "./posts/repositories/uploads.repository";
 import "./posts/uploads.service";
 import "./posts/posts.serializer";
 import "./posts/posts.service";

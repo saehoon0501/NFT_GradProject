@@ -13,8 +13,6 @@ let dk;
 
 let isInitialized = false;
 
-const baseURL = "http://localhost:4000";
-
 export const init = async () => {
   const provider = window.ethereum;
 
@@ -88,8 +86,6 @@ export const NFTLogin = () => {
       console.log(JSON.stringify(result));
 
       if (result != null) {
-        // setJwt()
-        // localStorage.setItem("accessToken", result.accessToken);
         setIsAuth(true);
         navigate("/");
       } else {
