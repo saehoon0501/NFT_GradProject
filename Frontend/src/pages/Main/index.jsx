@@ -23,11 +23,9 @@ import {
   showPopUpState,
 } from "../../store";
 import { LoginUser } from "../../components/main/LoginUser";
-import { VoteList } from "../../components/main/VoteList";
 import { Loading } from "../../components/common/Loading";
 import { CANCEL_FEED, DELETE, WRITE_FEED } from "../../utils";
 import { PopUp } from "../../components/common/PopUp";
-import { getVote } from "../../api/VoteApi";
 
 export const Main = ({ socketValue }) => {
   const [isBest, setIsBest] = useState(false);
