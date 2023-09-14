@@ -32,7 +32,7 @@ app.use(express.static(path.join(__dirname, "../public")));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cookieParser());
-app.use(AppRouter.getInstance());
+app.use("/api", AppRouter.getInstance());
 app.use((err, req, res, next) => {
   res.status(err.status || 500);
   res.send({ error: err.message });

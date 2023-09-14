@@ -1,4 +1,4 @@
-import { unlink, createReadStream, statSync } from "node:fs";
+import { unlink, createReadStream } from "node:fs";
 import Container from "typedi";
 import { IUploadRepository } from "./repositories/uploads.repository";
 
@@ -16,9 +16,11 @@ class UploadService implements IUploadService {
   constructor(private uploadRepository: IUploadRepository) {
     this.uploadFilePromises = [];
   }
+
   deleteFromS3(files: string[]): Promise<unknown> {
     return this.createDeletePromise(files);
   }
+
   convertURL(content: string): string {
     return content.replaceAll(
       /src\s*=\s*"(.+?\/images\/)/g,
