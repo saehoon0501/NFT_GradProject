@@ -19,10 +19,13 @@ export const User = () => {
   const [postData, setPostData] = useState([]);
   // getUserComments().then((result) => console.log(result));
 
-  useEffect(async () => {
+  useEffect(() => {
     async function fetchData() {
-      const data = await certainUserPost(user.publicAddr);
-      setPostData(data);
+      if (user) {
+        const post = await certainUserPost(user.id);
+        console.log(post);
+        setPostData(post);
+      }
     }
     fetchData();
   }, [user]);
@@ -34,21 +37,15 @@ export const User = () => {
   return (
     <div className="profile-container">
       <div className="profile-wrapper">
-        <ProfileChangeImage user={user} />
-        <ProfilePic userProfile={user?.profile} isOwner={false} />
-        <ProfileCaption userProfile={user?.profile} isOwner={false} />
+        <ProfilePic user={user} isOwner={false} />
+        <ProfileCaption user={user} isOwner={false} />
       </div>
       <div className="profile-post-wrapper">
         <span className="profile-post-title">게시물</span>
         <div className="profile-post">
           {postData &&
-            postData[0]?.posts?.map((post, index) => (
-              <ProfilePost
-                key={index}
-                title={post.title}
-                postId={post._id}
-                commentCount={post.comments.length}
-              />
+            postData.map((post, index) => (
+              <ProfilePost key={index} post={post} />
             ))}
         </div>
       </div>

@@ -52,8 +52,9 @@ const initialize = (socket) => {
     io.emit("onlineUsers", { onlineUsers });
   });
 
-  socket.on("disconnect", () => {
-    deleteUser(socket.id);
+  socket.on("disconnection", (user: socketUser) => {
+    deleteUser(user.user_id);
+    io.emit("onlineUsers", { onlineUsers });
   });
 };
 
